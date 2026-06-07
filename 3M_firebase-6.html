@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>3M — Career · Income · Protection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Non-blocking font load: media trick loads async, onload swaps to all -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap"></noscript>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --blk:#06090F;--surf:#0A0E18;--card:#0E1520;--card2:#121C2C;--raise:#172234;
+  --navy:#08111E;--navy2:#050D18;
+  --g:#F5C518;--gd:#C9A010;--g2:#FFD84D;
+  --glow:rgba(245,197,24,.22);--gf:rgba(245,197,24,.07);--gf2:rgba(245,197,24,.13);
+  --bdr:rgba(245,197,24,.18);--bdr2:rgba(245,197,24,.38);
+  --blue:#2D7DD2;--blue2:#1A5FAA;--blue3:#4DA8F8;
+  --bluef:rgba(45,125,210,.1);--bluebdr:rgba(45,125,210,.22);
+  --wire:rgba(255,255,255,.06);--wire2:rgba(255,255,255,.035);--wire3:rgba(255,255,255,.02);
+  --tx:#DCE6F5;--tx2:#98AECE;--dim:#48607E;--dim2:#6882A0;--wh:#fff;
+  --red:#E84855;--purple:#9D8FE0;
+  --rr:#E84855;--rf:rgba(232,72,85,.08);--rbdr:rgba(232,72,85,.2);
+  --bb:#2D7DD2;--bf:rgba(45,125,210,.08);--bbdr:rgba(45,125,210,.2);
+  --gold:#F5C518;--gold-f:rgba(245,197,24,.08);--gold-bdr:rgba(245,197,24,.2);
+  --radius:14px;--radius-sm:9px;--radius-lg:18px;
+  --shadow-card:0 2px 20px rgba(0,0,0,.45);
+  --shadow-lift:0 12px 40px rgba(0,0,0,.6);
+  --trans:.2s cubic-bezier(.4,0,.2,1);
+}
+
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;background:var(--blk);color:var(--tx);
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(45,125,210,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(45,125,210,.025) 1px,transparent 1px);
+  background-size:52px 52px;
+}
+
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%,rgba(45,125,210,.06),transparent 55%),
+    radial-gradient(ellipse 40% 35% at 85% 75%,rgba(245,197,24,.04),transparent 50%);
+}
+
+.top-bar{
+  position:fixed;top:0;left:0;right:0;height:2px;z-index:9999;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,var(--blue) 25%,var(--g) 50%,var(--blue) 75%,transparent 100%);
+  background-size:200% 100%;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--g),var(--blue));border-radius:4px;}
+
+.pg{display:none;position:relative;z-index:1;padding:32px 4% 100px;content-visibility:auto;contain:layout style;}
+.pg.on{display:block;animation:fadeUp .32s cubic-bezier(.4,0,.2,1);}
+nav{
+  position:sticky;top:0;z-index:300;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 4%;height:58px;gap:12px;
+  background:rgba(6,9,15,.94);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  box-shadow:0 1px 0 rgba(245,197,24,.07),0 4px 24px rgba(0,0,0,.3);
+}
+.logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;
+  color:var(--wh);white-space:nowrap;cursor:pointer;letter-spacing:-.03em;
+  transition:opacity .2s;
+}
+.logo:hover{opacity:.8;}
+.logo span{
+  color:var(--g);
+  text-shadow:0 0 16px rgba(245,197,24,.5),0 0 32px rgba(245,197,24,.2);
+}
+.nav-tools{display:flex;gap:1px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
+.nav-tools::-webkit-scrollbar{display:none;}
+.nt{
+  background:none;border:none;color:var(--dim2);
+  font-size:.68rem;font-weight:500;padding:5px 10px;border-radius:7px;
+  cursor:pointer;transition:color .16s;white-space:nowrap;flex-shrink:0;
+  position:relative;
+}
+.nt::after{
+  content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+  width:0;height:1.5px;background:var(--g);border-radius:2px;
+  transition:width .2s;
+}
+.nt:hover{color:var(--tx2);}
+.nt.active{color:var(--g);font-weight:700;}
+.nt.active::after,.nt.active-b::after,.nt.active-r::after,.nt.active-gold::after{width:60%;}
+.nt.active-r{color:var(--rr);font-weight:700;}
+.nt.active-r::after{background:var(--rr);}
+.nt.active-b{color:var(--bb);font-weight:700;}
+.nt.active-b::after{background:var(--bb);}
+.nt.active-gold{color:var(--gold);font-weight:700;}
+.nt.active-gold::after{background:var(--gold);}
+.nav-cta{
+  background:var(--g);
+  color:#000;border:none;padding:7px 16px;border-radius:7px;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:.68rem;
+  cursor:pointer;transition:var(--trans);white-space:nowrap;flex-shrink:0;
+  letter-spacing:.04em;position:relative;overflow:hidden;
+}
+.nav-cta::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.nav-cta:hover{box-shadow:0 4px 20px rgba(245,197,24,.4);transform:translateY(-1px);}
+.nav-cta:hover::before{opacity:1;}
+
+.ticker{
+  background:var(--surf);
+  border-bottom:1px solid rgba(255,255,255,.04);
+  padding:7px 0;overflow:hidden;position:relative;z-index:1;
+}
+.ticker::before,.ticker::after{
+  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;
+}
+.ticker::before{left:0;background:linear-gradient(to right,var(--surf),transparent);}
+.ticker::after{right:0;background:linear-gradient(to left,var(--surf),transparent);}
+.ticker-track{display:flex;white-space:nowrap;animation:tick 45s linear infinite;will-change:transform;transform:translateZ(0);}
+.ticker-track:hover{animation-play-state:paused;}
+.ti{
+  display:inline-flex;align-items:center;gap:6px;padding:0 24px;
+  font-size:.68rem;color:var(--dim2);
+}
+.ti::before{content:'·';color:var(--bdr);font-size:.9rem;}
+.ti strong{color:var(--g);font-weight:700;}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+.hero{
+  position:relative;z-index:1;text-align:center;
+  padding:70px 4% 52px;
+}
+.hero-eye{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(245,197,24,.06);
+  border:1px solid rgba(245,197,24,.15);border-radius:100px;
+  padding:5px 16px;font-size:.64rem;color:var(--g);font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;margin-bottom:24px;
+  box-shadow:0 0 20px rgba(245,197,24,.06);
+}
+.live{
+  width:6px;height:6px;background:var(--g);border-radius:50%;
+  animation:blink 2s infinite;display:inline-block;
+  box-shadow:0 0 8px var(--g);
+}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 8px var(--g);}50%{opacity:.3;box-shadow:none;}}
+.hero h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(2rem,5vw,3.4rem);
+  letter-spacing:-.055em;line-height:1.02;margin-bottom:16px;
+  color:var(--wh);
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--g),var(--g2) 50%,var(--g));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 20px rgba(245,197,24,.3));
+}
+.hero p{
+  color:var(--dim2);font-size:.88rem;
+  max-width:480px;margin:0 auto 40px;line-height:1.75;
+}
+
+.tool-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:10px;max-width:1060px;margin:0 auto;
+}
+.tg-btn{
+  background:var(--card2);
+  border:1px solid var(--wire);border-radius:var(--radius);
+  padding:22px 10px 17px;cursor:pointer;
+  transition:border-color var(--trans),box-shadow var(--trans),transform var(--trans);
+  text-align:center;position:relative;overflow:hidden;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+.tg-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(245,197,24,.1),transparent 60%);
+  opacity:0;transition:opacity .25s;
+}
+.tg-btn::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--g);transform:scaleX(0);transform-origin:center;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+}
+.tg-btn:hover{
+  border-color:var(--bdr);
+  box-shadow:0 8px 36px rgba(0,0,0,.5),0 0 0 1px rgba(245,197,24,.08);
+  transform:translateY(-2px);
+}
+.tg-btn:hover::before{opacity:1;}
+.tg-btn:hover::after{transform:scaleX(1);}
+.tg-btn.on{
+  border-color:var(--bdr2);
+  background:linear-gradient(160deg,rgba(245,197,24,.1),var(--card));
+  box-shadow:0 0 0 1px var(--bdr),0 8px 32px rgba(245,197,24,.12);
+  transform:translateY(-2px);
+}
+.tg-btn.on::before{opacity:1;}
+.tg-btn.on::after{transform:scaleX(1);}
+.tg-icon{font-size:1.65rem;display:block;margin-bottom:10px;transition:transform .2s;}
+.tg-btn:hover .tg-icon{transform:scale(1.12);}
+.tg-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.67rem;margin-bottom:2px;line-height:1.3;color:var(--tx);}
+.tg-tag{font-size:.58rem;color:var(--dim);}
+.tg-dot{
+  position:absolute;top:9px;right:9px;
+  width:5px;height:5px;background:var(--g);border-radius:50%;
+  box-shadow:0 0 6px var(--g);animation:blink 2.5s infinite;
+}
+
+.hero-stats{
+  display:flex;justify-content:center;gap:0;flex-wrap:wrap;
+  max-width:640px;margin:32px auto 0;
+  background:var(--card);border:1px solid var(--wire);
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow-card);
+}
+.hstat{flex:1;min-width:110px;padding:16px 18px;text-align:center;border-right:1px solid var(--wire);}
+.hstat:last-child{border-right:none;}
+.hstat-val{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;
+  color:var(--g);letter-spacing:-.04em;display:block;
+  text-shadow:0 0 20px rgba(245,197,24,.25);
+}
+.hstat-lbl{font-size:.62rem;color:var(--dim2);margin-top:3px;letter-spacing:.02em;}
+
+.pg{display:none;position:relative;z-index:1;padding:32px 4% 100px;}
+.pg.on{display:block;}
+.inner{max-width:960px;margin:0 auto;}
+
+.pg-header{
+  background:linear-gradient(135deg,var(--card2),var(--card));
+  border:1px solid var(--wire);border-radius:var(--radius-lg);
+  padding:26px 30px;margin-bottom:20px;
+  border-left:3px solid var(--g);
+  display:flex;align-items:flex-start;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+  box-shadow:var(--shadow-card);
+}
+.pg-header-left{}
+.ph-tag{
+  display:inline-block;font-size:.58rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.14em;
+  padding:3px 10px;border-radius:5px;margin-bottom:9px;
+}
+.tag-g{background:rgba(245,197,24,.1);color:var(--g);border:1px solid rgba(245,197,24,.2);}
+.tag-b{background:rgba(45,125,210,.1);color:var(--bb);border:1px solid rgba(45,125,210,.2);}
+.tag-rr{background:rgba(232,72,85,.1);color:var(--rr);border:1px solid rgba(232,72,85,.2);}
+.tag-gold{background:rgba(245,197,24,.08);color:var(--gold);border:1px solid rgba(245,197,24,.2);}
+.pg-title{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(1.3rem,2.5vw,1.85rem);
+  letter-spacing:-.04em;margin-bottom:6px;line-height:1.08;
+  color:var(--wh);
+}
+.pg-sub{color:var(--dim2);font-size:.83rem;line-height:1.7;max-width:540px;}
+
+.panel{
+  background:linear-gradient(155deg,var(--card2),var(--card));
+  border:1px solid var(--wire);border-radius:var(--radius);
+  padding:22px;margin-bottom:14px;
+  box-shadow:var(--shadow-card);
+  transition:border-color .22s,box-shadow .22s;
+}
+.panel:focus-within{border-color:rgba(245,197,24,.14);box-shadow:0 0 0 3px rgba(245,197,24,.04);}
+.card-label{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:.7rem;
+  color:var(--tx2);text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.card-label::after{content:'';flex:1;height:1px;background:var(--wire);}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.field{margin-bottom:13px;}
+.lbl{
+  font-size:.61rem;font-weight:700;color:var(--dim2);
+  text-transform:uppercase;letter-spacing:.09em;margin-bottom:6px;display:block;
+}
+.inp{
+  width:100%;background:rgba(6,9,15,.8);
+  border:1px solid var(--wire);border-radius:var(--radius-sm);
+  padding:10px 13px;color:var(--tx);font-size:.85rem;outline:none;
+  font-family:'DM Sans',sans-serif;transition:border-color .15s,box-shadow .15s;
+  appearance:none;-webkit-appearance:none;
+}
+.inp:focus{
+  border-color:rgba(245,197,24,.3);
+  box-shadow:0 0 0 3px rgba(245,197,24,.07);
+}
+select.inp{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236882A0'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;cursor:pointer;
+}
+
+.run-btn{
+  width:100%;padding:13px 16px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:.87rem;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:var(--trans);letter-spacing:.02em;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  position:relative;overflow:hidden;
+}
+.run-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.run-btn:hover{transform:translateY(-2px);}
+.run-btn:hover::before{opacity:1;}
+.run-btn:active{transform:translateY(0);}
+.rb-g{background:var(--g);color:#000;box-shadow:0 2px 12px rgba(245,197,24,.25);}
+.rb-g:hover{box-shadow:0 8px 28px rgba(245,197,24,.45);}
+.rb-b{background:linear-gradient(135deg,var(--blue3),var(--blue));color:#fff;box-shadow:0 2px 12px rgba(45,125,210,.2);}
+.rb-b:hover{box-shadow:0 8px 28px rgba(45,125,210,.4);}
+.rb-rr{background:linear-gradient(135deg,#E84855,#C0392B);color:#fff;box-shadow:0 2px 12px rgba(232,72,85,.2);}
+.rb-rr:hover{box-shadow:0 8px 28px rgba(232,72,85,.35);}
+.rb-gold{background:var(--g);color:#000;box-shadow:0 2px 12px rgba(245,197,24,.2);}
+.rb-gold:hover{box-shadow:0 8px 28px rgba(245,197,24,.4);}
+
+.share-bar{
+  background:rgba(245,197,24,.03);
+  border:1px solid rgba(245,197,24,.1);border-radius:var(--radius);
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;margin-top:14px;
+}
+.wa-btn,.copy-btn{
+  padding:7px 14px;border-radius:7px;font-weight:700;
+  font-size:.71rem;border:none;cursor:pointer;transition:var(--trans);
+  display:inline-flex;align-items:center;gap:5px;
+}
+.wa-btn{background:#25D366;color:#000;}
+.wa-btn:hover{background:#20BD5A;box-shadow:0 4px 16px rgba(37,211,102,.3);transform:translateY(-1px);}
+.copy-btn{background:var(--gf);border:1px solid var(--bdr);color:var(--g);}
+.copy-btn:hover{background:var(--gf2);transform:translateY(-1px);}
+
+.ins-item{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:9px;padding:9px 0;border-bottom:1px solid var(--wire2);font-size:.81rem;
+}
+.ins-item:last-child{border-bottom:none;}
+
+.sal-range{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:14px 0 10px;}
+.s-min,.s-max{font-size:1rem;color:var(--dim2);}
+.s-mid{
+  font-size:2.1rem;color:var(--g);font-weight:800;
+  font-family:'Syne',sans-serif;
+  text-shadow:0 0 24px rgba(245,197,24,.3);
+  filter:drop-shadow(0 0 12px rgba(245,197,24,.2));
+}
+
+.ptrack{
+  height:7px;background:rgba(6,9,15,.8);
+  border-radius:4px;overflow:hidden;border:1px solid var(--wire);
+}
+.pfill{height:100%;border-radius:4px;transition:width 1.1s cubic-bezier(.4,0,.2,1);}
+
+.issue-chip{
+  padding:6px 12px;border-radius:7px;border:1px solid var(--wire);
+  background:var(--card2);color:var(--dim2);font-size:.71rem;font-weight:600;
+  cursor:pointer;transition:var(--trans);
+}
+.issue-chip:hover{border-color:rgba(232,72,85,.2);color:var(--tx2);transform:translateY(-1px);}
+.issue-chip.sel{
+  background:rgba(232,72,85,.1);border-color:rgba(232,72,85,.3);
+  color:var(--red);box-shadow:0 0 0 2px rgba(232,72,85,.08);
+}
+
+.gjob{
+  background:var(--card2);
+  border:1px solid var(--wire);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:10px;
+  transition:border-color .2s,box-shadow .2s,transform .2s;
+  box-shadow:var(--shadow-card);
+}
+.gjob:hover{border-color:rgba(245,197,24,.18);box-shadow:var(--shadow-lift);transform:translateY(-1px);}
+.gj-title{font-weight:700;font-size:.9rem;margin-bottom:3px;color:var(--tx);}
+.gj-meta{font-size:.67rem;color:var(--dim2);}
+.gj-apply{
+  background:rgba(245,197,24,.07);border:1px solid rgba(245,197,24,.2);
+  color:var(--gold);padding:7px 16px;border-radius:7px;
+  font-size:.69rem;cursor:pointer;font-weight:700;transition:var(--trans);
+  white-space:nowrap;
+}
+.gj-apply:hover{background:rgba(245,197,24,.15);transform:translateY(-1px);}
+
+.vi{
+  background:var(--card2);border:1px solid var(--wire);
+  border-radius:var(--radius);padding:16px 18px;margin-bottom:10px;
+  border-left:3px solid var(--rr);
+  transition:border-left-color .2s,box-shadow .2s;
+  box-shadow:var(--shadow-card);
+}
+.vi:hover{border-left-color:var(--g);box-shadow:var(--shadow-lift);}
+.vi-ttl{font-weight:700;font-size:.87rem;color:var(--tx);margin-bottom:4px;}
+.vi-law{font-size:.67rem;color:var(--purple);margin-top:3px;}
+.vi-action{font-size:.71rem;color:var(--tx2);margin-top:4px;line-height:1.5;}
+
+.tr-row{
+  display:flex;justify-content:space-between;padding:9px 13px;
+  font-size:.8rem;background:var(--card);
+}
+.tr-row:nth-child(even){background:var(--card2);}
+.tr-row.total{
+  background:linear-gradient(135deg,rgba(245,197,24,.08),var(--card2));
+  font-weight:700;border-radius:0 0 9px 9px;color:var(--g);
+}
+.tax-table{border:1px solid var(--wire);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:14px;}
+.tax-head{
+  padding:9px 13px;
+  background:linear-gradient(135deg,rgba(245,197,24,.08),rgba(45,125,210,.04));
+  display:flex;justify-content:space-between;
+  font-size:.69rem;font-weight:700;color:var(--g);letter-spacing:.04em;
+}
+
+.ai-box{
+  background:linear-gradient(155deg,rgba(45,125,210,.07),rgba(14,21,32,.9));
+  border:1px solid rgba(45,125,210,.18);border-radius:var(--radius);
+  padding:20px;margin-top:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),var(--shadow-card);
+  position:relative;overflow:hidden;
+}
+.ai-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(45,125,210,.4),transparent);
+}
+.ai-box-header{
+  display:flex;align-items:center;gap:9px;margin-bottom:14px;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:.74rem;
+  color:var(--g);letter-spacing:.06em;text-transform:uppercase;
+}
+.bot-dot{
+  width:7px;height:7px;background:var(--g);border-radius:50%;
+  animation:blink 2s infinite;display:inline-block;
+  box-shadow:0 0 8px var(--g);
+}
+.ai-content{
+  font-size:.83rem;line-height:1.85;color:var(--tx2);white-space:pre-wrap;
+}
+.typing-dots{display:inline-flex;gap:5px;align-items:center;padding:4px 0;}
+.typing-dots span{
+  width:7px;height:7px;background:var(--g);border-radius:50%;
+  animation:tdot .9s ease-in-out infinite;opacity:.4;
+}
+.typing-dots span:nth-child(2){animation-delay:.18s;}
+.typing-dots span:nth-child(3){animation-delay:.36s;}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-6px);opacity:1;}}
+
+#nb-bubble{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  width:56px;height:56px;border-radius:16px;
+  background:var(--g);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  box-shadow:0 4px 20px rgba(245,197,24,.35),0 0 0 1px rgba(245,197,24,.15);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s cubic-bezier(.34,1.56,.64,1);
+  will-change:transform;
+  transform:translateZ(0);
+}
+#nb-bubble:hover{transform:scale(1.1) translateY(-2px);box-shadow:0 8px 36px rgba(245,197,24,.5);}
+.nb-badge{
+  position:absolute;top:-5px;right:-5px;background:var(--rr);color:#fff;
+  width:19px;height:19px;border-radius:50%;font-size:.56rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  animation:pulse 2.2s infinite;border:2px solid var(--blk);
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,72,85,.4);}60%{box-shadow:0 0 0 7px rgba(232,72,85,0);}}
+#nb-panel{
+  position:fixed;bottom:96px;right:24px;z-index:9998;
+  width:360px;max-width:calc(100vw - 32px);
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  box-shadow:0 28px 72px rgba(0,0,0,.75),0 0 0 1px rgba(245,197,24,.06);
+  display:none;flex-direction:column;max-height:500px;overflow:hidden;
+}
+#nb-panel.open{display:flex;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.nb-hdr{
+  background:linear-gradient(135deg,rgba(245,197,24,.07),rgba(45,125,210,.05));
+  border-bottom:1px solid rgba(255,255,255,.06);
+  padding:14px 16px;display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.nb-av{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--g);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+  box-shadow:0 2px 12px rgba(245,197,24,.3);
+}
+.nb-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;color:var(--tx);}
+.nb-sub{font-size:.59rem;color:var(--dim2);margin-top:1px;}
+.nb-x{
+  margin-left:auto;background:rgba(255,255,255,.06);
+  border:none;border-radius:7px;color:var(--dim2);
+  cursor:pointer;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;transition:background .15s,color .15s;flex-shrink:0;
+}
+.nb-x:hover{background:rgba(255,255,255,.1);color:var(--tx);}
+.nb-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.nb-msgs::-webkit-scrollbar{width:3px;}
+.nb-msgs::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px;}
+.nb-msg{
+  max-width:86%;padding:10px 13px;border-radius:14px;
+  font-size:.78rem;line-height:1.65;
+  animation:fadeUp .22s ease;
+}
+.nb-msg.bot{
+  background:var(--card2);border:1px solid var(--wire);
+  border-bottom-left-radius:4px;align-self:flex-start;color:var(--tx2);
+}
+.nb-msg.user{
+  background:var(--g);color:#000;font-weight:600;
+  border-bottom-right-radius:4px;align-self:flex-end;
+}
+.nb-msg.typing{
+  background:var(--card2);border:1px solid var(--wire);
+  align-self:flex-start;padding:13px 16px;
+}
+.nb-sugs{
+  padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;
+  border-top:1px solid var(--wire2);flex-shrink:0;
+}
+.nb-sug{
+  background:rgba(245,197,24,.07);border:1px solid rgba(245,197,24,.15);color:var(--g);
+  padding:4px 10px;border-radius:20px;font-size:.63rem;font-weight:600;
+  cursor:pointer;white-space:nowrap;transition:var(--trans);
+}
+.nb-sug:hover{background:rgba(245,197,24,.14);transform:translateY(-1px);}
+.nb-row{
+  padding:10px 12px;border-top:1px solid var(--wire);
+  display:flex;gap:7px;flex-shrink:0;
+  background:rgba(6,9,15,.5);
+}
+.nb-inp{
+  flex:1;background:rgba(6,9,15,.8);
+  border:1px solid var(--wire);border-radius:10px;
+  padding:8px 12px;color:var(--tx);font-size:.78rem;outline:none;
+  font-family:'DM Sans',sans-serif;transition:border-color .15s;
+}
+.nb-inp:focus{border-color:rgba(245,197,24,.25);}
+.nb-send{
+  background:var(--g);color:#000;
+  border:none;border-radius:10px;width:34px;height:34px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;flex-shrink:0;transition:var(--trans);
+  font-weight:800;
+}
+.nb-send:hover{box-shadow:0 4px 16px rgba(245,197,24,.4);transform:scale(1.06);}
+.nb-send:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+
+#pw-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(16px) saturate(1.2);
+  z-index:8000;display:none;
+  align-items:center;justify-content:center;padding:20px;
+}
+#pw-overlay.open{display:flex;}
+#pw-modal{
+  background:linear-gradient(155deg,var(--card2),var(--card));
+  border:1px solid rgba(245,197,24,.2);border-radius:22px;
+  padding:38px 30px;max-width:400px;width:100%;text-align:center;
+  position:relative;
+  animation:pwIn .35s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 40px 100px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.05);
+}
+#pw-modal::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:60%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(245,197,24,.4),transparent);
+}
+@keyframes pwIn{from{opacity:0;transform:scale(.88) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.pw-close{
+  position:absolute;top:14px;right:14px;
+  background:rgba(255,255,255,.07);border:none;
+  color:var(--dim2);font-size:.9rem;cursor:pointer;
+  width:28px;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,color .15s;
+}
+.pw-close:hover{background:rgba(255,255,255,.12);color:var(--tx);}
+.pw-icon{font-size:2.6rem;margin-bottom:10px;display:block;}
+.pw-title{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;
+  letter-spacing:-.035em;margin-bottom:8px;color:var(--tx);
+}
+.pw-title em{font-style:normal;color:var(--g);}
+.pw-sub{font-size:.79rem;color:var(--dim2);line-height:1.68;margin-bottom:22px;}
+.pw-plans{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.pw-plan{
+  background:var(--navy);border:1px solid var(--wire);
+  border-radius:var(--radius);padding:16px 12px;cursor:pointer;
+  transition:var(--trans);
+}
+.pw-plan:hover{border-color:var(--bdr);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.pw-plan.pop{
+  border-color:rgba(245,197,24,.25);
+  background:linear-gradient(135deg,rgba(245,197,24,.08),var(--navy));
+  box-shadow:0 0 0 1px rgba(245,197,24,.1);
+}
+.pw-plan-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.65rem;color:var(--dim2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
+.pw-plan-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-.04em;color:var(--tx);}
+.pw-plan-price span{font-size:.7rem;font-weight:400;color:var(--dim);}
+.pw-plan-note{font-size:.62rem;color:var(--dim2);margin-top:4px;}
+.pw-plan.pop .pw-plan-price{color:var(--g);}
+.pw-mpesa{
+  background:rgba(245,197,24,.05);border:1px solid rgba(245,197,24,.15);
+  border-radius:var(--radius);padding:14px;margin-bottom:16px;
+}
+.pw-mpesa-title{font-family:'Syne',sans-serif;font-weight:800;font-size:.75rem;color:var(--g);margin-bottom:9px;}
+.pw-mpesa-steps{font-size:.73rem;color:var(--tx2);line-height:1.95;text-align:left;}
+.pw-mpesa-code{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--g);
+  letter-spacing:.06em;background:rgba(245,197,24,.1);
+  padding:4px 12px;border-radius:6px;display:inline-block;margin:4px 0;
+}
+.pw-cta{
+  width:100%;padding:13px;background:var(--g);
+  color:#000;border:none;border-radius:var(--radius-sm);
+  font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;
+  cursor:pointer;transition:var(--trans);margin-bottom:10px;
+  box-shadow:0 4px 16px rgba(245,197,24,.3);
+}
+.pw-cta:hover{box-shadow:0 8px 28px rgba(245,197,24,.5);transform:translateY(-1px);}
+.pw-dismiss{background:none;border:none;color:var(--dim2);font-size:.72rem;cursor:pointer;transition:color .15s;}
+.pw-dismiss:hover{color:var(--tx2);}
+.pw-counter{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--gf2);border:1px solid var(--bdr);
+  border-radius:6px;padding:3px 10px;font-size:.63rem;font-weight:700;color:var(--g);margin-bottom:16px;
+}
+.pw-dot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:blink 1.8s infinite;}
+
+.use-badge{
+  display:inline-block;background:var(--gf2);border:1px solid var(--bdr);
+  color:var(--g);font-size:.57rem;font-weight:800;
+  padding:2px 7px;border-radius:4px;margin-left:8px;vertical-align:middle;
+  letter-spacing:.04em;
+}
+.use-badge.warn{background:rgba(245,197,24,.1);border-color:rgba(245,197,24,.2);color:var(--gold);}
+.use-badge.danger{background:var(--rf);border-color:var(--rbdr);color:var(--rr);}
+
+#cv-print-area{display:none;}
+@media print{
+  body > *{display:none !important;}
+  #cv-print-area{display:block !important;font-family:Georgia,serif;color:#111;background:#fff;padding:40px;max-width:750px;margin:0 auto;}
+  #cv-print-area h1{font-size:22px;margin-bottom:2px;color:#0A1628;}
+  #cv-print-area .cv-role{font-size:13px;color:#2D7DD2;margin-bottom:4px;}
+  #cv-print-area .cv-contact{font-size:11px;color:#555;margin-bottom:16px;border-bottom:2px solid #F5C518;padding-bottom:10px;}
+  #cv-print-area h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#2D7DD2;margin:18px 0 6px;border-bottom:1px solid #ddd;padding-bottom:3px;}
+  #cv-print-area p,#cv-print-area li{font-size:11px;line-height:1.6;color:#222;}
+  #cv-print-area ul{padding-left:16px;}
+}
+
+.mkt-tab{
+  background:var(--card2);border:1px solid var(--wire);color:var(--dim2);
+  font-size:.71rem;font-weight:600;padding:8px 16px;border-radius:8px;
+  cursor:pointer;transition:var(--trans);font-family:'DM Sans',sans-serif;
+}
+.mkt-tab:hover{color:var(--tx2);border-color:rgba(255,255,255,.1);}
+.mkt-tab.on{
+  background:rgba(245,197,24,.1);border-color:rgba(245,197,24,.25);
+  color:var(--g);font-weight:700;
+  box-shadow:0 0 0 2px rgba(245,197,24,.06);
+}
+
+@media(max-width:900px){
+  .tool-grid{grid-template-columns:repeat(5,1fr);}
+  .hero-stats{display:none;}
+}
+@media(max-width:600px){
+  .tool-grid{grid-template-columns:repeat(3,1fr);}
+  .g2{grid-template-columns:1fr;}
+  .g3{grid-template-columns:1fr 1fr;}
+  #nb-panel{width:calc(100vw - 32px);right:16px;bottom:88px;}
+  #nb-bubble{right:16px;bottom:16px;}
+  .pg-header{flex-direction:column;padding:20px;}
+  .hero{padding:52px 5% 40px;}
+  .hero h1{letter-spacing:-.04em;}
+  nav{padding:0 5%;height:54px;}
+}
+@media(max-width:400px){
+  .tool-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<!-- Debug Panel -->
+<div id="debug-panel" style="display:none;position:fixed;bottom:80px;left:10px;right:10px;background:#000;border:1px solid #F5C518;border-radius:10px;padding:12px;z-index:99999;max-height:200px;overflow-y:auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span style="color:#F5C518;font-size:.7rem;font-weight:700;">DEBUG LOG</span>
+    <button onclick="document.getElementById('debug-panel').style.display='none'" style="background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;">✕</button>
+  </div>
+  <div id="debug-log" style="font-size:.65rem;color:#ccc;line-height:1.8;font-family:monospace;"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="showHero()">3<span>M</span></div>
+  <div class="nav-tools" id="navTools"></div>
+  <button class="nav-cta" id="nav-login-btn">Sign In</button>
+</nav>
+<div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
+
+<!-- HERO -->
+<div id="heroSection">
+  <div class="hero">
+    <div class="hero-eye"><span class="live"></span> LIVE KENYA DATA · AI POWERED</div>
+    <h1>Your <em>career & income</em><br>protection hub</h1>
+    <p>10 AI-powered tools built for Kenyan professionals — salary intelligence, career growth, scam protection, legal rights & more.</p>
+    <div class="tool-grid" id="toolGrid"></div>
+    <div class="hero-stats">
+      <div class="hstat"><span class="hstat-val">24K+</span><div class="hstat-lbl">Active Users</div></div>
+      <div class="hstat"><span class="hstat-val">10</span><div class="hstat-lbl">AI Tools</div></div>
+      <div class="hstat"><span class="hstat-val">98%</span><div class="hstat-lbl">Scam Detection</div></div>
+      <div class="hstat"><span class="hstat-val">KES 0</span><div class="hstat-lbl">To Start</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SALARY ===== -->
+<div id="pg-salary" class="pg"><div class="inner">
+  <div class="pg-header">
+    <div class="pg-header-left">
+      <div class="ph-tag tag-g">💰 SALARY INSIGHT</div>
+      <div class="pg-title">Kenya Salary Intelligence</div>
+      <div class="pg-sub">Real salary ranges for 50+ roles across 11 counties and 11 industries. Based on Kenya market data 2024–2025.</div>
+    </div>
+  </div>
+  <div class="g2">
+    <div>
+      <div class="panel">
+        <div class="field">
+          <label class="lbl">🏭 Industry</label>
+          <select id="salIndustry" class="inp"></select>
+        </div>
+        <div class="field">
+          <label class="lbl">👔 Role</label>
+          <select id="salRole" class="inp"></select>
+        </div>
+        <div class="field">
+          <label class="lbl">📍 County / Location</label>
+          <select id="salCounty" class="inp"></select>
+        </div>
+        <div class="field">
+          <label class="lbl">⏱️ Experience — <span id="expYears">3 yrs</span></label>
+          <input type="range" id="expSlider" min="0" max="20" value="3" style="width:100%;accent-color:var(--g);">
+        </div>
+        <button id="salaryAiBtn" class="run-btn rb-g" style="margin-top:8px;">✨ AI Market Analysis</button>
+      </div>
+    </div>
+    <div>
+      <div class="panel" style="background:linear-gradient(160deg,rgba(245,197,24,.06),var(--card2));margin-bottom:14px;">
+        <div style="font-size:.65rem;color:var(--dim2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Monthly Gross — <span id="salCountyLabel">Nairobi</span></div>
+        <div class="sal-range"><span class="s-min" id="salMin">—</span><span style="color:var(--dim2);">–</span><span class="s-mid" id="salMid">—</span><span style="color:var(--dim2);">–</span><span class="s-max" id="salMax">—</span></div>
+        <div id="salaryDetails"></div>
+      </div>
+      <div class="panel" style="padding:16px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.7rem;color:var(--tx2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">📍 County Comparison (median)</div>
+        <div id="countyComparison"></div>
+      </div>
+    </div>
+  </div>
+  <div id="salaryAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Salary Analysis</div><div id="salaryAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><p style="font-size:.8rem;"><strong>Share salary snapshot</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="sal-wa">📱 WhatsApp</button><button class="copy-btn" id="sal-cp">📋 Copy</button></div></div>
+</div></div>
+
+<!-- ===== CAREER ===== -->
+<div id="pg-career" class="pg"><div class="inner">
+  <div class="ph-tag tag-b">🎯 AI CAREER COACH</div>
+  <div class="pg-title">Your Personalised Career Roadmap</div>
+  <div class="pg-sub">Describe your background and goals. 3MAI builds a step-by-step Kenya-specific plan with salary targets, skill gaps, and local platforms.</div>
+  <div class="panel">
+    <label class="lbl">Your background, skills & goals</label>
+    <textarea id="careerQuery" class="inp" rows="4" placeholder="e.g., I'm a 24-year-old IT graduate from Meru, doing odd tech jobs. I want to break into cybersecurity or cloud computing in Nairobi within 6 months..."></textarea>
+    <button id="careerRun" class="run-btn rb-b" style="margin-top:12px;">✨ Generate My Roadmap</button>
+  </div>
+  <div id="careerAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Career Coach</div><div id="careerAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><p style="font-size:.8rem;"><strong>Share your roadmap 🔥</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="car-wa">📱 Share</button><button class="copy-btn" id="car-cp">📋 Copy</button></div></div>
+</div></div>
+
+<!-- ===== SCAM ===== -->
+<div id="pg-scam" class="pg"><div class="inner">
+  <div class="ph-tag tag-rr">⚠️ SCAM DETECTOR</div>
+  <div class="pg-title">AI Job Scam Risk Analyzer</div>
+  <div class="pg-sub">Select red flags, describe the offer, and 3MAI will tell you if it's a scam — and exactly what to do next.</div>
+  <div class="panel">
+    <label class="lbl">Red flags spotted (select all that apply)</label>
+    <div id="scamChips" style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px;"></div>
+    <label class="lbl">Describe the offer (optional)</label>
+    <textarea id="scamDesc" class="inp" rows="3" placeholder="e.g., WhatsApp message from 'Equity Recruitment' offering KES 180k/month remote data entry, asking KES 2,500 training fee first..."></textarea>
+    <button id="scamBtn" class="run-btn rb-rr" style="margin-top:12px;">🔍 Analyse Scam Risk</button>
+    <div id="riskMeter" class="ptrack" style="margin:18px 0 6px;"><div id="riskFill" class="pfill" style="width:0%;background:var(--rr);"></div></div>
+    <div id="scamScore" style="text-align:center;font-size:.84rem;font-weight:600;margin-bottom:4px;"></div>
+  </div>
+  <div id="scamAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Scam Analysis</div><div id="scamAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><button class="wa-btn" id="scm-wa">⚠️ Share warning</button><button class="copy-btn" id="scm-cp">📋 Copy report</button></div>
+</div></div>
+
+<!-- ===== GOVT JOBS ===== -->
+<div id="pg-govt" class="pg"><div class="inner">
+  <div class="ph-tag tag-gold">🏛️ GOVERNMENT JOBS</div>
+  <div class="pg-title">Live Government Job Listings</div>
+  <div class="pg-sub">Latest openings from PSC, counties, parastatals and government agencies. AI application tips for any role.</div>
+  <div id="govtList" style="margin-bottom:14px;"></div>
+  <div class="panel">
+    <label class="lbl">🤖 AI Application Strategy — which job?</label>
+    <input type="text" id="govtInput" class="inp" placeholder="e.g., KRA Tax Assistant, Police Constable, Public Health Officer...">
+    <button id="govtBtn" class="run-btn rb-gold" style="margin-top:10px;">✨ Get Application Strategy</button>
+  </div>
+  <div id="govtAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Application Coach</div><div id="govtAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><button class="wa-btn" id="gov-wa">📱 Share job alerts</button><button class="copy-btn" id="gov-cp">📋 Copy list</button></div>
+</div></div>
+
+<!-- ===== RIGHTS ===== -->
+<div id="pg-rights" class="pg"><div class="inner">
+  <div class="ph-tag tag-gold">⚖️ WORKERS' RIGHTS</div>
+  <div class="pg-title">Know Your Rights Under Kenyan Law</div>
+  <div class="pg-sub">Employment Act 2007 made simple. Tap any issue, then get personalised AI legal guidance for your situation.</div>
+  <div id="rightsCards" style="margin-bottom:14px;"></div>
+  <div class="panel">
+    <label class="lbl">⚖️ Describe your workplace situation</label>
+    <textarea id="rightsQuery" class="inp" rows="3" placeholder="e.g., My employer hasn't paid salary for 2 months, threatening to fire me if I complain..."></textarea>
+    <button id="rightsBtn" class="run-btn rb-gold" style="margin-top:10px;">⚖️ Get AI Legal Advice</button>
+  </div>
+  <div id="rightsAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Legal Assistant</div><div id="rightsAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><button class="wa-btn" id="rig-wa">📢 Share rights info</button><button class="copy-btn" id="rig-cp">📋 Copy legal tips</button></div>
+</div></div>
+
+<!-- ===== TAX ===== -->
+<div id="pg-tax" class="pg"><div class="inner">
+  <div class="ph-tag tag-b">📊 KRA TAX CALCULATOR</div>
+  <div class="pg-title">PAYE & Deductions Calculator</div>
+  <div class="pg-sub">Calculate your exact take-home pay. Then get AI tips to legally reduce your tax burden.</div>
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="panel">
+      <div class="field"><label class="lbl">💰 Monthly Gross (KES)</label><input type="number" id="grossIncome" class="inp" value="65000" step="1000"></div>
+      <div class="field"><label class="lbl">🧾 Personal Relief (KES/mo)</label><input type="number" id="taxRelief" class="inp" value="2400" step="100"></div>
+      <button id="calcTaxBtn" class="run-btn rb-b">Calculate PAYE</button>
+    </div>
+    <div class="panel">
+      <div class="tax-table"><div class="tax-head"><span>PAYE Band (Monthly)</span><span>Rate</span></div><div class="tr-row"><span>Up to KES 24,000</span><span>10%</span></div><div class="tr-row"><span>KES 24,001–32,333</span><span>25%</span></div><div class="tr-row"><span>KES 32,334–500,000</span><span>30%</span></div><div class="tr-row"><span>KES 500,001–800,000</span><span>32.5%</span></div><div class="tr-row"><span>Above KES 800,000</span><span>35%</span></div></div>
+      <div id="taxResult"></div>
+    </div>
+  </div>
+  <div class="panel"><button id="taxAiBtn" class="run-btn rb-b">✨ Get AI Tax-Saving Tips</button></div>
+  <div id="taxAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Tax Advisor</div><div id="taxAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><button class="wa-btn" id="tax-wa">📊 Share estimate</button><button class="copy-btn" id="tax-cp">📋 Copy</button></div>
+</div></div>
+
+<!-- ===== CV BUILDER ===== -->
+<div id="pg-cv" class="pg"><div class="inner">
+  <div class="ph-tag tag-b">📄 CV BUILDER</div>
+  <div class="pg-title">AI-Powered CV Builder</div>
+  <div class="pg-sub">Fill in your details and get AI-enhanced CV content tailored for Kenyan employers. ATS-optimised.</div>
+  <div class="g2">
+    <div class="panel">
+      <div class="field"><label class="lbl">Full Name</label><input type="text" id="cvName" class="inp" placeholder="e.g., James Mwangi Kamau"></div>
+      <div class="field"><label class="lbl">Target Role</label><input type="text" id="cvRole" class="inp" placeholder="e.g., Software Engineer"></div>
+      <div class="field"><label class="lbl">Email</label><input type="email" id="cvEmail" class="inp" placeholder="james@email.com"></div>
+      <div class="field"><label class="lbl">Phone</label><input type="tel" id="cvPhone" class="inp" placeholder="+254 7XX XXX XXX"></div>
+      <div class="field"><label class="lbl">Location</label><input type="text" id="cvLocation" class="inp" placeholder="Nairobi, Kenya"></div>
+      <div class="field"><label class="lbl">Key Skills</label><input type="text" id="cvSkills" class="inp" placeholder="Python, Data Analysis, SQL..."></div>
+      <div class="field"><label class="lbl">Work Experience</label><textarea id="cvExp" class="inp" rows="3" placeholder="2 yrs at Safaricom as data analyst. Built dashboards, automated reporting..."></textarea></div>
+      <div class="field"><label class="lbl">Education</label><input type="text" id="cvEdu" class="inp" placeholder="BSc Computer Science — UoN, 2022"></div>
+      <button id="cvBtn" class="run-btn rb-b" style="margin-top:4px;">✨ Generate AI CV</button>
+    </div>
+    <div class="panel" id="cvPreview" style="min-height:280px;">
+      <div style="text-align:center;color:var(--dim);padding:40px 0;font-size:.83rem;">Your CV preview will appear here →</div>
+    </div>
+  </div>
+  <div id="cvAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI CV Writer</div><div id="cvAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><p style="font-size:.8rem;"><strong>📄 Export your CV</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="cv-pdf" style="display:none;">📄 Download PDF</button><button class="copy-btn" id="cv-cp">📋 Copy CV text</button></div></div>
+</div></div>
+
+<!-- ===== COVER LETTER ===== -->
+<div id="pg-cover" class="pg"><div class="inner">
+  <div class="ph-tag tag-b">✉️ COVER LETTER AI</div>
+  <div class="pg-title">AI Cover Letter Generator</div>
+  <div class="pg-sub">Paste a job description and your background. 3MAI writes a compelling cover letter for Kenyan employers in seconds.</div>
+  <div class="panel">
+    <div class="field"><label class="lbl">Your Name & Role</label><input type="text" id="clName" class="inp" placeholder="e.g., Grace Njeri — Marketing Manager"></div>
+    <div class="field"><label class="lbl">Job Description</label><textarea id="clJob" class="inp" rows="4" placeholder="e.g., Digital Marketing Officer at KCB. Requirements: 3+ yrs digital marketing, SEO/SEM, Google Analytics..."></textarea></div>
+    <div class="field"><label class="lbl">Your Key Strengths & Experience</label><textarea id="clExp" class="inp" rows="3" placeholder="e.g., 4 years managing social media for Nairobi FMCG brand. Grew Instagram 2k→40k followers. Strong paid ads and content strategy..."></textarea></div>
+    <button id="coverBtn" class="run-btn rb-b" style="margin-top:4px;">✉️ Generate Cover Letter</button>
+  </div>
+  <div id="coverAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Cover Letter</div><div id="coverAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><p style="font-size:.8rem;"><strong>✉️ Ready to send?</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="cl-wa">📱 Share</button><button class="copy-btn" id="cl-cp">📋 Copy letter</button></div></div>
+</div></div>
+
+<!-- ===== SIDE HUSTLE ===== -->
+<div id="pg-hustle" class="pg"><div class="inner">
+  <div class="ph-tag tag-g">🚀 SIDE HUSTLE GENERATOR</div>
+  <div class="pg-title">AI Side Hustle Ideas for Kenya</div>
+  <div class="pg-sub">Tell 3MAI your skills, time, and capital. Get personalised side hustle ideas with income projections and exact how-to-start steps.</div>
+  <div class="panel">
+    <div class="g2">
+      <div class="field"><label class="lbl">Your Main Skills</label><input type="text" id="hustleSkills" class="inp" placeholder="e.g., Excel, driving, cooking, coding..."></div>
+      <div class="field"><label class="lbl">Available Time / Week</label><select id="hustleTime" class="inp"><option value="2-5">2–5 hours</option><option value="5-10">5–10 hours</option><option value="10-20" selected>10–20 hours</option><option value="20+">20+ hours</option></select></div>
+      <div class="field"><label class="lbl">Starting Capital</label><select id="hustleCapital" class="inp"><option value="0">KES 0 — Bootstrap</option><option value="5000" selected>Up to KES 5,000</option><option value="20000">Up to KES 20,000</option><option value="50000">Up to KES 50,000</option></select></div>
+      <div class="field"><label class="lbl">Category</label><select id="hustleCat" class="inp"><option value="any">Any — surprise me</option><option value="online">Online / Digital</option><option value="offline">Offline / Physical</option><option value="services">Services</option><option value="products">Products / Reselling</option></select></div>
+    </div>
+    <button id="hustleBtn" class="run-btn rb-g" style="margin-top:4px;">🚀 Generate Side Hustle Ideas</button>
+  </div>
+  <div id="hustleAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Side Hustle Advisor</div><div id="hustleAiContent" class="ai-content"></div></div>
+  <div class="share-bar"><p style="font-size:.8rem;"><strong>Share the opportunity 🚀</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="hus-wa">📱 WhatsApp</button><button class="copy-btn" id="hus-cp">📋 Copy ideas</button></div></div>
+</div></div>
+
+<!-- ===== MARKETING HUB ===== -->
+<div id="pg-marketing" class="pg"><div class="inner">
+  <div class="ph-tag tag-rr">📣 MARKETING HUB</div>
+  <div class="pg-title">AI Marketing Suite</div>
+  <div class="pg-sub">Four powerful AI marketing tools in one place — social posts, brand identity, full strategy, and ad copy. Built for Kenyan entrepreneurs and hustlers.</div>
+
+  <!-- SUB-TAB NAV -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;" id="mktTabs">
+    <button class="mkt-tab on" onclick="switchMkt('social')">📱 Social Posts</button>
+    <button class="mkt-tab" onclick="switchMkt('brand')">🎨 Brand Generator</button>
+    <button class="mkt-tab" onclick="switchMkt('strategy')">📈 Strategy Builder</button>
+    <button class="mkt-tab" onclick="switchMkt('adcopy')">✍️ Ad Copy Writer</button>
+  </div>
+
+  <!-- SOCIAL MEDIA POST GENERATOR -->
+  <div id="mkt-social" class="mkt-panel">
+    <div class="panel">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px;">📱 Social Media Post Generator</div>
+      <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Generate ready-to-post content for Instagram, X, TikTok, and WhatsApp in seconds.</div>
+      <div class="g2">
+        <div class="field"><label class="lbl">Your Product / Service / Topic</label><input type="text" id="socialProduct" class="inp" placeholder="e.g., My chapati business in Westlands, New clothing line..."></div>
+        <div class="field"><label class="lbl">Target Audience</label><input type="text" id="socialAudience" class="inp" placeholder="e.g., Nairobi youth 18-30, working mums..."></div>
+        <div class="field"><label class="lbl">Platform</label>
+          <select id="socialPlatform" class="inp">
+            <option value="all">All platforms (Instagram, X, TikTok, WhatsApp)</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok / Reels script</option>
+            <option value="x">X (Twitter)</option>
+            <option value="whatsapp">WhatsApp status / broadcast</option>
+          </select>
+        </div>
+        <div class="field"><label class="lbl">Tone</label>
+          <select id="socialTone" class="inp">
+            <option value="energetic">Energetic & hype</option>
+            <option value="professional">Professional & trustworthy</option>
+            <option value="funny">Funny & relatable</option>
+            <option value="kenyan">Kenyan / Sheng mix</option>
+          </select>
+        </div>
+      </div>
+      <button id="socialBtn" class="run-btn rb-rr">📱 Generate Social Posts</button>
+    </div>
+    <div id="socialAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Social Post Writer</div><div id="socialAiContent" class="ai-content"></div></div>
+    <div class="share-bar"><p style="font-size:.8rem;"><strong>Ready to post 🔥</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="soc-wa">📱 Share</button><button class="copy-btn" id="soc-cp">📋 Copy posts</button></div></div>
+  </div>
+
+  <!-- BRAND GENERATOR -->
+  <div id="mkt-brand" class="mkt-panel" style="display:none;">
+    <div class="panel">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px;">🎨 Business Name & Brand Generator</div>
+      <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Generate business names, taglines, brand personality, logo concepts, and colour palette ideas.</div>
+      <div class="g2">
+        <div class="field"><label class="lbl">What Does Your Business Do?</label><textarea id="brandDesc" class="inp" rows="3" placeholder="e.g., I sell handmade jewellery targeting young professional women in Nairobi..."></textarea></div>
+        <div class="field">
+          <label class="lbl">Industry / Niche</label>
+          <select id="brandIndustry" class="inp">
+            <option value="food">Food & Beverage</option>
+            <option value="fashion">Fashion & Clothing</option>
+            <option value="tech">Tech & Digital</option>
+            <option value="beauty">Beauty & Wellness</option>
+            <option value="retail">Retail & E-commerce</option>
+            <option value="services">Professional Services</option>
+            <option value="education">Education & Training</option>
+            <option value="other">Other</option>
+          </select>
+          <label class="lbl" style="margin-top:10px;">Brand Personality</label>
+          <select id="brandVibe" class="inp">
+            <option value="bold">Bold & Fearless</option>
+            <option value="premium">Premium & Luxurious</option>
+            <option value="friendly">Friendly & Approachable</option>
+            <option value="innovative">Innovative & Modern</option>
+            <option value="authentic">Authentic & Local</option>
+          </select>
+        </div>
+      </div>
+      <button id="brandBtn" class="run-btn rb-rr" style="margin-top:4px;">🎨 Generate My Brand Identity</button>
+    </div>
+    <div id="brandAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Brand Generator</div><div id="brandAiContent" class="ai-content"></div></div>
+    <div class="share-bar"><p style="font-size:.8rem;"><strong>Love your brand? Share it 🎨</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="brd-wa">📱 Share</button><button class="copy-btn" id="brd-cp">📋 Copy brand kit</button></div></div>
+  </div>
+
+  <!-- STRATEGY BUILDER -->
+  <div id="mkt-strategy" class="mkt-panel" style="display:none;">
+    <div class="panel">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px;">📈 Marketing Strategy Builder</div>
+      <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Get a full 90-day marketing plan tailored to your business, budget, and Kenyan market.</div>
+      <div class="g2">
+        <div class="field"><label class="lbl">Business Description</label><textarea id="stratBusiness" class="inp" rows="3" placeholder="e.g., Online shop selling African print clothing. Based in Nairobi, targeting diaspora and local market..."></textarea></div>
+        <div class="field">
+          <label class="lbl">Monthly Marketing Budget</label>
+          <select id="stratBudget" class="inp">
+            <option value="0">KES 0 — Free / organic only</option>
+            <option value="5000">Up to KES 5,000</option>
+            <option value="20000">Up to KES 20,000</option>
+            <option value="50000">Up to KES 50,000</option>
+            <option value="100000">KES 100,000+</option>
+          </select>
+          <label class="lbl" style="margin-top:10px;">Primary Goal</label>
+          <select id="stratGoal" class="inp">
+            <option value="awareness">Brand awareness — more people know me</option>
+            <option value="sales">Drive sales — more orders / revenue</option>
+            <option value="followers">Grow social media following</option>
+            <option value="leads">Generate leads / enquiries</option>
+            <option value="retention">Retain existing customers</option>
+          </select>
+        </div>
+      </div>
+      <button id="stratBtn" class="run-btn rb-rr" style="margin-top:4px;">📈 Build My 90-Day Strategy</button>
+    </div>
+    <div id="stratAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Strategy Builder</div><div id="stratAiContent" class="ai-content"></div></div>
+    <div class="share-bar"><p style="font-size:.8rem;"><strong>Share your strategy 📈</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="str-wa">📱 Share</button><button class="copy-btn" id="str-cp">📋 Copy strategy</button></div></div>
+  </div>
+
+  <!-- AD COPY WRITER -->
+  <div id="mkt-adcopy" class="mkt-panel" style="display:none;">
+    <div class="panel">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px;">✍️ AI Ad Copy Writer</div>
+      <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Write high-converting headlines, ad copy, and CTAs for any product or service.</div>
+      <div class="g2">
+        <div class="field"><label class="lbl">Product / Service</label><input type="text" id="adProduct" class="inp" placeholder="e.g., Online Python programming course for beginners in Kenya"></div>
+        <div class="field"><label class="lbl">Target Customer</label><input type="text" id="adTarget" class="inp" placeholder="e.g., Unemployed graduates aged 22-28 in Nairobi"></div>
+        <div class="field"><label class="lbl">Key Benefit / Unique Selling Point</label><input type="text" id="adUSP" class="inp" placeholder="e.g., Learn in 30 days, get a job or full refund"></div>
+        <div class="field"><label class="lbl">Ad Format</label>
+          <select id="adFormat" class="inp">
+            <option value="all">All formats</option>
+            <option value="facebook">Facebook / Instagram Ad</option>
+            <option value="google">Google Search Ad</option>
+            <option value="whatsapp">WhatsApp Broadcast</option>
+            <option value="tiktok">TikTok Ad Script</option>
+            <option value="flyer">Digital Flyer / Poster copy</option>
+          </select>
+        </div>
+      </div>
+      <button id="adBtn" class="run-btn rb-rr" style="margin-top:4px;">✍️ Write My Ad Copy</button>
+    </div>
+    <div id="adAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Ad Copywriter</div><div id="adAiContent" class="ai-content"></div></div>
+    <div class="share-bar"><p style="font-size:.8rem;"><strong>Ready to run your ads ✍️</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="adc-wa">📱 Share</button><button class="copy-btn" id="adc-cp">📋 Copy ad copy</button></div></div>
+  </div>
+
+</div></div>
+
+<!-- ===== PAYWALL MODAL ===== -->
+<div id="pw-overlay">
+  <div id="pw-modal">
+    <button class="pw-close" id="pw-close">✕</button>
+    <span class="pw-icon">🔒</span>
+    <div class="pw-title">You've used your <em>3 free</em> queries</div>
+    <p class="pw-sub">Upgrade to Pro for unlimited AI queries across all 9 tools — salary insights, career roadmaps, scam detection, legal guidance, tax tips, CV builder &amp; more.</p>
+    <div class="pw-plans">
+      <div class="pw-plan" data-plan="basic" onclick="selectPlan('basic')">
+        <div class="pw-plan-name">Basic</div>
+        <div class="pw-plan-price">KES 49<span>/mo</span></div>
+        <div class="pw-plan-note">50 AI queries/mo</div>
+      </div>
+      <div class="pw-plan pop" data-plan="pro" onclick="selectPlan('pro')">
+        <div class="pw-plan-name">⚡ Pro</div>
+        <div class="pw-plan-price">KES 99<span>/mo</span></div>
+        <div class="pw-plan-note">Unlimited · All tools</div>
+      </div>
+    </div>
+    <div class="pw-mpesa">
+      <div class="pw-mpesa-title">💳 Pay via M-Pesa (Lipa Na M-Pesa)</div>
+      <div class="pw-mpesa-steps">
+        1. Go to M-Pesa → Lipa Na M-Pesa → Pay Bill<br>
+        2. Business No: <span class="pw-mpesa-code">400200</span><br>
+        3. Account No: <span class="pw-mpesa-code">3M</span><br>
+        4. Amount: KES 49 (Basic) or KES 99 (Pro)<br>
+        5. WhatsApp screenshot to: <strong style="color:var(--g);">+254 700 000 000</strong>
+      </div>
+    </div>
+    <button class="pw-cta" id="pw-wa-btn">📱 Send Payment via WhatsApp</button>
+    <br><button class="pw-dismiss" id="pw-dismiss">Maybe later — go back</button>
+  </div>
+</div>
+
+<!-- CV PRINT AREA (hidden except when printing) -->
+<div id="cv-print-area">
+  <h1 id="cvp-name"></h1>
+  <div class="cv-role" id="cvp-role"></div>
+  <div class="cv-contact" id="cvp-contact"></div>
+  <div id="cvp-body"></div>
+</div>
+
+<!-- ===== NAIROBOT ===== -->
+<button id="nb-bubble">🤖<span class="nb-badge">AI</span></button>
+<div id="nb-panel">
+  <div class="nb-hdr">
+    <div class="nb-av">🤖</div>
+    <div><div class="nb-name">3MAI</div><div class="nb-sub">3M · Kenya Career AI</div></div>
+    <button class="nb-x" id="nb-close">✕</button>
+  </div>
+  <div class="nb-msgs" id="nbMsgs"></div>
+  <div class="nb-sugs" id="nbSugs">
+    <button class="nb-sug" data-q="What's a fair salary for a software engineer in Nairobi?">💰 SW salary</button>
+    <button class="nb-sug" data-q="How do I spot a job scam in Kenya?">⚠️ Scam tips</button>
+    <button class="nb-sug" data-q="What are my rights if fired unfairly in Kenya?">⚖️ Rights</button>
+    <button class="nb-sug" data-q="What side hustle can I start with KES 5000 in Nairobi?">🚀 Side hustle</button>
+    <button class="nb-sug" data-q="How do I file iTax returns in Kenya?">📊 iTax</button>
+  </div>
+  <div class="nb-row">
+    <input type="text" id="nbInput" class="nb-inp" placeholder="Ask 3MAI anything...">
+    <button id="nbSend" class="nb-send">➤</button>
+  </div>
+</div>
+
+<script type="module">
+// ============ FIREBASE IMPORTS ============
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { initializeFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Debug helper — shows messages on screen
+function dbg(msg) {
+  console.log(msg);
+  const panel = document.getElementById("debug-panel");
+  const log = document.getElementById("debug-log");
+  if (panel && log) {
+    panel.style.display = "block";
+    log.innerHTML += msg + "<br>";
+    log.scrollTop = log.scrollHeight;
+  }
+}
+
+// ============ CONFIG ============
+
+const API_KEY = "YOUR_ANTHROPIC_API_KEY_HERE";
+
+// ============ DATA ============
+const TOOLS = [
+  {id:"salary",   icon:"💰", name:"Salary",      tag:"AI Data",    nav:"active"},
+  {id:"career",   icon:"🎯", name:"Career AI",   tag:"Roadmap",    nav:"active-b"},
+  {id:"scam",     icon:"⚠️", name:"Scam Shield", tag:"Detector",   nav:"active-r"},
+  {id:"govt",     icon:"🏛️", name:"Govt Jobs",   tag:"Listings",   nav:"active-gold"},
+  {id:"rights",   icon:"⚖️", name:"Rights",      tag:"Legal AI",   nav:"active-gold"},
+  {id:"tax",      icon:"📊", name:"Tax Calc",    tag:"KRA Smart",  nav:"active-b"},
+  {id:"cv",       icon:"📄", name:"CV Builder",  tag:"AI Write",   nav:"active-b"},
+  {id:"cover",    icon:"✉️", name:"Cover AI",    tag:"Letters",    nav:"active-b"},
+  {id:"hustle",   icon:"🚀", name:"Side Hustle", tag:"Generator",  nav:"active"},
+  {id:"marketing",icon:"📣", name:"Marketing",   tag:"AI Hub",     nav:"active-r"},
+];
+
+const SAL = {
+  
+  sw:       {base:70000, max:250000, title:"Software Engineer",          industry:"tech"},
+  mobile:   {base:65000, max:220000, title:"Mobile Developer (Android/iOS)", industry:"tech"},
+  frontend: {base:55000, max:180000, title:"Frontend Developer",         industry:"tech"},
+  backend:  {base:60000, max:200000, title:"Backend Developer",          industry:"tech"},
+  devops:   {base:80000, max:260000, title:"DevOps / Cloud Engineer",    industry:"tech"},
+  cyber:    {base:85000, max:280000, title:"Cybersecurity Analyst",      industry:"tech"},
+  data:     {base:72000, max:200000, title:"Data Analyst",               industry:"tech"},
+  ml:       {base:90000, max:300000, title:"ML / AI Engineer",           industry:"tech"},
+  ux:       {base:55000, max:160000, title:"UX/UI Designer",             industry:"tech"},
+  pm:       {base:85000, max:260000, title:"Product Manager",            industry:"tech"},
+  sysadmin: {base:50000, max:140000, title:"IT / Systems Administrator", industry:"tech"},
+  support:  {base:30000, max:70000,  title:"IT Support Technician",      industry:"tech"},
+
+  
+  accountant:{base:55000, max:160000, title:"Accountant (CPA)",          industry:"finance"},
+  auditor:  {base:65000, max:180000, title:"Internal / External Auditor",industry:"finance"},
+  banker:   {base:45000, max:130000, title:"Bank Officer / Relationship Mgr", industry:"finance"},
+  finanalyst:{base:70000, max:200000, title:"Financial Analyst",         industry:"finance"},
+  cfo:      {base:180000,max:500000, title:"CFO / Finance Director",     industry:"finance"},
+  tax_cons: {base:60000, max:170000, title:"Tax Consultant (KRA)",       industry:"finance"},
+  insurance:{base:40000, max:110000, title:"Insurance Underwriter",      industry:"finance"},
+  stockbkr: {base:55000, max:200000, title:"Stockbroker / Investments",  industry:"finance"},
+
+  
+  doctor:   {base:80000, max:250000, title:"Medical Doctor (MBChB)",     industry:"health"},
+  nurse:    {base:42000, max:110000, title:"Registered Nurse",           industry:"health"},
+  pharmacist:{base:65000, max:160000, title:"Pharmacist",                industry:"health"},
+  lab:      {base:38000, max:90000,  title:"Medical Lab Technologist",   industry:"health"},
+  publichealth:{base:45000, max:110000, title:"Public Health Officer",   industry:"health"},
+  dentist:  {base:80000, max:220000, title:"Dentist",                    industry:"health"},
+  clinofficer:{base:38000, max:90000, title:"Clinical Officer",          industry:"health"},
+
+  
+  teacher:  {base:30000, max:85000,  title:"Secondary School Teacher",   industry:"education"},
+  lecturer: {base:65000, max:180000, title:"University Lecturer",        industry:"education"},
+  principal:{base:70000, max:160000, title:"School Principal",           industry:"education"},
+  trainer:  {base:50000, max:130000, title:"Corporate Trainer",          industry:"education"},
+
+  
+  hr:       {base:50000, max:140000, title:"HR Officer / Manager",       industry:"business"},
+  marketing:{base:50000, max:150000, title:"Marketing Manager",          industry:"business"},
+  sales:    {base:35000, max:140000, title:"Sales Executive / Manager",  industry:"business"},
+  supplychain:{base:55000, max:140000, title:"Supply Chain Manager",     industry:"business"},
+  ops:      {base:60000, max:160000, title:"Operations Manager",         industry:"business"},
+  ceo:      {base:200000,max:700000, title:"CEO / Managing Director",    industry:"business"},
+  pa:       {base:35000, max:80000,  title:"Personal Assistant / EA",    industry:"business"},
+  custserv: {base:25000, max:60000,  title:"Customer Service Agent",     industry:"business"},
+  procurement:{base:55000, max:140000, title:"Procurement Officer",      industry:"business"},
+
+  
+  lawyer:   {base:80000, max:300000, title:"Advocate (Lawyer)",          industry:"legal"},
+  paralegal:{base:35000, max:80000,  title:"Paralegal / Legal Assistant",industry:"legal"},
+  compliance:{base:70000, max:180000, title:"Compliance Officer",        industry:"legal"},
+
+  
+  civil:    {base:60000, max:180000, title:"Civil Engineer",             industry:"engineering"},
+  mech:     {base:55000, max:160000, title:"Mechanical Engineer",        industry:"engineering"},
+  electrical:{base:55000, max:160000, title:"Electrical Engineer",       industry:"engineering"},
+  architect:{base:65000, max:200000, title:"Architect",                  industry:"engineering"},
+  surveyor: {base:55000, max:150000, title:"Quantity Surveyor",          industry:"engineering"},
+  plumber:  {base:25000, max:70000,  title:"Plumber / Artisan",          industry:"engineering"},
+
+  
+  journalist:{base:35000, max:120000, title:"Journalist / Reporter",     industry:"media"},
+  designer: {base:40000, max:130000, title:"Graphic Designer",           industry:"media"},
+  filmmaker:{base:45000, max:150000, title:"Videographer / Filmmaker",   industry:"media"},
+  copywriter:{base:40000, max:110000, title:"Copywriter / Content Writer",industry:"media"},
+  socialmedia:{base:35000, max:100000, title:"Social Media Manager",     industry:"media"},
+
+  
+  driver:   {base:22000, max:60000,  title:"Matatu / PSV Driver",        industry:"transport"},
+  pilot:    {base:200000,max:600000, title:"Commercial Pilot",           industry:"transport"},
+  logistics:{base:40000, max:100000, title:"Logistics Coordinator",      industry:"transport"},
+
+  
+  ngo_prog: {base:60000, max:180000, title:"NGO Programme Officer",      industry:"ngo"},
+  ngo_mon:  {base:55000, max:150000, title:"M&E Officer (NGO)",          industry:"ngo"},
+  govtofficer:{base:40000, max:120000, title:"Government Officer (PSC)", industry:"government"},
+  diplomat: {base:100000,max:300000, title:"Diplomat / Foreign Service", industry:"government"},
+};
+
+const COUNTY_MULTIPLIERS = {
+  nairobi:  {label:"Nairobi",    m:1.00},
+  mombasa:  {label:"Mombasa",    m:0.88},
+  kisumu:   {label:"Kisumu",     m:0.78},
+  nakuru:   {label:"Nakuru",     m:0.75},
+  eldoret:  {label:"Eldoret",    m:0.73},
+  thika:    {label:"Thika",      m:0.80},
+  nyeri:    {label:"Nyeri",      m:0.70},
+  meru:     {label:"Meru",       m:0.68},
+  kisii:    {label:"Kisii",      m:0.65},
+  garissa:  {label:"Garissa",    m:0.62},
+  remote:   {label:"Remote/WFH", m:1.05},
+};
+
+const INDUSTRIES = {
+  tech:"💻 Technology",finance:"🏦 Finance & Banking",health:"🏥 Health & Medical",
+  education:"📚 Education",business:"💼 Business & Management",legal:"⚖️ Legal",
+  engineering:"🔧 Engineering",media:"🎬 Media & Creative",
+  transport:"🚗 Transport",ngo:"🌍 NGO / International",government:"🏛️ Government"
+};
+const SCAM_FLAGS = [
+  {name:"Fake job offer",w:35},{name:"Upfront payment required",w:45},
+  {name:"Impersonating known company",w:40},{name:"Unrealistic salary",w:30},
+  {name:"WhatsApp/Telegram only",w:25},{name:"No physical office",w:20},
+  {name:"Overpayment/refund scheme",w:50},{name:"Asked for ID/bank details",w:40},
+  {name:"Pressure to decide fast",w:20},{name:"Poor grammar/communication",w:15}
+];
+const GOVT_JOBS = [
+  {org:"Ministry of ICT",title:"Digital Services Officer",deadline:"2026-05-30",salary:"KES 68k–92k"},
+  {org:"Kenya Police Service",title:"Police Constable (Recruit)",deadline:"2026-06-15",salary:"KES 45k + allowances"},
+  {org:"KRA",title:"Tax Assistant (Revenue)",deadline:"2026-06-30",salary:"KES 70k–98k"},
+  {org:"County Gov – Nairobi",title:"Public Health Officer",deadline:"2026-06-05",salary:"KES 55k–75k"},
+  {org:"KEMSA",title:"Procurement Officer",deadline:"2026-06-20",salary:"KES 62k–85k"},
+  {org:"CBK",title:"Graduate Trainee (Finance)",deadline:"2026-06-30",salary:"KES 55k + benefits"},
+];
+const RIGHTS = [
+  {title:"Unfair / wrongful dismissal",law:"Employment Act 2007 §45",action:"Report to Labour Officer within 3 months. Up to 12 months' salary compensation."},
+  {title:"Wage theft / unpaid overtime",law:"Regulation of Wages Orders",action:"File claim at Employment & Labour Relations Court. Keep payslips as evidence."},
+  {title:"Discrimination (gender/ethnicity/disability)",law:"Constitution Art.27 + Employment Act §5",action:"Complaint to KEHRC and Labour Office simultaneously."},
+  {title:"Denied annual leave (21 days/year)",law:"Employment Act §28",action:"Send formal demand letter. File at Labour Office if ignored."},
+  {title:"No written contract (required by law)",law:"Employment Act §9",action:"Demand written contract. Report employer to Labour Office if refused."},
+  {title:"Workplace harassment",law:"Employment Act §6",action:"Document incidents. HR complaint → KEHRC if unresolved. Civil damages available."}
+];
+const TICKER = [
+  {l:"Average SW Engineer",v:"KES 120k/mo"},{l:"KRA Deadline",v:"June 30 2026"},
+  {l:"Minimum wage 2026",v:"KES 16,177/mo"},{l:"NSSF Rate",v:"6% of gross"},
+  {l:"Housing Levy",v:"1.5% of gross"},{l:"NHIF/SHIF",v:"2.75% of gross"},
+  {l:"Youth unemployment KE",v:"~13.5%"},{l:"Govt jobs this week",v:"6 new listings"},
+  {l:"Freelance market KE",v:"Growing 40% YoY"}
+];
+
+// ============ INIT ============
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ============ FIREBASE INIT ============
+  const firebaseConfig = {
+    apiKey: "AIzaSyAB6xsmjLxkZpFcxJPJPMwJeVkBz0Wd01s",
+    authDomain: "biz-3mt.firebaseapp.com",
+    projectId: "biz-3mt",
+    storageBucket: "biz-3mt.firebasestorage.app",
+    messagingSenderId: "635132245018",
+    appId: "1:635132245018:web:d22978d041344ffe2e0da3"
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  const auth = getAuth(fbApp);
+  const db = initializeFirestore(fbApp, {
+    experimentalForceLongPolling: true,
+    useFetchStreams: false
+  });
+  dbg("🔥 Firestore initialized");
+  const provider = new GoogleAuthProvider();
+
+  // Wire login button
+  document.getElementById("nav-login-btn").addEventListener("click", () => {
+    if (auth.currentUser) {
+      auth.signOut();
+    } else {
+      signInWithPopup(auth, provider).catch(e => console.error("Login error:", e.message));
+    }
+  });
+
+  // Auth state listener
+  onAuthStateChanged(auth, async (user) => {
+    const btn = document.getElementById("nav-login-btn");
+    if (user) {
+      dbg("✅ Logged in: " + user.displayName + " | " + user.uid);
+      window._user = user;
+
+      // Small delay to ensure Firestore is ready
+      await new Promise(r => setTimeout(r, 3000));
+      dbg("⏳ Attempting Firestore write...");
+
+      try {
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
+        dbg("📄 User doc exists: " + snap.exists());
+        if (!snap.exists()) {
+          await setDoc(userRef, {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            premium: false,
+            premiumSince: null,
+            createdAt: new Date().toISOString()
+          });
+          dbg("✅ User doc created");
+        }
+        window._userDoc = snap.exists() ? snap.data() : {};
+
+        const usageRef = doc(db, "usage", user.uid);
+        const usageSnap = await getDoc(usageRef);
+        if (!usageSnap.exists()) {
+          await setDoc(usageRef, {
+            salary:0,career:0,scam:0,govt:0,
+            rights:0,tax:0,cv:0,cover:0,hustle:0,marketing:0
+          });
+          dbg("✅ Usage doc created");
+        }
+
+        onSnapshot(doc(db, "users", user.uid), (d) => {
+          if (d.exists()) {
+            window._userDoc = d.data();
+            if (d.data().premium) {
+              const overlay = document.getElementById("pw-overlay");
+              if (overlay) overlay.classList.remove("open");
+            }
+          }
+        });
+
+      } catch(e) {
+        dbg("❌ Firestore error: " + e.code + " | " + e.message);
+      }
+
+      if (btn) btn.textContent = user.displayName.split(" ")[0];
+    } else {
+      window._user = null;
+      window._userDoc = {};
+      if (btn) btn.textContent = "Sign In";
+    }
+  });
+
+  // ============ APP INIT ============
+  buildNav(); buildToolGrid(); buildSalaryFilters(); bindEvents(); initPaywall(); initNairobot();
+  
+  requestAnimationFrame(() => {
+    buildTicker();
+    buildScamChips();
+    buildGovtJobs();
+    buildRights();
+    bindMarketing();
+    refreshAllBadges();
+    
+    document.getElementById("taxResult").innerHTML =
+      `<div style="color:var(--dim);font-size:.82rem;text-align:center;padding:12px 0;">Enter your gross salary above and tap <strong style="color:var(--tx)">Calculate</strong> to see your breakdown.</div>`;
+  });
+  setTimeout(()=>{
+    const msgs=document.getElementById("nbMsgs");
+    const d=document.createElement("div");d.className="nb-msg bot";
+    d.textContent="👋 Mambo! I'm 3MAI, your career and income assistant. Ask me about salaries, scams, tax, career growth, or your rights in Kenya!";
+    msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+    
+  }, 1000);
+});
+
+function buildTicker() {
+  let h = "";
+  for(let i=0;i<2;i++) TICKER.forEach(t=>h+=`<div class="ti">${t.l}: <strong>${t.v}</strong></div>`);
+  document.getElementById("tickerTrack").innerHTML = h;
+}
+function buildNav() {
+  const c = document.getElementById("navTools");
+  TOOLS.forEach(t => {
+    const b = document.createElement("button");
+    b.className = "nt"; b.id = "nav-"+t.id; b.textContent = t.icon+" "+t.name;
+    b.addEventListener("click", () => showPage(t.id));
+    c.appendChild(b);
+  });
+}
+function buildToolGrid() {
+  const g = document.getElementById("toolGrid");
+  TOOLS.forEach(t => {
+    const d = document.createElement("div");
+    d.className = "tg-btn"; d.id = "tg-"+t.id;
+    d.innerHTML = `<span class="tg-dot"></span><span class="tg-icon">${t.icon}</span><div class="tg-name">${t.name}</div><div class="tg-tag">${t.tag}</div>`;
+    d.addEventListener("click", () => showPage(t.id));
+    g.appendChild(d);
+  });
+}
+let currentPage = null;
+function showPage(id) {
+  currentPage = id;
+  document.getElementById("heroSection").style.display = "none";
+  document.querySelectorAll(".pg").forEach(p => p.classList.remove("on"));
+  document.querySelectorAll(".nt").forEach(b => b.className = "nt");
+  document.querySelectorAll(".tg-btn").forEach(b => b.classList.remove("on"));
+  document.getElementById("pg-"+id).classList.add("on");
+  const t = TOOLS.find(x=>x.id===id);
+  if(t) { document.getElementById("nav-"+id).className = "nt "+t.nav; document.getElementById("tg-"+id).classList.add("on"); }
+  window.scrollTo({top:0, behavior: /Mobi|Android/i.test(navigator.userAgent) ? "instant" : "smooth"});
+}
+function showHero() {
+  currentPage = null;
+  document.getElementById("heroSection").style.display = "";
+  document.querySelectorAll(".pg").forEach(p=>p.classList.remove("on"));
+  document.querySelectorAll(".nt").forEach(b=>b.className="nt");
+  document.querySelectorAll(".tg-btn").forEach(b=>b.classList.remove("on"));
+  window.scrollTo({top:0, behavior: /Mobi|Android/i.test(navigator.userAgent) ? "instant" : "smooth"});
+}
+
+function calcPAYE(gross, relief) {
+  
+  
+  
+  
+  
+  
+  let p = 0;
+  if (gross > 800000)      p = (gross-800000)*.35 + (300000*.325) + (467667*.30) + (8333*.25) + (24000*.10);
+  else if (gross > 500000) p = (gross-500000)*.325 + (467667*.30) + (8333*.25) + (24000*.10);
+  else if (gross > 32333)  p = (gross-32333)*.30 + (8333*.25) + (24000*.10);
+  else if (gross > 24000)  p = (gross-24000)*.25 + (24000*.10);
+  else                     p = gross*.10;
+  return Math.max(0, p - (relief || 2400));
+}
+function calcNSSF(gross) {
+  
+  
+  const tierI = Math.min(gross, 7000) * 0.06;
+  const tierII = Math.min(Math.max(gross - 7000, 0), 36000) * 0.06;
+  return Math.floor(tierI + tierII);
+}
+function getTax(gross) {
+  const p = calcPAYE(gross, 2400);
+  const ns = calcNSSF(gross);
+  const hs = gross * 0.015;
+  const nh = gross * 0.0275;
+  return { paye: Math.floor(p), nssf: ns, housing: Math.floor(hs), nhif: Math.floor(nh), net: Math.floor(gross - p - ns - hs - nh) };
+}
+
+// ============ SALARY — UPGRADED ============
+function buildSalaryFilters() {
+  
+  const indSel = document.getElementById("salIndustry");
+  indSel.innerHTML = '<option value="all">— All Industries —</option>';
+  Object.entries(INDUSTRIES).forEach(([k,v]) => {
+    indSel.innerHTML += `<option value="${k}">${v}</option>`;
+  });
+
+  
+  const cntSel = document.getElementById("salCounty");
+  cntSel.innerHTML = Object.entries(COUNTY_MULTIPLIERS)
+    .map(([k,v]) => `<option value="${k}"${k==="nairobi"?" selected":""}>${v.label}</option>`).join("");
+
+  
+  filterRolesByIndustry("all");
+
+  indSel.addEventListener("change", () => filterRolesByIndustry(indSel.value));
+  document.getElementById("salCounty").addEventListener("change", updateSalary);
+}
+
+function filterRolesByIndustry(industry) {
+  const roleSel = document.getElementById("salRole");
+  const entries = Object.entries(SAL).filter(([,v]) => industry === "all" || v.industry === industry);
+  roleSel.innerHTML = entries.map(([k,v]) => `<option value="${k}">${v.title}</option>`).join("");
+  updateSalary();
+}
+
+function getSal(roleId, yrs, countyKey) {
+  const d = SAL[roleId];
+  const cm = (COUNTY_MULTIPLIERS[countyKey] || COUNTY_MULTIPLIERS.nairobi).m;
+  let mn = d.base * 0.78;
+  let mx = d.base + (d.max - d.base) * (yrs / 20);
+  if (yrs < 1) mn = d.base * 0.70;
+  if (mx > d.max) mx = d.max;
+  return {
+    mn: Math.floor(mn * cm),
+    md: Math.floor(((mn + mx) / 2) * cm),
+    mx: Math.floor(mx * cm)
+  };
+}
+
+function updateSalary() {
+  const roleEl = document.getElementById("salRole");
+  if (!roleEl || !roleEl.value) return;
+  const role = roleEl.value;
+  const yrs = parseInt(document.getElementById("expSlider").value);
+  const county = document.getElementById("salCounty")?.value || "nairobi";
+  const countyLabel = (COUNTY_MULTIPLIERS[county] || COUNTY_MULTIPLIERS.nairobi).label;
+
+  document.getElementById("expYears").textContent = yrs + " yrs";
+  document.getElementById("salCountyLabel").textContent = countyLabel;
+
+  const { mn, md, mx } = getSal(role, yrs, county);
+  document.getElementById("salMin").textContent = "KES " + mn.toLocaleString();
+  document.getElementById("salMid").textContent = "KES " + md.toLocaleString();
+  document.getElementById("salMax").textContent = "KES " + mx.toLocaleString();
+
+  const t = getTax(md);
+  document.getElementById("salaryDetails").innerHTML = `
+    <div class="ins-item"><span>💼 Gross (median)</span><strong>KES ${md.toLocaleString()}</strong></div>
+    <div class="ins-item"><span>🧾 PAYE</span><strong style="color:var(--rr);">−KES ${t.paye.toLocaleString()}</strong></div>
+    <div class="ins-item"><span>🏦 NSSF</span><strong style="color:var(--rr);">−KES ${t.nssf.toLocaleString()}</strong></div>
+    <div class="ins-item"><span>🏠 Housing Levy</span><strong style="color:var(--rr);">−KES ${t.housing.toLocaleString()}</strong></div>
+    <div class="ins-item"><span>🏥 NHIF/SHIF</span><strong style="color:var(--rr);">−KES ${t.nhif.toLocaleString()}</strong></div>
+    <div class="ins-item"><span>✅ Net Take-Home</span><strong style="color:var(--g);">KES ${t.net.toLocaleString()}</strong></div>`;
+
+  
+  buildCountyComparison(role, yrs);
+}
+
+function buildCountyComparison(role, yrs) {
+  const container = document.getElementById("countyComparison");
+  if (!container) return;
+  const selectedCounty = document.getElementById("salCounty")?.value || "nairobi";
+  const topCounties = ["nairobi","mombasa","kisumu","nakuru","eldoret","thika","remote"];
+  
+  const allVals = topCounties.map(ck => getSal(role, yrs, ck).md);
+  const maxVal = Math.max(...allVals);
+
+  container.innerHTML = topCounties.map(ck => {
+    const c = COUNTY_MULTIPLIERS[ck];
+    const val = getSal(role, yrs, ck).md;
+    const pct = Math.round((val / maxVal) * 100);
+    const isSelected = ck === selectedCounty;
+    return `
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:3px;">
+          <span style="color:${isSelected?'var(--g)':'var(--tx2)'};font-weight:${isSelected?'700':'400'}">${c.label}</span>
+          <strong style="color:${isSelected?'var(--g)':'var(--tx2)'}">KES ${val.toLocaleString()}</strong>
+        </div>
+        <div class="ptrack"><div class="pfill" style="width:${pct}%;background:${isSelected?'var(--g)':'var(--blue)'};"></div></div>
+      </div>`;
+  }).join("");
+}
+
+// ============ SCAM ============
+function buildScamChips() {
+  const c=document.getElementById("scamChips");
+  SCAM_FLAGS.forEach((f,i)=>{
+    const ch=document.createElement("span");
+    ch.className="issue-chip"; ch.textContent=f.name; ch.dataset.i=i;
+    ch.addEventListener("click",()=>ch.classList.toggle("sel"));
+    c.appendChild(ch);
+  });
+}
+
+// ============ GOVT JOBS ============
+function buildGovtJobs() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  document.getElementById("govtList").innerHTML = GOVT_JOBS.map(j=>{
+    const deadline = new Date(j.deadline);
+    const expired = deadline < today;
+    const dLabel = expired
+      ? `<span style="color:var(--rr);font-weight:700;">CLOSED</span>`
+      : `📅 ${j.deadline}`;
+    return `
+    <div class="gjob" style="${expired?'opacity:.5;':''}">
+      <div><div class="gj-title">${j.title}</div><div class="gj-meta">🏛️ ${j.org} · ${dLabel} · 💰 ${j.salary}</div></div>
+      <button class="gj-apply" ${expired?'disabled style="opacity:.4;cursor:not-allowed;"':''} onclick="document.getElementById('govtInput').value='${j.title} at ${j.org}';document.getElementById('govtBtn').click();">🤖 AI Tips</button>
+    </div>`;
+  }).join("");
+}
+
+// ============ RIGHTS ============
+function buildRights() {
+  document.getElementById("rightsCards").innerHTML = RIGHTS.map(r=>`
+    <div class="vi">
+      <div class="vi-ttl">⚖️ ${r.title}</div>
+      <div class="vi-law">📜 ${r.law}</div>
+      <div class="vi-action">→ ${r.action}</div>
+    </div>`).join("");
+}
+
+// ============ TAX ============
+function calcTax() {
+  const gr=parseFloat(document.getElementById("grossIncome").value)||0;
+  const rel=parseFloat(document.getElementById("taxRelief").value)||2400;
+  const p=calcPAYE(gr,rel);
+  const ns=calcNSSF(gr),hs=gr*.015,nh=gr*.0275,net=gr-p-ns-hs-nh;
+  document.getElementById("taxResult").innerHTML=`
+    <div class="tr-row"><span>Gross</span><span>KES ${gr.toLocaleString()}</span></div>
+    <div class="tr-row"><span>PAYE</span><span style="color:var(--rr)">−KES ${Math.floor(p).toLocaleString()}</span></div>
+    <div class="tr-row"><span>NSSF</span><span style="color:var(--rr)">−KES ${Math.floor(ns).toLocaleString()}</span></div>
+    <div class="tr-row"><span>Housing Levy</span><span style="color:var(--rr)">−KES ${Math.floor(hs).toLocaleString()}</span></div>
+    <div class="tr-row"><span>NHIF/SHIF</span><span style="color:var(--rr)">−KES ${Math.floor(nh).toLocaleString()}</span></div>
+    <div class="tr-row total"><span>✅ Net Take-Home</span><span style="color:var(--g)">KES ${Math.floor(net).toLocaleString()}</span></div>`;
+}
+
+// ============ FREEMIUM PAYWALL ============
+const FREE_LIMIT = 3;
+const TOOL_KEYS = ["salary","career","scam","govt","rights","tax","cv","cover","hustle","marketing"];
+let selectedPlan = "pro";
+
+function getUsage(tool) {
+  try { return parseInt(localStorage.getItem("3m_uses_"+tool)||"0"); } catch(e){ return 0; }
+}
+function incUsage(tool) {
+  try { localStorage.setItem("3m_uses_"+tool, getUsage(tool)+1); } catch(e){}
+}
+function resetUsage(tool) {
+  try { localStorage.removeItem("3m_uses_"+tool); } catch(e){}
+}
+function isPro() {
+  try { return localStorage.getItem("3m_pro")==="1"; } catch(e){ return false; }
+}
+function unlockPro() {
+  try { localStorage.setItem("3m_pro","1"); } catch(e){}
+}
+
+function checkGate(tool) {
+  if(isPro()) return true;
+  const used = getUsage(tool);
+  if(used < FREE_LIMIT) return true;
+  showPaywall(tool);
+  return false;
+}
+
+function updateBadge(btnId, tool) {
+  if(isPro()) { document.getElementById(btnId)?.querySelector(".use-badge")?.remove(); return; }
+  const used = getUsage(tool);
+  const rem = Math.max(0, FREE_LIMIT - used);
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  let badge = btn.querySelector(".use-badge");
+  if(!badge){ badge=document.createElement("span"); badge.className="use-badge"; btn.appendChild(badge); }
+  if(rem===0){ badge.className="use-badge danger"; badge.textContent="LOCKED 🔒"; }
+  else if(rem===1){ badge.className="use-badge danger"; badge.textContent=rem+" free left"; }
+  else if(rem===2){ badge.className="use-badge warn"; badge.textContent=rem+" free left"; }
+  else{ badge.className="use-badge"; badge.textContent=rem+" free"; }
+}
+function refreshAllBadges() {
+  const map = {salary:"salaryAiBtn",career:"careerRun",scam:"scamBtn",govt:"govtBtn",rights:"rightsBtn",tax:"taxAiBtn",cv:"cvBtn",cover:"coverBtn",hustle:"hustleBtn",marketing:"socialBtn"};
+  Object.entries(map).forEach(([tool,btnId])=>updateBadge(btnId,tool));
+  
+  ["brandBtn","stratBtn","adBtn"].forEach(btnId=>updateBadge(btnId,"marketing"));
+}
+
+function showPaywall(tool) {
+  document.getElementById("pw-overlay").classList.add("open");
+}
+function hidePaywall() {
+  document.getElementById("pw-overlay").classList.remove("open");
+}
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.querySelectorAll(".pw-plan").forEach(p => p.style.outline = "none");
+  const target = document.querySelector(`.pw-plan[data-plan="${plan}"]`);
+  if(target) target.style.outline = "2px solid var(--g)";
+  const amount = plan==="pro"?"99":"49";
+  document.getElementById("pw-wa-btn").textContent = `📱 Pay KES ${amount} via WhatsApp`;
+}
+
+function initPaywall() {
+  document.getElementById("pw-close").addEventListener("click", hidePaywall);
+  document.getElementById("pw-dismiss").addEventListener("click", hidePaywall);
+  document.getElementById("pw-wa-btn").addEventListener("click", ()=>{
+    const amount = selectedPlan==="pro"?"99":"49";
+    const msg = `Hi 3M! I've paid KES ${amount} for the ${selectedPlan.toUpperCase()} plan via M-Pesa. Please activate my account. 🙏`;
+    window.open("https://wa.me/254700000000?text="+encodeURIComponent(msg),"_blank");
+  });
+  
+  document.getElementById("pw-overlay").addEventListener("click", e=>{
+    if(e.target===document.getElementById("pw-overlay")) hidePaywall();
+  });
+  selectPlan("pro");
+  refreshAllBadges();
+
+  
+  window.unlock3M = ()=>{ unlockPro(); refreshAllBadges(); alert("✅ Pro unlocked! Refresh to see changes."); };
+}
+
+// ============ AI STREAM ============
+async function streamAI(prompt, el, tool) {
+  
+  if(tool && !checkGate(tool)) return false;
+
+  el.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST", headers:{"Content-Type":"application/json","x-api-key":API_KEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514", max_tokens:1500,
+        system:"You are 3MAI, AI assistant for 3M — Kenya's #1 career and income platform for youth. Specialise in Kenya's job market, Nairobi salaries, KRA tax, Employment Act 2007, and practical career advice. Give grounded, Kenya-specific answers. Be warm, direct, and empowering.",
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(b=>b.text||"").join("") || "⚠️ No response. Please try again.";
+    el.textContent = "";
+    
+    const words = text.split(" ");
+    const CHUNK = 3;
+    await new Promise(resolve => {
+      let i = 0;
+      (function renderChunk() {
+        if (i < words.length) {
+          el.textContent += (i === 0 ? "" : " ") + words.slice(i, i + CHUNK).join(" ");
+          el.scrollIntoView({block:"end", behavior:"nearest"});
+          i += CHUNK;
+          setTimeout(renderChunk, 18);
+        } else {
+          resolve();
+        }
+      })();
+    });
+    
+    if(tool) { incUsage(tool); updateBadge(getToolBtnId(tool), tool); }
+    return true;
+  } catch(e) {
+    el.textContent = "⚠️ Connection error. Please check your network.";
+    return false;
+  }
+}
+function getToolBtnId(tool){
+  const m={salary:"salaryAiBtn",career:"careerRun",scam:"scamBtn",govt:"govtBtn",rights:"rightsBtn",tax:"taxAiBtn",cv:"cvBtn",cover:"coverBtn",hustle:"hustleBtn",marketing:"socialBtn"};
+  return m[tool]||"";
+}
+function openAiBox(boxId, contentId) {
+  const box=document.getElementById(boxId), content=document.getElementById(contentId);
+  box.style.display="block";
+  return content;
+}
+
+// ============ NAIROBOT ============
+function initNairobot() {
+  const bubble = document.getElementById("nb-bubble");
+  const panel  = document.getElementById("nb-panel");
+  const closeBtn = document.getElementById("nb-close");
+  const sendBtn  = document.getElementById("nbSend");
+  const input    = document.getElementById("nbInput");
+  const msgs     = document.getElementById("nbMsgs");
+  const sugs     = document.getElementById("nbSugs");
+
+  
+  const nbHistory = [];
+
+  bubble.addEventListener("click", () => {
+    panel.classList.toggle("open");
+    if(panel.classList.contains("open")) input.focus();
+  });
+  closeBtn.addEventListener("click", () => panel.classList.remove("open"));
+
+  
+  sugs.querySelectorAll(".nb-sug").forEach(btn => {
+    btn.addEventListener("click", () => {
+      input.value = btn.dataset.q;
+      sendMsg();
+    });
+  });
+
+  sendBtn.addEventListener("click", sendMsg);
+  input.addEventListener("keydown", e => { if(e.key==="Enter" && !e.shiftKey) sendMsg(); });
+
+  async function sendMsg() {
+    const q = input.value.trim();
+    if(!q) return;
+    input.value = "";
+    sendBtn.disabled = true;
+
+    
+    sugs.style.display = "none";
+
+    
+    const uDiv = document.createElement("div");
+    uDiv.className = "nb-msg user";
+    uDiv.textContent = q;
+    msgs.appendChild(uDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    
+    const tDiv = document.createElement("div");
+    tDiv.className = "nb-msg typing";
+    tDiv.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+    msgs.appendChild(tDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    
+    nbHistory.push({role:"user", content:q});
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-api-key": API_KEY,
+          "anthropic-version":"2023-06-01",
+          "anthropic-dangerous-direct-browser-access":"true"
+        },
+        body: JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:600,
+          system:"You are 3MAI, the friendly AI assistant built into 3M — Kenya's #1 career and income platform for youth. You specialise in Kenya's job market, Nairobi salaries, KRA/PAYE tax, Employment Act 2007, M-Pesa, side hustles, and practical career advice. Keep responses concise (under 180 words), warm, and grounded in Kenya's real market. Use light Sheng/Swahili phrases naturally where appropriate (mambo, sawa, poa). Format for readability — short paragraphs or bullet points.",
+          messages: nbHistory
+        })
+      });
+      const data = await res.json();
+      const reply = data.content?.map(b=>b.text||"").join("") || "Pole sana, something went wrong. Try again!";
+
+      
+      nbHistory.push({role:"assistant", content:reply});
+
+      
+      tDiv.remove();
+      const bDiv = document.createElement("div");
+      bDiv.className = "nb-msg bot";
+      bDiv.textContent = reply;
+      msgs.appendChild(bDiv);
+    } catch(e) {
+      tDiv.remove();
+      const eDiv = document.createElement("div");
+      eDiv.className = "nb-msg bot";
+      eDiv.textContent = "⚠️ Network error. Please check your connection and try again.";
+      msgs.appendChild(eDiv);
+      
+      nbHistory.pop();
+    }
+
+    msgs.scrollTop = msgs.scrollHeight;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+}
+
+function exportCVPdf() {
+  const name = document.getElementById("cvName").value.trim() || "Your Name";
+  const role = document.getElementById("cvRole").value.trim() || "Professional";
+  const email = document.getElementById("cvEmail").value.trim();
+  const phone = document.getElementById("cvPhone").value.trim();
+  const loc = document.getElementById("cvLocation").value.trim();
+  const aiText = document.getElementById("cvAiContent").textContent.trim();
+
+  if(!aiText || aiText.length < 50) {
+    alert("Please generate your CV with AI first before exporting.");
+    return;
+  }
+
+  
+  document.getElementById("cvp-name").textContent = name;
+  document.getElementById("cvp-role").textContent = role;
+  document.getElementById("cvp-contact").textContent = [email,phone,loc].filter(Boolean).join(" · ");
+
+  
+  const lines = aiText.split("\n").filter(l=>l.trim());
+  let html = "";
+  let inList = false;
+  lines.forEach(line => {
+    const l = line.trim();
+    if(!l) return;
+    const isBullet = l.startsWith("•") || l.startsWith("-") || l.startsWith("*");
+    if(l.length < 60 && (l===l.toUpperCase() || /^[\d\.\🎯💼📚🏆✅💡📄⚡🔑]/.test(l))) {
+      if(inList){ html += `</ul>`; inList=false; }
+      html += `<h2>${l.replace(/^[\d\.]+\s*/,"")}</h2>`;
+    } else if(isBullet) {
+      if(!inList){ html += `<ul>`; inList=true; }
+      html += `<li>${l.replace(/^[•\-\*]\s*/,"")}</li>`;
+    } else {
+      if(inList){ html += `</ul>`; inList=false; }
+      html += `<p>${l}</p>`;
+    }
+  });
+  if(inList) html += `</ul>`;
+  document.getElementById("cvp-body").innerHTML = html;
+
+  
+  setTimeout(()=>{ window.print(); }, 100);
+}
+
+// ============ BIND ALL EVENTS ============
+function bindEvents() {
+  document.getElementById("salRole").addEventListener("change", updateSalary);
+  document.getElementById("expSlider").addEventListener("input", updateSalary);
+
+  
+  document.getElementById("salaryAiBtn").addEventListener("click", async ()=>{
+    const role = document.getElementById("salRole").value;
+    const yrs = parseInt(document.getElementById("expSlider").value);
+    const county = document.getElementById("salCounty")?.value || "nairobi";
+    const countyLabel = (COUNTY_MULTIPLIERS[county]||COUNTY_MULTIPLIERS.nairobi).label;
+    const {mn,md,mx} = getSal(role, yrs, county);
+    const roleTitle = SAL[role]?.title || role;
+    const industry = INDUSTRIES[SAL[role]?.industry] || "";
+    const el = openAiBox("salaryAiBox","salaryAiContent");
+    await streamAI(`You are 3MAI for 3M — Kenya's career platform. Salary market insights for:
+Role: ${roleTitle} | Industry: ${industry} | County: ${countyLabel} | Experience: ${yrs} years
+Salary range in ${countyLabel}: KES ${mn.toLocaleString()}–${md.toLocaleString()}–${mx.toLocaleString()} gross/month
+
+Cover these 5 areas:
+1. 📊 How accurate this range is for ${countyLabel} — what drives salary differences between counties in Kenya
+2. 💡 Top 3 skills/certifications that push salaries to the top of this range
+3. 🏢 Best employers in Kenya for this role (name specific companies/organisations)
+4. 💪 Salary negotiation tactics specific to this industry in Kenya
+5. 📈 Career progression: 3 and 5 year income projections in KES
+Be specific, practical, Kenya-market focused. Under 380 words.`, el, "salary");
+  });
+
+  
+  document.getElementById("careerRun").addEventListener("click", async ()=>{
+    const q=document.getElementById("careerQuery").value.trim();
+    if(!q){alert("Please describe your background and goals.");return;}
+    const el=openAiBox("careerAiBox","careerAiContent");
+    await streamAI(`You are 3MAI for 3M. A Kenyan professional says: "${q}". Create a Kenya-specific career roadmap: (1) 🎯 Immediate steps (30 days): skills, certs, platforms (2) 📈 3-month milestones: portfolio, network, first opportunities (3) 🚀 6–12 month goals: target companies in Kenya, salary expectations in KES (4) 💡 Kenya-specific: BrighterMonday, MyJobMag, iHub, local professional bodies (5) ⚠️ Common mistakes to avoid (6) 💰 Income projections Year 1, 2, 3. Be specific and motivating. Under 400 words.`, el, "career");
+  });
+
+  
+  document.getElementById("scamBtn").addEventListener("click", async ()=>{
+    const chips=[...document.querySelectorAll(".issue-chip.sel")].map(c=>({name:c.textContent,w:SCAM_FLAGS[c.dataset.i].w}));
+    const score=Math.min(chips.reduce((s,c)=>s+c.w,0),100);
+    const col=score<30?"var(--g)":score<60?"var(--gold)":"var(--rr)";
+    document.getElementById("riskFill").style.cssText=`width:${score}%;background:${col};`;
+    document.getElementById("scamScore").innerHTML=`Risk Score: <strong style="color:${col}">${score}/100</strong> — ${score<30?"Low Risk ✅":score<60?"Medium Risk ⚠️":"HIGH RISK 🚨"}`;
+    const desc=document.getElementById("scamDesc").value.trim();
+    const el=openAiBox("scamAiBox","scamAiContent");
+    await streamAI(`You are 3MAI scam detection expert for Kenya. Red flags: ${chips.map(c=>c.name).join(", ")||"None selected"}. ${desc?"Description: "+desc:""} Risk score: ${score}/100. Provide: (1) 🚨 Verdict: is this a scam? Confidence level. (2) 🔍 Analysis of each red flag (3) 📱 Common Kenya scam patterns this matches (M-Pesa, fake agencies) (4) 🛡️ Immediate actions to take NOW (5) 📞 Where to report in Kenya: DCI, Communications Authority (6) ✅ What a legitimate offer looks like. Direct and protective. Under 350 words.`, el, "scam");
+  });
+
+  
+  document.getElementById("govtBtn").addEventListener("click", async ()=>{
+    const job=document.getElementById("govtInput").value.trim();
+    if(!job){alert("Please enter the job you're applying for.");return;}
+    const el=openAiBox("govtAiBox","govtAiContent");
+    await streamAI(`You are 3MAI, expert in Kenya Public Service. User applies for: "${job}". Provide: (1) 📋 Key requirements under Kenya PSC (2) 📝 CV/cover letter tips for PSC standards (3) 🎯 What interview panels focus on (4) 📚 Preparation: skills, certs, knowledge areas (5) ⏰ Documents: HELB clearance, EACC, KRA, certificate of good conduct (6) 💡 Insider tips — common mistakes for govt applicants in Kenya (7) 💰 Salary + benefits under government pay structure. Kenya-PSC specific. Under 380 words.`, el, "govt");
+  });
+
+  
+  document.getElementById("rightsBtn").addEventListener("click", async ()=>{
+    const q=document.getElementById("rightsQuery").value.trim();
+    if(!q){alert("Please describe your workplace situation.");return;}
+    const el=openAiBox("rightsAiBox","rightsAiContent");
+    await streamAI(`You are 3MAI legal aid assistant specialising in Kenya employment law. Worker's situation: "${q}". Provide: (1) ⚖️ Applicable laws — cite specific acts and sections (Employment Act 2007, Labour Relations Act, Constitution 2010) (2) 🚨 Is this a violation? What rights may be breached? (3) 📋 Step-by-step action plan (4) 📞 Who to contact: Labour Office, KEHRC, ELRC court (5) 📄 Documents to gather as evidence (6) ⏰ Time limits/deadlines to file (7) 💡 Realistic outcome. Note: legal information not formal legal advice — recommend advocate for complex cases. Empowering and clear. Under 380 words.`, el, "rights");
+  });
+
+  
+  document.getElementById("calcTaxBtn").addEventListener("click", calcTax);
+  document.getElementById("taxAiBtn").addEventListener("click", async ()=>{
+    const gr=parseFloat(document.getElementById("grossIncome").value)||0;
+    if(!gr){ alert("Please enter your gross salary first."); return; }
+    const p=calcPAYE(gr,2400);
+    const ns=calcNSSF(gr);
+    const net=Math.floor(gr-p-ns-gr*.015-gr*.0275);
+    const el=openAiBox("taxAiBox","taxAiContent");
+    await streamAI(`You are 3MAI KRA tax advisor. User earns KES ${gr.toLocaleString()} gross/month, PAYE approx KES ${Math.floor(p).toLocaleString()}, net KES ${net.toLocaleString()}. Provide: (1) 💡 Legal tax relief options in Kenya: mortgage interest, insurance relief, NSSF voluntary, pension funds (2) 📊 Exact KES savings possible with each relief (3) 🧾 How to claim on iTax step by step (4) 💼 Side hustle / gig income tax advice (5) ⚠️ Common iTax mistakes and how to avoid penalties (6) 📅 Key KRA deadlines. Specific KES amounts. Under 350 words.`, el, "tax");
+  });
+
+  
+  document.getElementById("cvBtn").addEventListener("click", async ()=>{
+    const name=document.getElementById("cvName").value.trim();
+    const role=document.getElementById("cvRole").value.trim();
+    if(!name||!role){alert("Please enter at least your name and target role.");return;}
+    const skills=document.getElementById("cvSkills").value.trim();
+    const exp=document.getElementById("cvExp").value.trim();
+    const edu=document.getElementById("cvEdu").value.trim();
+    const email=document.getElementById("cvEmail").value.trim();
+    const phone=document.getElementById("cvPhone").value.trim();
+    const loc=document.getElementById("cvLocation").value.trim();
+    document.getElementById("cvPreview").innerHTML=`<div style="padding:16px;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;margin-bottom:3px;">${name}</div><div style="color:var(--g);font-size:.78rem;margin-bottom:6px;">${role}</div><div style="font-size:.7rem;color:var(--dim);">${email} · ${phone} · ${loc}</div><hr style="border:none;border-top:1px solid var(--wire);margin:10px 0;"><div style="font-size:.73rem;color:var(--dim);">Full AI-generated CV appears below ↓</div></div>`;
+    const el=openAiBox("cvAiBox","cvAiContent");
+    const ok = await streamAI(`You are 3MAI CV Writer for 3M. Create a professional, ATS-optimised CV for a Kenyan job seeker:
+Name: ${name} | Role: ${role} | Email: ${email} | Phone: ${phone} | Location: ${loc}
+Skills: ${skills} | Experience: ${exp} | Education: ${edu}
+Write a complete polished CV with: (1) Professional Summary (3 impactful sentences for Kenyan employers) (2) Core Skills (bulleted, ATS-optimised) (3) Work Experience (action verbs, quantified results) (4) Education (5) Certifications/Training (suggest relevant ones for Kenya) (6) References (Available upon request). Format as clean plain text CV. Compelling for Kenyan hiring managers. Under 450 words.`, el, "cv");
+    
+    if(ok) document.getElementById("cv-pdf").style.display="inline-block";
+  });
+
+  
+  document.getElementById("cv-pdf").addEventListener("click", exportCVPdf);
+
+  
+  document.getElementById("coverBtn").addEventListener("click", async ()=>{
+    const job=document.getElementById("clJob").value.trim();
+    if(!job){alert("Please describe the job you're applying for.");return;}
+    const name=document.getElementById("clName").value.trim();
+    const exp=document.getElementById("clExp").value.trim();
+    const el=openAiBox("coverAiBox","coverAiContent");
+    await streamAI(`You are 3MAI Cover Letter Writer for 3M. Write a compelling cover letter for a Kenyan job applicant:
+Applicant: ${name||"[Applicant]"} | Job: ${job} | Background: ${exp||"Not specified"}
+Write a professional cover letter (3–4 paragraphs) tailored for a Kenyan employer:
+- Opening: hook referencing the specific role and company
+- Body: match experience to job requirements with specific examples
+- Value proposition: what makes them ideal in the Kenyan context
+- Closing: confident call to action
+Professional but warm. Avoid clichés. Under 300 words.`, el, "cover");
+  });
+
+  
+  document.getElementById("hustleBtn").addEventListener("click", async ()=>{
+    const skills=document.getElementById("hustleSkills").value.trim();
+    const time=document.getElementById("hustleTime").value;
+    const capital=document.getElementById("hustleCapital").value;
+    const cat=document.getElementById("hustleCat").value;
+    const el=openAiBox("hustleAiBox","hustleAiContent");
+    await streamAI(`You are 3MAI Side Hustle Advisor for 3M. Generate personalised side hustle ideas for a Kenyan youth:
+Skills: ${skills||"General"} | Time: ${time} hrs/week | Capital: KES ${capital} | Category: ${cat}
+Provide 4 specific side hustle ideas tailored to Kenya's market. For each:
+💡 Name & one-line description
+📍 Why it works in Kenya right now
+⚡ How to start in 7 days (concrete steps)
+💰 Realistic income: Month 1, Month 3, Month 6 (in KES)
+🛠️ Tools/platforms: M-Pesa, WhatsApp Business, Jumia, etc.
+⚠️ One key risk to watch
+Make ideas genuinely actionable for Nairobi/Kenya. Vary digital to physical. Under 500 words.`, el, "hustle");
+  });
+
+  
+  document.getElementById("sal-wa").addEventListener("click",()=>{
+    const role = document.getElementById("salRole").value;
+    const county = document.getElementById("salCounty")?.value || "nairobi";
+    const countyLabel = (COUNTY_MULTIPLIERS[county]||COUNTY_MULTIPLIERS.nairobi).label;
+    const md = document.getElementById("salMid").textContent;
+    shareWA(`💰 ${SAL[role]?.title} earns ~${md}/mo in ${countyLabel}, Kenya\nCheck 3M for full salary data across 50+ roles!`);
+  });
+  document.getElementById("sal-cp").addEventListener("click",function(){copyIt(document.getElementById("salaryDetails").innerText,this);});
+  document.getElementById("car-wa").addEventListener("click",()=>shareWA("🎯 Just got my AI career roadmap from 3M — Kenya's #1 career platform!"));
+  document.getElementById("car-cp").addEventListener("click",function(){copyIt(document.getElementById("careerAiContent").textContent,this);});
+  document.getElementById("scm-wa").addEventListener("click",()=>shareWA("⚠️ SCAM WARNING: Use 3M's AI Scam Detector before accepting any job offer in Kenya!"));
+  document.getElementById("scm-cp").addEventListener("click",function(){copyIt(document.getElementById("scamAiContent").textContent,this);});
+  document.getElementById("gov-wa").addEventListener("click",()=>shareWA("🏛️ Latest Kenyan govt job openings — check 3M for listings + AI application tips!"));
+  document.getElementById("gov-cp").addEventListener("click",function(){copyIt(GOVT_JOBS.map(j=>`${j.title} @ ${j.org} — ${j.salary} (Deadline: ${j.deadline})`).join("\n"),this);});
+  document.getElementById("rig-wa").addEventListener("click",()=>shareWA("⚖️ Know your workers' rights in Kenya! Check 3M for Employment Act guidance + AI legal advice."));
+  document.getElementById("rig-cp").addEventListener("click",function(){copyIt(RIGHTS.map(r=>`${r.title}: ${r.law} → ${r.action}`).join("\n"),this);});
+  document.getElementById("tax-wa").addEventListener("click",()=>shareWA(`📊 KRA tax on KES ${document.getElementById("grossIncome").value}/mo — calculated on 3M`));
+  document.getElementById("tax-cp").addEventListener("click",function(){copyIt(document.getElementById("taxResult").innerText,this);});
+  document.getElementById("cv-cp").addEventListener("click",function(){copyIt(document.getElementById("cvAiContent").textContent,this);});
+  document.getElementById("cl-wa").addEventListener("click",()=>shareWA("✉️ Just generated my cover letter with 3MAI AI on 3M!"));
+  document.getElementById("cl-cp").addEventListener("click",function(){copyIt(document.getElementById("coverAiContent").textContent,this);});
+  document.getElementById("hus-wa").addEventListener("click",()=>shareWA("🚀 Got side hustle ideas from 3MAI AI on 3M — check it out!"));
+  document.getElementById("hus-cp").addEventListener("click",function(){copyIt(document.getElementById("hustleAiContent").textContent,this);});
+}
+
+function shareWA(text){window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank");}
+function copyIt(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    if(btn){const o=btn.textContent;btn.textContent="✅ Copied!";setTimeout(()=>btn.textContent=o,2000);}
+  });
+}
+
+// ============ MARKETING HUB ============
+function switchMkt(tab) {
+  document.querySelectorAll(".mkt-panel").forEach(p=>p.style.display="none");
+  document.querySelectorAll(".mkt-tab").forEach(b=>b.classList.remove("on"));
+  document.getElementById("mkt-"+tab).style.display="block";
+  const tabs = ["social","brand","strategy","adcopy"];
+  const tabBtns = document.querySelectorAll(".mkt-tab");
+  tabBtns[tabs.indexOf(tab)]?.classList.add("on");
+}
+function bindMarketing() {
+  
+  document.getElementById("socialBtn").addEventListener("click", async ()=>{
+    const product = document.getElementById("socialProduct").value.trim();
+    if(!product){alert("Please describe your product or service.");return;}
+    const audience = document.getElementById("socialAudience").value.trim();
+    const platform = document.getElementById("socialPlatform").value;
+    const tone = document.getElementById("socialTone").value;
+    const el = openAiBox("socialAiBox","socialAiContent");
+    await streamAI(`You are 3MAI, a social media marketing expert specialising in the Kenyan market. Create social media posts for:
+Product/Service: ${product}
+Target audience: ${audience||"Kenyan youth and professionals"}
+Platform: ${platform==="all"?"Instagram, X (Twitter), TikTok, and WhatsApp":platform}
+Tone: ${tone}
+
+Generate ready-to-use posts for ${platform==="all"?"each platform separately":platform}. Each post should have:
+- A powerful hook/opening line that stops the scroll
+- Compelling body copy with emojis where appropriate
+- A clear call-to-action
+- Relevant hashtags (for platforms that use them)
+- For TikTok: include a full video script with timestamps
+- For WhatsApp: conversational broadcast-style message
+
+Make all content Kenya-specific, culturally relevant, and optimised for engagement. Reference local context (M-Pesa, Nairobi, etc.) where natural. Under 500 words total.`, el, "marketing");
+  });
+
+  
+  document.getElementById("brandBtn").addEventListener("click", async ()=>{
+    const desc = document.getElementById("brandDesc").value.trim();
+    if(!desc){alert("Please describe your business.");return;}
+    const industry = document.getElementById("brandIndustry").value;
+    const vibe = document.getElementById("brandVibe").value;
+    const el = openAiBox("brandAiBox","brandAiContent");
+    await streamAI(`You are 3MAI, a brand strategist specialising in the Kenyan market. Create a full brand identity for:
+Business: ${desc}
+Industry: ${industry} | Brand personality: ${vibe}
+
+Deliver a complete brand kit:
+🏷️ 5 Business Name Options (memorable, available as .co.ke, Kenya-relevant)
+✨ Tagline for each name (punchy, 5–8 words)
+🎨 Brand Personality Statement (2–3 sentences capturing the vibe)
+🎨 Colour Palette (3 colours with hex codes and what they communicate)
+📱 Logo Concept (describe the ideal logo in 2–3 sentences)
+💬 Brand Voice (3 adjectives + how to write captions/messages)
+🚀 Launch tip: first thing to do on social media in Kenya
+
+Make it specific, modern, and suited to the Kenyan market. Under 450 words.`, el, "marketing");
+  });
+
+  
+  document.getElementById("stratBtn").addEventListener("click", async ()=>{
+    const business = document.getElementById("stratBusiness").value.trim();
+    if(!business){alert("Please describe your business.");return;}
+    const budget = document.getElementById("stratBudget").value;
+    const goal = document.getElementById("stratGoal").value;
+    const el = openAiBox("stratAiBox","stratAiContent");
+    await streamAI(`You are 3MAI, a marketing strategist for Kenyan SMEs. Build a 90-day marketing plan for:
+Business: ${business}
+Monthly budget: KES ${budget==="0"?"0 (free/organic only)":budget} | Goal: ${goal}
+
+Structure the plan clearly:
+📅 Month 1 — Foundation (weeks 1–4): exact platforms, content types, posting frequency
+📅 Month 2 — Growth (weeks 5–8): paid tactics if budget allows, community building, WhatsApp strategy
+📅 Month 3 — Scale (weeks 9–12): what to double down on, partnerships, M-Pesa payment integration
+📊 KPIs to track each month (followers, leads, sales, cost per lead)
+🛠️ Free tools to use: Canva, Meta Business Suite, Google My Business, etc.
+⚠️ #1 mistake Kenyan SMEs make and how to avoid it
+
+Be specific with Kenya platforms (TikTok KE, Instagram, WhatsApp Business, X). Realistic for the budget given. Under 480 words.`, el, "marketing");
+  });
+
+  
+  document.getElementById("adBtn").addEventListener("click", async ()=>{
+    const product = document.getElementById("adProduct").value.trim();
+    if(!product){alert("Please describe your product or service.");return;}
+    const target = document.getElementById("adTarget").value.trim();
+    const usp = document.getElementById("adUSP").value.trim();
+    const format = document.getElementById("adFormat").value;
+    const el = openAiBox("adAiBox","adAiContent");
+    await streamAI(`You are 3MAI, a world-class ad copywriter who knows the Kenyan market deeply. Write high-converting ad copy for:
+Product/Service: ${product}
+Target customer: ${target||"Kenyan consumers"}
+Key benefit / USP: ${usp||"Not specified"}
+Format: ${format==="all"?"All formats (Facebook/Instagram, Google Search, WhatsApp Broadcast, TikTok script)":format}
+
+For each format requested, provide:
+📣 3 Headline variations (attention-grabbing, under 10 words each)
+📝 Full ad body copy (benefits-led, specific to Kenyan buyer psychology)
+🎯 Call-to-action (strong, clear, M-Pesa payment friendly where relevant)
+💡 Pro tip for that specific platform
+
+Reference Kenyan context naturally (M-Pesa, Nairobi, local pain points). Focus on benefits over features. Use social proof language. Under 500 words total.`, el, "marketing");
+  });
+
+  
+  document.getElementById("soc-wa").addEventListener("click",()=>shareWA("🔥 Just generated killer social posts with 3MAI on 3M — Kenya's #1 marketing AI!"));
+  document.getElementById("soc-cp").addEventListener("click",function(){copyIt(document.getElementById("socialAiContent").textContent,this);});
+  document.getElementById("brd-wa").addEventListener("click",()=>shareWA("🎨 Just built my brand identity with 3MAI on 3M!"));
+  document.getElementById("brd-cp").addEventListener("click",function(){copyIt(document.getElementById("brandAiContent").textContent,this);});
+  document.getElementById("str-wa").addEventListener("click",()=>shareWA("📈 Got a full 90-day marketing strategy from 3MAI on 3M!"));
+  document.getElementById("str-cp").addEventListener("click",function(){copyIt(document.getElementById("stratAiContent").textContent,this);});
+  document.getElementById("adc-wa").addEventListener("click",()=>shareWA("✍️ Just wrote high-converting ad copy with 3MAI on 3M!"));
+  document.getElementById("adc-cp").addEventListener("click",function(){copyIt(document.getElementById("adAiContent").textContent,this);});
+}
+</script>
+
+</body>
+</html>
