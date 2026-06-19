@@ -1,5 +1,5 @@
 export async function onRequestPost(context) {
-  const apiKey = context.env.GEMINI_API_KEY;
+  const apiKey = context.env.OPENROUTER_API_KEY;
 
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "API key not configured" }), {
@@ -11,47 +11,46 @@ export async function onRequestPost(context) {
   try {
     const body = await context.request.json();
 
-    // Extract system prompt and messages from Anthropic-style request
-    const systemPrompt = body.system || "";
-    const messages = body.messages || [];
+    // Build messages array, prepending system prompt if present
+    const messages = [];
+    if (body.system) {
+      messages.push({ role: "system", content: body.system });
+    }
+    if (body.messages) {
+      messages.push(...body.messages);
+    }
 
-    // Convert to Gemini format
-    const contents = messages.map(m => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }]
-    }));
-
-    const geminiBody = {
-      system_instruction: systemPrompt ? { parts: [{ text: systemPrompt }] } : undefined,
-      contents,
-      generationConfig: {
-        maxOutputTokens: body.max_tokens || 1000,
-        temperature: 0.7
-      }
+    const openRouterBody = {
+      model: "meta-llama/llama-3.3-70b-instruct:free",
+      messages,
+      max_tokens: body.max_tokens || 1000
     };
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-    const response = await fetch(url, {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(geminiBody)
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://3m-app.pages.dev",
+        "X-Title": "3M App"
+      },
+      body: JSON.stringify(openRouterBody)
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      return new Response(JSON.stringify({ error: data.error?.message || "Gemini error" }), {
+      return new Response(JSON.stringify({ error: data.error?.message || "OpenRouter error" }), {
         status: response.status,
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
     }
 
-    // Convert Gemini response back to Anthropic-style format
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    // Convert OpenRouter (OpenAI-style) response to Anthropic-style format
+    const text = data.choices?.[0]?.message?.content || "";
     const anthropicStyle = {
       content: [{ type: "text", text }],
-      model: "gemini-2.0-flash",
+      model: data.model || "openrouter",
       role: "assistant"
     };
 
@@ -77,4 +76,5 @@ export async function onRequestOptions() {
       "Access-Control-Allow-Headers": "Content-Type"
     }
   });
-}
+      }
+          
