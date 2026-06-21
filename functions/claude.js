@@ -21,7 +21,7 @@ export async function onRequestPost(context) {
     }
 
     const openRouterBody = {
-      model: "nvidia/nemotron-3-ultra-550b-a55b:free",
+      model: "nex-agi/nex-n2-pro:free",
       messages,
       max_tokens: body.max_tokens || 1000
     };
@@ -76,5 +76,5 @@ export async function onRequestOptions() {
       "Access-Control-Allow-Headers": "Content-Type"
     }
   });
-}
-  
+  }
+      
