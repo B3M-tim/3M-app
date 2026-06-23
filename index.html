@@ -1665,40 +1665,88 @@ function calcTax() {
 }
 
 // ============ FREEMIUM PAYWALL ============
-const FREE_LIMIT = 3;
+const FREE_LIMIT = 5;
 const TOOL_KEYS = ["salary","career","scam","govt","rights","tax","cv","cover","hustle","marketing"];
 let selectedPlan = "pro";
 
-function getUsage(tool) {
-  try { return parseInt(localStorage.getItem("3m_uses_"+tool)||"0"); } catch(e){ return 0; }
-}
-function incUsage(tool) {
-  try { localStorage.setItem("3m_uses_"+tool, getUsage(tool)+1); } catch(e){}
-}
-function resetUsage(tool) {
-  try { localStorage.removeItem("3m_uses_"+tool); } catch(e){}
-}
-function isPro() {
-  try { return localStorage.getItem("3m_pro")==="1"; } catch(e){ return false; }
-}
-function unlockPro() {
-  try { localStorage.setItem("3m_pro","1"); } catch(e){}
+// ============ FIRESTORE USAGE TRACKING ============
+// Usage stored as: usage/{uid} -> { salary_2026-06-23: 2, career_2026-06-23: 1, ... }
+// Pro stored as: users/{uid} -> { premium: true }
+
+function getTodayKey(tool) {
+  const d = new Date();
+  const dateStr = d.toISOString().split("T")[0]; // e.g. "2026-06-23"
+  return `${tool}_${dateStr}`;
 }
 
-function checkGate(tool) {
-  if(isPro()) return true;
-  const used = getUsage(tool);
-  if(used < FREE_LIMIT) return true;
+function isPro() {
+  return window._userDoc?.premium === true;
+}
+
+async function getUsageFS(tool) {
+  if (!window._user) return 0;
+  try {
+    const token = await window._user.getIdToken();
+    const doc = await fsGet("usage", window._user.uid, token);
+    if (!doc || doc.error) return 0;
+    const key = getTodayKey(tool);
+    const field = doc.fields?.[key];
+    if (!field) return 0;
+    return parseInt(field.integerValue || field.doubleValue || 0);
+  } catch(e) { return 0; }
+}
+
+async function incUsageFS(tool) {
+  if (!window._user) return;
+  try {
+    const token = await window._user.getIdToken();
+    const doc = await fsGet("usage", window._user.uid, token);
+    const key = getTodayKey(tool);
+    const current = parseInt(doc?.fields?.[key]?.integerValue || 0);
+    const fields = {};
+    // Preserve existing fields
+    if (doc?.fields) {
+      Object.entries(doc.fields).forEach(([k, v]) => { fields[k] = v; });
+    }
+    fields[key] = { integerValue: current + 1 };
+    const FS_PROJECT = "biz-3mt";
+    const FS_BASE = `https://firestore.googleapis.com/v1/projects/${FS_PROJECT}/databases/default/documents`;
+    await fetch(`${FS_BASE}/usage/${window._user.uid}?key=AIzaSyAB6xsmjLxkZpFcxJPJPMwJeVkBz0Wd01s`, {
+      method: "PATCH",
+      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ fields })
+    });
+  } catch(e) { console.log("Usage track error:", e.message); }
+}
+
+async function checkGate(tool) {
+  if (!window._user) { showPaywall(tool); return false; }
+  if (isPro()) return true;
+  const used = await getUsageFS(tool);
+  if (used < FREE_LIMIT) return true;
   showPaywall(tool);
   return false;
 }
 
-function updateBadge(btnId, tool) {
-  if(isPro()) { document.getElementById(btnId)?.querySelector(".use-badge")?.remove(); return; }
-  const used = getUsage(tool);
-  const rem = Math.max(0, FREE_LIMIT - used);
+// Keep these for compatibility but they now use Firestore values
+function getUsage(tool) { return 0; } // legacy fallback
+function incUsage(tool) {} // replaced by incUsageFS
+function unlockPro() {
+  if (window._userDoc) window._userDoc.premium = true;
+}
+
+async function updateBadge(btnId, tool) {
   const btn = document.getElementById(btnId);
   if(!btn) return;
+  if(isPro()) { btn.querySelector(".use-badge")?.remove(); return; }
+  if(!window._user) {
+    let badge = btn.querySelector(".use-badge");
+    if(!badge){ badge=document.createElement("span"); badge.className="use-badge"; btn.appendChild(badge); }
+    badge.className="use-badge"; badge.textContent="Sign in to use";
+    return;
+  }
+  const used = await getUsageFS(tool);
+  const rem = Math.max(0, FREE_LIMIT - used);
   let badge = btn.querySelector(".use-badge");
   if(!badge){ badge=document.createElement("span"); badge.className="use-badge"; btn.appendChild(badge); }
   if(rem===0){ badge.className="use-badge danger"; badge.textContent="LOCKED 🔒"; }
@@ -1706,11 +1754,10 @@ function updateBadge(btnId, tool) {
   else if(rem===2){ badge.className="use-badge warn"; badge.textContent=rem+" free left"; }
   else{ badge.className="use-badge"; badge.textContent=rem+" free"; }
 }
-function refreshAllBadges() {
+async function refreshAllBadges() {
   const map = {salary:"salaryAiBtn",career:"careerRun",scam:"scamBtn",govt:"govtBtn",rights:"rightsBtn",tax:"taxAiBtn",cv:"cvBtn",cover:"coverBtn",hustle:"hustleBtn",marketing:"socialBtn"};
-  Object.entries(map).forEach(([tool,btnId])=>updateBadge(btnId,tool));
-  
-  ["brandBtn","stratBtn","adBtn"].forEach(btnId=>updateBadge(btnId,"marketing"));
+  for (const [tool,btnId] of Object.entries(map)) await updateBadge(btnId,tool);
+  for (const btnId of ["brandBtn","stratBtn","adBtn"]) await updateBadge(btnId,"marketing");
 }
 
 function showPaywall(tool) {
@@ -1750,11 +1797,11 @@ function initPaywall() {
 // ============ AI STREAM ============
 async function streamAI(prompt, el, tool) {
   
-  if(tool && !checkGate(tool)) return false;
+  if(tool && !(await checkGate(tool))) return false;
 
   el.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
   try {
-    const res = await fetch("/claude", {
+    const res = await fetch("/functions/claude", {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({
         model:"claude-haiku-4-5-20251001", max_tokens:1500,
@@ -1782,7 +1829,7 @@ async function streamAI(prompt, el, tool) {
       })();
     });
     
-    if(tool) { incUsage(tool); updateBadge(getToolBtnId(tool), tool); }
+    if(tool) { await incUsageFS(tool); updateBadge(getToolBtnId(tool), tool); }
     return true;
   } catch(e) {
     el.textContent = "⚠️ Connection error. Please check your network.";
@@ -1861,7 +1908,7 @@ function initNairobot() {
     nbHistory.push({role:"user", content:q});
 
     try {
-      const res = await fetch("/claude", {
+      const res = await fetch("/functions/claude", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body: JSON.stringify({
