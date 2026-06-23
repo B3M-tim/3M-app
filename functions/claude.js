@@ -21,7 +21,7 @@ export async function onRequestPost(context) {
     }
 
     const openRouterBody = {
-      model: "nex-agi/nex-n2-pro:free",
+      model: "poolside/laguna-xs.2:free",
       messages,
       max_tokens: body.max_tokens || 1000
     };
@@ -76,5 +76,5 @@ export async function onRequestOptions() {
       "Access-Control-Allow-Headers": "Content-Type"
     }
   });
-  }
-      
+}
+  
