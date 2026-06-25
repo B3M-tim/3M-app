@@ -11,7 +11,6 @@ export async function onRequestPost(context) {
   try {
     const body = await context.request.json();
 
-    // Build messages array, prepending system prompt if present
     const messages = [];
     if (body.system) {
       messages.push({ role: "system", content: body.system });
@@ -21,7 +20,7 @@ export async function onRequestPost(context) {
     }
 
     const openRouterBody = {
-      model: "poolside/laguna-xs.2:free",
+      model: "mistralai/mistral-7b-instruct:free",
       messages,
       max_tokens: body.max_tokens || 1000
     };
@@ -37,16 +36,25 @@ export async function onRequestPost(context) {
       body: JSON.stringify(openRouterBody)
     });
 
-    const data = await response.json();
+    const rawText = await response.text();
 
-    if (!response.ok) {
-      return new Response(JSON.stringify({ error: data.error?.message || "OpenRouter error" }), {
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch(parseErr) {
+      return new Response(JSON.stringify({ error: "Parse error: " + rawText.substring(0, 200) }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    }
+
+    if (!response.ok || data.error) {
+      return new Response(JSON.stringify({ error: data.error?.message || JSON.stringify(data) }), {
         status: response.status,
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
     }
 
-    // Convert OpenRouter (OpenAI-style) response to Anthropic-style format
     const text = data.choices?.[0]?.message?.content || "";
     const anthropicStyle = {
       content: [{ type: "text", text }],
@@ -76,5 +84,5 @@ export async function onRequestOptions() {
       "Access-Control-Allow-Headers": "Content-Type"
     }
   });
-}
-  
+      }
+                          
