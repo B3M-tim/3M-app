@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
     }
 
     const openRouterBody = {
-      model: "mistralai/mistral-7b-instruct:free",
+      model: "openrouter/free",
       messages,
       max_tokens: body.max_tokens || 1000
     };
@@ -84,5 +84,5 @@ export async function onRequestOptions() {
       "Access-Control-Allow-Headers": "Content-Type"
     }
   });
-      }
-                          
+}
+  
