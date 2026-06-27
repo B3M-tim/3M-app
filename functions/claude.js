@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
     }
 
     const openRouterBody = {
-      model: "openrouter/free",
+      model: "nvidia/nemotron-3-ultra-550b-a55b:free",
       messages,
       max_tokens: body.max_tokens || 1000
     };
