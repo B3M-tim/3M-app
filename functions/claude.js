@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
     }
 
     const openRouterBody = {
-      model: "nvidia/nemotron-3-ultra-550b-a55b:free",
+      model: "meta-llama/llama-3.3-70b-instruct:free",
       messages,
       max_tokens: body.max_tokens || 1000
     };
@@ -84,5 +84,5 @@ export async function onRequestOptions() {
       "Access-Control-Allow-Headers": "Content-Type"
     }
   });
-}
-  
+      }
+      
