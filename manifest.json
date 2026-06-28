@@ -1,0 +1,43 @@
+{
+  "name": "3M Kenya — Career & Income",
+  "short_name": "3M Kenya",
+  "description": "Kenya's #1 AI-powered career and income platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050810",
+  "theme_color": "#F5C518",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en-KE",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Salary Check",
+      "short_name": "Salary",
+      "description": "Check Kenya salary ranges",
+      "url": "/?tool=salary",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "NairoBot AI",
+      "short_name": "NairoBot",
+      "description": "Chat with 3MAI",
+      "url": "/?tool=nairobot",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
