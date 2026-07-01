@@ -1,4 +1,4 @@
-  const FREE_MODELS = [
+const FREE_MODELS = [
   "meta-llama/llama-3.3-70b-instruct:free",
   "nvidia/nemotron-3-ultra-550b-a55b:free",
   "poolside/laguna-m.1:free",
@@ -37,6 +37,9 @@ export async function onRequestPost(context) {
           max_tokens: body.max_tokens || 1000
         };
 
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -45,8 +48,11 @@ export async function onRequestPost(context) {
             "HTTP-Referer": "https://3m-app.pages.dev",
             "X-Title": "3M App"
           },
-          body: JSON.stringify(openRouterBody)
+          body: JSON.stringify(openRouterBody),
+          signal: controller.signal
         });
+
+        clearTimeout(timeout);
 
         const rawText = await response.text();
         let data;
@@ -100,4 +106,3 @@ export async function onRequestOptions() {
   });
       }
         
-      
