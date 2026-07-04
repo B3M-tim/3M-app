@@ -1417,6 +1417,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return await res.json();
   }
+  window.fsGet = fsGet;
+  window.fsSet = fsSet;
 
   // Wire login button
   document.getElementById("nav-login-btn").addEventListener("click", () => {
@@ -1793,7 +1795,7 @@ async function getUsageFS(tool) {
   if (!window._user) return 0;
   try {
     const token = await window._user.getIdToken();
-    const doc = await fsGet("usage", window._user.uid, token);
+    const doc = await window.fsGet("usage", window._user.uid, token);
     if (!doc || doc.error) return 0;
     const key = getTodayKey(tool);
     const field = doc.fields?.[key];
@@ -1806,7 +1808,7 @@ async function incUsageFS(tool) {
   if (!window._user) return;
   try {
     const token = await window._user.getIdToken();
-    const doc = await fsGet("usage", window._user.uid, token);
+    const doc = await window.fsGet("usage", window._user.uid, token);
     const key = getTodayKey(tool);
     const current = parseInt(doc?.fields?.[key]?.integerValue || 0);
     const fields = {};
