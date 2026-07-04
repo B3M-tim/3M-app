@@ -38,7 +38,7 @@ export async function onRequestPost(context) {
         };
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 5000);
+        const timeout = setTimeout(() => controller.abort(), 3000);
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
@@ -104,5 +104,5 @@ export async function onRequestOptions() {
       "Access-Control-Allow-Headers": "Content-Type"
     }
   });
-}
-  
+        }
+    
