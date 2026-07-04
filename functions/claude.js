@@ -1,9 +1,9 @@
 const FREE_MODELS = [
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "poolside/laguna-m.1:free",
   "cohere/north-mini-code:free",
-  "openrouter/owl-alpha"
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "poolside/laguna-m.1:free",
+  "openrouter/owl-alpha",
+  "nvidia/nemotron-3-ultra-550b-a55b:free"
 ];
 
 export async function onRequestPost(context) {
@@ -104,5 +104,5 @@ export async function onRequestOptions() {
       "Access-Control-Allow-Headers": "Content-Type"
     }
   });
-      }
-        
+}
+  
