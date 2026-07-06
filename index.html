@@ -65,22 +65,23 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 
 :root{
-  --blk:#050810;--surf:#090D1A;--card:#0D1422;--card2:#111929;--raise:#16223A;
-  --navy:#08111E;--navy2:#050D18;
+  --blk:#FFFFFF;--surf:#FAFBFD;--card:#FFFFFF;--card2:#FFFFFF;--raise:#FFFFFF;
+  --navy:#EEF2F9;--navy2:#F5F8FC;
   --g:#F5C518;--gd:#C9A010;--g2:#FFD84D;
   --glow:rgba(245,197,24,.22);--gf:rgba(245,197,24,.07);--gf2:rgba(245,197,24,.13);
-  --bdr:rgba(245,197,24,.18);--bdr2:rgba(245,197,24,.38);
+  --bdr:rgba(245,197,24,.25);--bdr2:rgba(245,197,24,.45);
   --blue:#2D7DD2;--blue2:#1A5FAA;--blue3:#4DA8F8;
-  --bluef:rgba(45,125,210,.1);--bluebdr:rgba(45,125,210,.22);
-  --wire:rgba(255,255,255,.06);--wire2:rgba(255,255,255,.035);--wire3:rgba(255,255,255,.02);
-  --tx:#DCE6F5;--tx2:#98AECE;--dim:#48607E;--dim2:#6882A0;--wh:#fff;
-  --red:#E84855;--purple:#9D8FE0;
-  --rr:#E84855;--rf:rgba(232,72,85,.08);--rbdr:rgba(232,72,85,.2);
+  --bluef:rgba(45,125,210,.08);--bluebdr:rgba(45,125,210,.22);
+  --wire:rgba(17,24,39,.08);--wire2:rgba(17,24,39,.05);--wire3:rgba(17,24,39,.03);
+  --tx:#111827;--tx2:#5B6B85;--dim:#6B7C94;--dim2:#94A3B8;--wh:#fff;
+  --red:#D6304A;--purple:#7A68BC;
+  --rr:#D6304A;--rf:rgba(214,48,74,.08);--rbdr:rgba(214,48,74,.22);
   --bb:#2D7DD2;--bf:rgba(45,125,210,.08);--bbdr:rgba(45,125,210,.2);
-  --gold:#F5C518;--gold-f:rgba(245,197,24,.08);--gold-bdr:rgba(245,197,24,.2);
+  --gold:#F5C518;--gold-f:rgba(245,197,24,.08);--gold-bdr:rgba(245,197,24,.25);
+  --gold-tx:#8A6D00;
   --radius:16px;--radius-sm:10px;--radius-lg:22px;--radius-xs:6px;
-  --shadow-card:0 4px 24px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.04);
-  --shadow-lift:0 20px 56px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05);
+  --shadow-card:0 4px 24px rgba(17,24,39,.07),0 1px 2px rgba(17,24,39,.04);
+  --shadow-lift:0 20px 56px rgba(17,24,39,.14),0 0 0 1px rgba(17,24,39,.05);
   --trans:.22s cubic-bezier(.4,0,.2,1);--trans-spring:.35s cubic-bezier(.34,1.56,.64,1);
 }
 
@@ -132,15 +133,11 @@ nav{
   box-shadow:0 1px 0 rgba(245,197,24,.1),0 8px 32px rgba(0,0,0,.4);
 }
 .logo{
-  font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;
-  color:var(--wh);white-space:nowrap;cursor:pointer;letter-spacing:-.04em;
-  transition:opacity .2s;
+  white-space:nowrap;cursor:pointer;
+  transition:opacity .2s;display:flex;align-items:center;
 }
 .logo:hover{opacity:.8;}
-.logo span{
-  color:var(--g);
-  text-shadow:0 0 16px rgba(245,197,24,.5),0 0 32px rgba(245,197,24,.2);
-}
+.logo-img{height:34px;width:auto;display:block;}
 .nav-tools{display:flex;gap:1px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
 .nav-tools::-webkit-scrollbar{display:none;}
 .nt{
@@ -161,7 +158,7 @@ nav{
 .nt.active-r::after{background:var(--rr);}
 .nt.active-b{color:var(--bb);font-weight:700;}
 .nt.active-b::after{background:var(--bb);}
-.nt.active-gold{color:var(--gold);font-weight:700;}
+.nt.active-gold{color:var(--gold-tx);font-weight:700;}
 .nt.active-gold::after{background:var(--gold);}
 .nav-cta{
   background:linear-gradient(135deg,var(--g),var(--gd));
@@ -320,7 +317,7 @@ nav{
 .tag-g{background:rgba(245,197,24,.1);color:var(--g);border:1px solid rgba(245,197,24,.2);}
 .tag-b{background:rgba(45,125,210,.1);color:var(--bb);border:1px solid rgba(45,125,210,.2);}
 .tag-rr{background:rgba(232,72,85,.1);color:var(--rr);border:1px solid rgba(232,72,85,.2);}
-.tag-gold{background:rgba(245,197,24,.08);color:var(--gold);border:1px solid rgba(245,197,24,.2);}
+.tag-gold{background:rgba(245,197,24,.12);color:var(--gold-tx);border:1px solid rgba(245,197,24,.3);}
 .pg-title{
   font-family:'Syne',sans-serif;font-weight:800;
   font-size:clamp(1.3rem,2.5vw,1.85rem);
@@ -463,8 +460,8 @@ select.inp{
 .gj-title{font-weight:700;font-size:.9rem;margin-bottom:3px;color:var(--tx);}
 .gj-meta{font-size:.67rem;color:var(--dim2);}
 .gj-apply{
-  background:rgba(245,197,24,.07);border:1px solid rgba(245,197,24,.2);
-  color:var(--gold);padding:7px 16px;border-radius:7px;
+  background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.3);
+  color:var(--gold-tx);padding:7px 16px;border-radius:7px;
   font-size:.69rem;cursor:pointer;font-weight:700;transition:var(--trans);
   white-space:nowrap;
 }
@@ -731,7 +728,7 @@ select.inp{
   padding:2px 7px;border-radius:4px;margin-left:8px;vertical-align:middle;
   letter-spacing:.04em;
 }
-.use-badge.warn{background:rgba(245,197,24,.1);border-color:rgba(245,197,24,.2);color:var(--gold);}
+.use-badge.warn{background:rgba(245,197,24,.15);border-color:rgba(245,197,24,.3);color:var(--gold-tx);}
 .use-badge.danger{background:var(--rf);border-color:var(--rbdr);color:var(--rr);}
 
 #cv-print-area{display:none;}
@@ -783,7 +780,7 @@ select.inp{
 
 <!-- NAV -->
 <nav>
-  <div class="logo" onclick="showHero()">3<span>M</span></div>
+  <div class="logo" onclick="showHero()"><img src="/logo-header.png" alt="3M" class="logo-img"></div>
   <div class="nav-tools" id="navTools"></div>
   <button class="nav-cta" id="nav-login-btn">Sign In</button>
 </nav>
@@ -1199,12 +1196,47 @@ select.inp{
 </div>
 
 <script type="module">
-// ============ FIREBASE IMPORTS ============
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getAnalytics, logEvent }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+// ============ FIREBASE IMPORTS (failure-tolerant) ============
+// Static imports would halt this entire script silently if the Firebase CDN
+// is slow/blocked/unreachable for any reason — every function below, including
+// basic navigation, would break with cryptic "X is not defined" errors.
+// Dynamic imports let us retry transient failures and degrade gracefully.
+let initializeApp, getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged,
+    getAnalytics, logEvent;
+let firebaseReady = false;
+
+async function loadFirebaseWithRetry(attempts = 3) {
+  const FB_VER = "10.12.0";
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const [appMod, authMod, analyticsMod] = await Promise.all([
+        import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-app.js`),
+        import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-auth.js`),
+        import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-analytics.js`)
+      ]);
+      initializeApp = appMod.initializeApp;
+      getAuth = authMod.getAuth;
+      signInWithPopup = authMod.signInWithPopup;
+      GoogleAuthProvider = authMod.GoogleAuthProvider;
+      onAuthStateChanged = authMod.onAuthStateChanged;
+      getAnalytics = analyticsMod.getAnalytics;
+      logEvent = analyticsMod.logEvent;
+      firebaseReady = true;
+      return true;
+    } catch (e) {
+      console.log(`Firebase load attempt ${i+1}/${attempts} failed:`, e.message);
+      if (i < attempts - 1) await new Promise(r => setTimeout(r, 800 * (i + 1)));
+    }
+  }
+  return false;
+}
+// Safe analytics wrapper — never throws even if Firebase never loaded
+window.logEventSafe = (name, params) => {
+  if (firebaseReady && window.analytics) {
+    try { logEvent(window.analytics, name, params); } catch(e) { console.log("Analytics error:", e.message); }
+  }
+};
+const fbLoadPromise = loadFirebaseWithRetry();
 
 // Debug helper (console only — no visible panel in production)
 function dbg(msg) { console.log(msg); }
@@ -1363,7 +1395,7 @@ const TICKER = [
 ];
 
 // ============ INIT ============
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // Register service worker for PWA
   if ('serviceWorker' in navigator) {
     // handled outside module
@@ -1371,7 +1403,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Performance: set passive touch handlers
   document.addEventListener("touchstart", ()=>{}, {passive:true});
 
-  // ============ FIREBASE INIT ============
+  await fbLoadPromise;
+
   const firebaseConfig = {
     apiKey: "AIzaSyAB6xsmjLxkZpFcxJPJPMwJeVkBz0Wd01s",
     authDomain: "biz-3mt.firebaseapp.com",
@@ -1381,14 +1414,10 @@ document.addEventListener("DOMContentLoaded", () => {
     appId: "1:635132245018:web:d22978d041344ffe2e0da3",
     measurementId: "G-X2MT0ZPWJK"
   };
-  const fbApp = initializeApp(firebaseConfig);
-  const auth = getAuth(fbApp);
-  const analytics = getAnalytics(fbApp);
-  window.analytics = analytics;
-  const provider = new GoogleAuthProvider();
-  dbg("🔥 Firebase Auth + Analytics initialized");
 
   // ============ FIRESTORE REST API HELPERS ============
+  // These only need firebaseConfig values (not the SDK objects), so they work
+  // regardless of whether the Firebase SDK itself loaded successfully.
   const FS_PROJECT = firebaseConfig.projectId;
   const FS_BASE = `https://firestore.googleapis.com/v1/projects/${FS_PROJECT}/databases/default/documents`;
 
@@ -1420,6 +1449,25 @@ document.addEventListener("DOMContentLoaded", () => {
   window.fsGet = fsGet;
   window.fsSet = fsSet;
 
+  if (!firebaseReady) {
+    // Firebase never loaded after retries — show a clear message instead of silently
+    // breaking. Core navigation still works since it doesn't depend on any of this.
+    dbg("❌ Firebase failed to load after retries — auth/AI features disabled this session");
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:var(--rr);color:#fff;padding:8px 16px;text-align:center;font-size:.75rem;font-weight:700;';
+    banner.textContent = '⚠️ Connection issue — sign-in and AI features are unavailable. Please reload.';
+    document.body.prepend(banner);
+    return; // skip all Firebase-dependent setup below; core UI setup after this block still runs
+  }
+
+  // ============ FIREBASE INIT ============
+  const fbApp = initializeApp(firebaseConfig);
+  const auth = getAuth(fbApp);
+  const analytics = getAnalytics(fbApp);
+  window.analytics = analytics;
+  const provider = new GoogleAuthProvider();
+  dbg("🔥 Firebase Auth + Analytics initialized");
+
   // Wire login button
   document.getElementById("nav-login-btn").addEventListener("click", () => {
     if (auth.currentUser) {
@@ -1435,7 +1483,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (user) {
       dbg("✅ Logged in: " + user.displayName);
       window._user = user;
-      logEvent(analytics, 'login', { method: 'Google' });
+      window.logEventSafe('login', { method: 'Google' });
 
       try {
         const token = await user.getIdToken();
@@ -1573,7 +1621,7 @@ function showPage(id) {
   const t = TOOLS.find(x=>x.id===id);
   if(t) { document.getElementById("nav-"+id).className = "nt "+t.nav; document.getElementById("tg-"+id).classList.add("on"); }
   window.scrollTo({top:0, behavior: /Mobi|Android/i.test(navigator.userAgent) ? "instant" : "smooth"});
-  logEvent(window.analytics, 'page_view', { page_title: id });
+  window.logEventSafe('page_view', { page_title: id });
 }
 function showHero() {
   currentPage = null;
@@ -1943,7 +1991,7 @@ async function streamAI(prompt, el, tool) {
       await incUsageFS(tool);
       const btnIds = getToolBtnId(tool);
       (Array.isArray(btnIds) ? btnIds : [btnIds]).forEach(id => updateBadge(id, tool));
-      logEvent(window.analytics, 'tool_used', { tool_name: tool });
+      window.logEventSafe('tool_used', { tool_name: tool });
     } catch(e) {
       console.log("Post-processing error (answer still shown):", e.message);
     }
