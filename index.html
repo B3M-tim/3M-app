@@ -522,7 +522,7 @@ select.inp{
   box-shadow:0 0 8px var(--g);
 }
 .ai-content{
-  font-size:.83rem;line-height:1.85;color:var(--tx2);white-space:pre-wrap;
+  font-size:.83rem;line-height:1.85;color:rgba(255,255,255,.88);white-space:pre-wrap;
 }
 .typing-dots{display:inline-flex;gap:5px;align-items:center;padding:4px 0;}
 .typing-dots span{
@@ -953,12 +953,14 @@ select.inp{
     <div class="panel">
       <div class="field"><label class="lbl">Full Name</label><input type="text" id="cvName" class="inp" placeholder="e.g., James Mwangi Kamau"></div>
       <div class="field"><label class="lbl">Target Role</label><input type="text" id="cvRole" class="inp" placeholder="e.g., Software Engineer"></div>
+      <div class="field"><label class="lbl">Years of Experience</label><input type="text" id="cvYears" class="inp" placeholder="e.g., 2"></div>
       <div class="field"><label class="lbl">Email</label><input type="email" id="cvEmail" class="inp" placeholder="james@email.com"></div>
       <div class="field"><label class="lbl">Phone</label><input type="tel" id="cvPhone" class="inp" placeholder="+254 7XX XXX XXX"></div>
       <div class="field"><label class="lbl">Location</label><input type="text" id="cvLocation" class="inp" placeholder="Nairobi, Kenya"></div>
       <div class="field"><label class="lbl">Key Skills</label><input type="text" id="cvSkills" class="inp" placeholder="Python, Data Analysis, SQL..."></div>
       <div class="field"><label class="lbl">Work Experience</label><textarea id="cvExp" class="inp" rows="3" placeholder="2 yrs at Safaricom as data analyst. Built dashboards, automated reporting..."></textarea></div>
       <div class="field"><label class="lbl">Education</label><input type="text" id="cvEdu" class="inp" placeholder="BSc Computer Science — UoN, 2022"></div>
+      <div class="field"><label class="lbl">Target Job Description (optional, boosts ATS match)</label><textarea id="cvJobDesc" class="inp" rows="3" placeholder="Paste the job posting here so 3MAI can mirror its exact keywords..."></textarea></div>
       <button id="cvBtn" class="run-btn rb-b" style="margin-top:4px;">✨ Generate AI CV</button>
     </div>
     <div class="panel" id="cvPreview" style="min-height:280px;">
@@ -2367,24 +2369,40 @@ Be specific, practical, Kenya-market focused. Under 380 words.`, el, "salary");
     const name=document.getElementById("cvName").value.trim();
     const role=document.getElementById("cvRole").value.trim();
     if(!role){alert("Please enter your target role.");return;}
+    const years=document.getElementById("cvYears").value.trim();
     const skills=document.getElementById("cvSkills").value.trim();
     const exp=document.getElementById("cvExp").value.trim();
     const edu=document.getElementById("cvEdu").value.trim();
+    const jobDesc=document.getElementById("cvJobDesc").value.trim();
     const el=openAiBox("cvAiBox","cvAiContent");
     document.getElementById("cv-pdf").style.display="inline-flex";
-    const ok = await streamAI(`You are 3MAI CV writer for 3M. Write a complete, ATS-optimised CV for a Kenyan professional:
-Name: ${name||"[Name]"} | Target Role: ${role}
+    const lengthGuidance = years && parseInt(years) >= 5
+      ? "This candidate has 5+ years experience — a fuller two-page-equivalent level of detail is fine; don't cut relevant achievements just to shorten it."
+      : "This candidate is early-career — keep it tight, one-page-equivalent, no padding or filler bullets.";
+    const ok = await streamAI(`You are 3MAI CV writer for 3M, trained on 2026 ATS best practices. Write a complete CV for a Kenyan professional that passes both automated ATS screening AND impresses a human recruiter.
+
+CANDIDATE DATA:
+Name: ${name||"[Name]"} | Target Role: ${role} | Years of experience: ${years||"Not specified"}
 Skills: ${skills||"Not specified"} | Experience: ${exp||"Not specified"} | Education: ${edu||"Not specified"}
+${jobDesc ? `Target job posting (mirror its exact keywords and phrasing wherever truthfully applicable):\n${jobDesc}` : "No specific job posting provided — optimise for the target role and Kenyan job market generally."}
+
+ATS RULES TO FOLLOW (2026 standards):
+- Single-column, plain-text-parseable structure only — no tables, no columns, no graphics implied.
+- Standard section headings the ATS expects (no creative renaming).
+- KEY SKILLS section must be prominent and near the top — most large employers now filter by skills before reading job history. List both the acronym and full term where relevant (e.g., "Search Engine Optimization (SEO)", not just "SEO").
+- At least 70% of WORK EXPERIENCE bullets must include a measurable result: a %, KES amount, time saved, count, or scale — not just a listed duty.
+- If a job posting was provided, mirror its exact phrasing naturally in the summary and skills — do not stuff keywords unnaturally.
+- ${lengthGuidance}
 
 Structure the CV exactly like this:
-PROFESSIONAL SUMMARY (3 sentences, achievement-focused, Kenya market)
-KEY SKILLS (8–10 bullet points, ATS keywords for ${role} in Kenya)
-WORK EXPERIENCE (enhance what's given with strong action verbs and quantified achievements)
+PROFESSIONAL SUMMARY (2–3 sentences, achievement-focused, states years of experience and target role)
+KEY SKILLS (8–12 items, mix of hard skills/tools and role keywords, acronym + full term where applicable)
+WORK EXPERIENCE (strong action verbs, quantified achievements — not duty descriptions)
 EDUCATION (format properly for Kenyan employers)
 CERTIFICATIONS & TRAINING (relevant to Kenyan job market)
 REFEREES (standard Kenya format: "Available upon request")
 
-Make it compelling for Kenyan employers. Use power verbs. Quantify achievements. Under 500 words.`, el, "cv");
+Make it compelling for Kenyan employers and ATS software alike. Use power verbs. Quantify achievements — do not invent fake numbers, but push the candidate's real input into a measurable frame wherever the data given allows it.`, el, "cv");
     if(ok) renderCVPreview();
   });
 
