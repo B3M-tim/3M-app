@@ -218,7 +218,7 @@ nav{
   font-family:'Syne',sans-serif;font-weight:800;
   font-size:clamp(2rem,5vw,3.4rem);
   letter-spacing:-.055em;line-height:1.02;margin-bottom:16px;
-  color:var(--wh);
+  color:var(--tx);
 }
 .hero h1 em{
   font-style:normal;
@@ -322,7 +322,7 @@ nav{
   font-family:'Syne',sans-serif;font-weight:800;
   font-size:clamp(1.3rem,2.5vw,1.85rem);
   letter-spacing:-.04em;margin-bottom:6px;line-height:1.08;
-  color:var(--wh);
+  color:var(--tx);
 }
 .pg-sub{color:var(--dim2);font-size:.83rem;line-height:1.7;max-width:540px;}
 
@@ -2019,13 +2019,16 @@ async function streamAI(prompt, el, tool, maxTokens = 600) {
     });
     const data = await res.json();
     text = data.content?.map(b=>b.text||"").join("") || "⚠️ No response. Please try again.";
+    if (data.stop_reason === "max_tokens") {
+      text += "\n\n⚠️ [Response was cut off — click generate again, or ask 3MAI to continue from here.]";
+    }
   } catch(e) {
     el.textContent = "⚠️ Connection error. Please check your network.";
     if (tool) _inFlightTools.delete(tool);
     return false;
   }
 
-  el.textContent = text;
+  el.textContent = text.replace(/\*\*(.+?)\*\*/g, "$1");
   el.scrollIntoView({block:"end", behavior:"nearest"});
 
   // Post-processing (usage tracking, badges, analytics) is isolated here on purpose —
@@ -2168,23 +2171,34 @@ function escapeHtml(s) {
 // Shared: turns the AI-generated CV text into formatted CV markup.
 // Used by both the live on-screen preview and the print/PDF export area,
 // so they can never drift out of sync with each other.
+// Converts basic markdown bold (**text**) into real <strong> tags.
+// The AI model sometimes wraps headings/emphasis in markdown syntax even
+// though this isn't a markdown renderer — without this, users see literal
+// asterisks in the output (e.g. "**PROFESSIONAL SUMMARY**").
+function mdBoldToHtml(escapedText) {
+  return escapedText.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
+
 function buildCVBodyHtml(aiText) {
   const lines = aiText.split("\n").filter(l=>l.trim());
   let html = "";
   let inList = false;
   lines.forEach(line => {
-    const l = line.trim();
+    let l = line.trim();
     if(!l) return;
-    const isBullet = l.startsWith("•") || l.startsWith("-") || l.startsWith("*");
-    if(l.length < 60 && (l===l.toUpperCase() || /^[\d\.\🎯💼📚🏆✅💡📄⚡🔑]/.test(l))) {
+    // Strip markdown bold markers before heading/bullet detection so
+    // "**PROFESSIONAL SUMMARY**" is still recognised as a heading line.
+    const bare = l.replace(/\*\*/g, "");
+    const isBullet = bare.startsWith("•") || bare.startsWith("-") || bare.startsWith("*");
+    if(bare.length < 60 && (bare===bare.toUpperCase() || /^[\d\.\🎯💼📚🏆✅💡📄⚡🔑]/.test(bare))) {
       if(inList){ html += `</ul>`; inList=false; }
-      html += `<h2>${escapeHtml(l.replace(/^[\d\.]+\s*/,""))}</h2>`;
+      html += `<h2>${escapeHtml(bare.replace(/^[\d\.]+\s*/,""))}</h2>`;
     } else if(isBullet) {
       if(!inList){ html += `<ul>`; inList=true; }
-      html += `<li>${escapeHtml(l.replace(/^[•\-\*]\s*/,""))}</li>`;
+      html += `<li>${mdBoldToHtml(escapeHtml(bare.replace(/^[•\-\*]\s*/,"")))}</li>`;
     } else {
       if(inList){ html += `</ul>`; inList=false; }
-      html += `<p>${escapeHtml(l)}</p>`;
+      html += `<p>${mdBoldToHtml(escapeHtml(bare))}</p>`;
     }
   });
   if(inList) html += `</ul>`;
@@ -2379,7 +2393,7 @@ Be specific, practical, Kenya-market focused. Under 380 words.`, el, "salary");
     const lengthGuidance = years && parseInt(years) >= 5
       ? "This candidate has 5+ years experience — a fuller two-page-equivalent level of detail is fine; don't cut relevant achievements just to shorten it."
       : "This candidate is early-career — keep it tight, one-page-equivalent, no padding or filler bullets.";
-    const ok = await streamAI(`You are 3MAI CV writer for 3M. Write a complete CV for a Kenyan professional, following 2026 ATS best practices: single-column plain structure, standard section headings, a prominent Skills section near the top (list acronym + full term, e.g. "SEO (Search Engine Optimization)"), and at least 70% of Work Experience bullets carrying a real measurable result (%, KES amount, time saved, count) — not bare duty descriptions. ${lengthGuidance}
+    const ok = await streamAI(`You are 3MAI CV writer for 3M. Write a complete CV for a Kenyan professional, following 2026 ATS best practices: single-column plain structure, standard section headings, a prominent Skills section near the top, and at least 70% of Work Experience bullets carrying a real measurable result (%, KES amount, time saved, count) — not bare duty descriptions. Only pair an acronym with its full term when it's a REAL, widely-recognized industry acronym (e.g. "SEO (Search Engine Optimization)", "SQL (Structured Query Language)") — never invent an abbreviation for a skill that doesn't already have one (so "Python" stays "Python", not "PY (Python)"). ${lengthGuidance}
 
 CANDIDATE DATA:
 Name: ${name||"[Name]"} | Target Role: ${role} | Years of experience: ${years||"Not specified"}
@@ -2394,7 +2408,7 @@ EDUCATION
 CERTIFICATIONS & TRAINING
 REFEREES (Kenya standard: "Available upon request")
 
-Do not invent fake numbers — frame the candidate's real input in measurable terms wherever the given data allows it. Use power verbs. Write the full CV now.`, el, "cv", 1400);
+Do not invent fake numbers — frame the candidate's real input in measurable terms wherever the given data allows it. Use power verbs. Write the full CV now.`, el, "cv", 2000);
     if(ok) renderCVPreview();
   });
 
