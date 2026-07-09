@@ -1997,7 +1997,7 @@ function initPaywall() {
 // ============ AI STREAM ============
 const _inFlightTools = new Set(); // guards against rapid double-clicks bypassing the usage gate
 
-async function streamAI(prompt, el, tool) {
+async function streamAI(prompt, el, tool, maxTokens = 600) {
 
   if (tool) {
     if (_inFlightTools.has(tool)) return false; // a request for this tool is already running
@@ -2012,7 +2012,7 @@ async function streamAI(prompt, el, tool) {
     const res = await fetch("/claude", {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({
-        model:"claude-haiku-4-5-20251001", max_tokens:600,
+        model:"claude-haiku-4-5-20251001", max_tokens:maxTokens,
         system:"You are 3MAI, AI assistant for 3M — Kenya's #1 career and income platform for youth. Specialise in Kenya's job market, Nairobi salaries, KRA tax, Employment Act 2007, and practical career advice. Give grounded, Kenya-specific answers. Be warm, direct, and empowering.",
         messages:[{role:"user",content:prompt}]
       })
@@ -2379,30 +2379,22 @@ Be specific, practical, Kenya-market focused. Under 380 words.`, el, "salary");
     const lengthGuidance = years && parseInt(years) >= 5
       ? "This candidate has 5+ years experience — a fuller two-page-equivalent level of detail is fine; don't cut relevant achievements just to shorten it."
       : "This candidate is early-career — keep it tight, one-page-equivalent, no padding or filler bullets.";
-    const ok = await streamAI(`You are 3MAI CV writer for 3M, trained on 2026 ATS best practices. Write a complete CV for a Kenyan professional that passes both automated ATS screening AND impresses a human recruiter.
+    const ok = await streamAI(`You are 3MAI CV writer for 3M. Write a complete CV for a Kenyan professional, following 2026 ATS best practices: single-column plain structure, standard section headings, a prominent Skills section near the top (list acronym + full term, e.g. "SEO (Search Engine Optimization)"), and at least 70% of Work Experience bullets carrying a real measurable result (%, KES amount, time saved, count) — not bare duty descriptions. ${lengthGuidance}
 
 CANDIDATE DATA:
 Name: ${name||"[Name]"} | Target Role: ${role} | Years of experience: ${years||"Not specified"}
 Skills: ${skills||"Not specified"} | Experience: ${exp||"Not specified"} | Education: ${edu||"Not specified"}
-${jobDesc ? `Target job posting (mirror its exact keywords and phrasing wherever truthfully applicable):\n${jobDesc}` : "No specific job posting provided — optimise for the target role and Kenyan job market generally."}
+${jobDesc ? `Target job posting (mirror its exact keywords/phrasing naturally where truthfully applicable):\n${jobDesc}` : "No job posting provided — optimise generally for this role in the Kenyan market."}
 
-ATS RULES TO FOLLOW (2026 standards):
-- Single-column, plain-text-parseable structure only — no tables, no columns, no graphics implied.
-- Standard section headings the ATS expects (no creative renaming).
-- KEY SKILLS section must be prominent and near the top — most large employers now filter by skills before reading job history. List both the acronym and full term where relevant (e.g., "Search Engine Optimization (SEO)", not just "SEO").
-- At least 70% of WORK EXPERIENCE bullets must include a measurable result: a %, KES amount, time saved, count, or scale — not just a listed duty.
-- If a job posting was provided, mirror its exact phrasing naturally in the summary and skills — do not stuff keywords unnaturally.
-- ${lengthGuidance}
+Structure exactly like this, using these exact headings:
+PROFESSIONAL SUMMARY (2–3 sentences, states years of experience and target role)
+KEY SKILLS (8–12 items)
+WORK EXPERIENCE (action verbs, quantified achievements)
+EDUCATION
+CERTIFICATIONS & TRAINING
+REFEREES (Kenya standard: "Available upon request")
 
-Structure the CV exactly like this:
-PROFESSIONAL SUMMARY (2–3 sentences, achievement-focused, states years of experience and target role)
-KEY SKILLS (8–12 items, mix of hard skills/tools and role keywords, acronym + full term where applicable)
-WORK EXPERIENCE (strong action verbs, quantified achievements — not duty descriptions)
-EDUCATION (format properly for Kenyan employers)
-CERTIFICATIONS & TRAINING (relevant to Kenyan job market)
-REFEREES (standard Kenya format: "Available upon request")
-
-Make it compelling for Kenyan employers and ATS software alike. Use power verbs. Quantify achievements — do not invent fake numbers, but push the candidate's real input into a measurable frame wherever the data given allows it.`, el, "cv");
+Do not invent fake numbers — frame the candidate's real input in measurable terms wherever the given data allows it. Use power verbs. Write the full CV now.`, el, "cv", 1400);
     if(ok) renderCVPreview();
   });
 
