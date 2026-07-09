@@ -624,9 +624,10 @@ select.inp{
 .nb-inp{
   flex:1;background:rgba(6,9,15,.8);
   border:1px solid var(--wire);border-radius:10px;
-  padding:8px 12px;color:var(--tx);font-size:.78rem;outline:none;
+  padding:8px 12px;color:#fff;font-size:.78rem;outline:none;
   font-family:'DM Sans',sans-serif;transition:border-color .15s;
 }
+.nb-inp::placeholder{color:rgba(255,255,255,.4);}
 .nb-inp:focus{border-color:rgba(245,197,24,.25);}
 .nb-send{
   background:var(--g);color:#000;
@@ -731,7 +732,15 @@ select.inp{
 .use-badge.warn{background:rgba(245,197,24,.15);border-color:rgba(245,197,24,.3);color:var(--gold-tx);}
 .use-badge.danger{background:var(--rf);border-color:var(--rbdr);color:var(--rr);}
 
-#cv-print-area{display:none;}
+#cv-print-area{display:none;position:fixed;left:-9999px;top:0;width:750px;}
+#cv-print-area.capturing{display:block !important;}
+#cvPreview.filled{text-align:left;font-family:Georgia,serif;color:#111;padding:20px;}
+#cvPreview.filled h1{font-size:20px;margin-bottom:2px;color:#0A1628;font-family:'Syne',sans-serif;}
+#cvPreview.filled .cv-role{font-size:12px;color:#2D7DD2;margin-bottom:4px;}
+#cvPreview.filled .cv-contact{font-size:10px;color:#555;margin-bottom:14px;border-bottom:2px solid #F5C518;padding-bottom:8px;}
+#cvPreview.filled h2{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#2D7DD2;margin:16px 0 5px;border-bottom:1px solid #ddd;padding-bottom:3px;}
+#cvPreview.filled p,#cvPreview.filled li{font-size:11px;line-height:1.6;color:#222;}
+#cvPreview.filled ul{padding-left:16px;}
 @media print{
   body > *{display:none !important;}
   #cv-print-area{display:block !important;font-family:Georgia,serif;color:#111;background:#fff;padding:40px;max-width:750px;margin:0 auto;}
@@ -1450,90 +1459,95 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.fsSet = fsSet;
 
   if (!firebaseReady) {
-    // Firebase never loaded after retries — show a clear message instead of silently
-    // breaking. Core navigation still works since it doesn't depend on any of this.
-    dbg("❌ Firebase failed to load after retries — auth/AI features disabled this session");
+    // Firebase never loaded after retries. Sign-in and cross-device usage sync
+    // are unavailable, but AI tools still work — usage limits fall back to
+    // this device's localStorage so the core product isn't taken down by a
+    // CDN/network hiccup. Falls through to core UI init below (unconditional).
+    window._offlineMode = true;
+    dbg("⚠️ Firebase failed to load after retries — running in offline mode (local usage limits, no sign-in)");
     const banner = document.createElement('div');
-    banner.style.cssText = 'background:var(--rr);color:#fff;padding:8px 16px;text-align:center;font-size:.75rem;font-weight:700;';
-    banner.textContent = '⚠️ Connection issue — sign-in and AI features are unavailable. Please reload.';
+    banner.style.cssText = 'background:var(--gold-tx);color:#fff;padding:8px 16px;text-align:center;font-size:.75rem;font-weight:700;';
+    banner.textContent = '⚠️ Running offline — sign-in unavailable, AI tools work with device-only limits.';
     document.body.prepend(banner);
-    return; // skip all Firebase-dependent setup below; core UI setup after this block still runs
+    const loginBtn = document.getElementById("nav-login-btn");
+    if (loginBtn) { loginBtn.textContent = "Offline"; loginBtn.disabled = true; loginBtn.style.opacity = ".5"; }
+  } else {
+    // ============ FIREBASE INIT ============
+    const fbApp = initializeApp(firebaseConfig);
+    const auth = getAuth(fbApp);
+    const analytics = getAnalytics(fbApp);
+    window.analytics = analytics;
+    const provider = new GoogleAuthProvider();
+    dbg("🔥 Firebase Auth + Analytics initialized");
+
+    // Wire login button
+    document.getElementById("nav-login-btn").addEventListener("click", () => {
+      if (auth.currentUser) {
+        auth.signOut();
+      } else {
+        signInWithPopup(auth, provider).catch(e => dbg("❌ Login error: " + e.message));
+      }
+    });
+
+    // Auth state listener
+    onAuthStateChanged(auth, async (user) => {
+      const btn = document.getElementById("nav-login-btn");
+      if (user) {
+        dbg("✅ Logged in: " + user.displayName);
+        window._user = user;
+        window.logEventSafe('login', { method: 'Google' });
+
+        try {
+          const token = await user.getIdToken();
+          dbg("🔑 Got auth token");
+
+          // Check/create user doc
+          dbg("⏳ Reading user doc...");
+          const userDoc = await fsGet("users", user.uid, token);
+          dbg("📄 User doc: " + (userDoc ? "exists" : "not found"));
+
+          if (!userDoc || userDoc.error) {
+            dbg("✍️ Creating user doc...");
+            const result = await fsSet("users", user.uid, {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              premium: false,
+              premiumSince: null,
+              createdAt: new Date().toISOString()
+            }, token);
+            dbg(result.error ? "❌ Create error: " + result.error.message : "✅ User doc created");
+            window._userDoc = { premium: false }; // brand-new user — correctly false
+          } else {
+            window._userDoc = { premium: userDoc.fields?.premium?.booleanValue === true }; // FIX: read real status
+            dbg("💳 Premium status: " + window._userDoc.premium);
+          }
+
+          // Check/create usage doc
+          const usageDoc = await fsGet("usage", user.uid, token);
+          if (!usageDoc || usageDoc.error) {
+            await fsSet("usage", user.uid, {
+              salary:0,career:0,scam:0,govt:0,
+              rights:0,tax:0,cv:0,cover:0,hustle:0,marketing:0,nairobot:0
+            }, token);
+            dbg("✅ Usage doc created");
+          }
+
+        } catch(e) {
+          dbg("❌ Error: " + e.message);
+        }
+
+        if (btn) btn.textContent = user.displayName.split(" ")[0];
+      } else {
+        window._user = null;
+        window._userDoc = {};
+        if (btn) btn.textContent = "Sign In";
+      }
+    });
   }
 
-  // ============ FIREBASE INIT ============
-  const fbApp = initializeApp(firebaseConfig);
-  const auth = getAuth(fbApp);
-  const analytics = getAnalytics(fbApp);
-  window.analytics = analytics;
-  const provider = new GoogleAuthProvider();
-  dbg("🔥 Firebase Auth + Analytics initialized");
-
-  // Wire login button
-  document.getElementById("nav-login-btn").addEventListener("click", () => {
-    if (auth.currentUser) {
-      auth.signOut();
-    } else {
-      signInWithPopup(auth, provider).catch(e => dbg("❌ Login error: " + e.message));
-    }
-  });
-
-  // Auth state listener
-  onAuthStateChanged(auth, async (user) => {
-    const btn = document.getElementById("nav-login-btn");
-    if (user) {
-      dbg("✅ Logged in: " + user.displayName);
-      window._user = user;
-      window.logEventSafe('login', { method: 'Google' });
-
-      try {
-        const token = await user.getIdToken();
-        dbg("🔑 Got auth token");
-
-        // Check/create user doc
-        dbg("⏳ Reading user doc...");
-        const userDoc = await fsGet("users", user.uid, token);
-        dbg("📄 User doc: " + (userDoc ? "exists" : "not found"));
-
-        if (!userDoc || userDoc.error) {
-          dbg("✍️ Creating user doc...");
-          const result = await fsSet("users", user.uid, {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            premium: false,
-            premiumSince: null,
-            createdAt: new Date().toISOString()
-          }, token);
-          dbg(result.error ? "❌ Create error: " + result.error.message : "✅ User doc created");
-          window._userDoc = { premium: false }; // brand-new user — correctly false
-        } else {
-          window._userDoc = { premium: userDoc.fields?.premium?.booleanValue === true }; // FIX: read real status
-          dbg("💳 Premium status: " + window._userDoc.premium);
-        }
-
-        // Check/create usage doc
-        const usageDoc = await fsGet("usage", user.uid, token);
-        if (!usageDoc || usageDoc.error) {
-          await fsSet("usage", user.uid, {
-            salary:0,career:0,scam:0,govt:0,
-            rights:0,tax:0,cv:0,cover:0,hustle:0,marketing:0,nairobot:0
-          }, token);
-          dbg("✅ Usage doc created");
-        }
-
-      } catch(e) {
-        dbg("❌ Error: " + e.message);
-      }
-
-      if (btn) btn.textContent = user.displayName.split(" ")[0];
-    } else {
-      window._user = null;
-      window._userDoc = {};
-      if (btn) btn.textContent = "Sign In";
-    }
-  });
-
   // ============ PWA INSTALL BUTTON ============
+  // Runs regardless of Firebase status — installability has nothing to do with auth.
   let deferredPrompt;
   const installBtn = document.createElement('button');
   installBtn.id = 'pwa-install-btn';
@@ -1836,10 +1850,28 @@ function getTodayKey(tool) {
 }
 
 function isPro() {
+  if (window._offlineMode) return false; // no paid verification possible offline — safe default
   return window._userDoc?.premium === true;
 }
 
+// ---- Offline (Firebase-unavailable) usage tracking ----
+// Per-device only, not synced across devices/sessions like the Firestore path,
+// but it means a CDN/network hiccup doesn't take down every AI tool at once.
+function getOfflineUsage(tool) {
+  try {
+    const key = `3m_offline_usage_${getTodayKey(tool)}`;
+    return parseInt(localStorage.getItem(key) || "0");
+  } catch(e) { return 0; }
+}
+function incOfflineUsage(tool) {
+  try {
+    const key = `3m_offline_usage_${getTodayKey(tool)}`;
+    localStorage.setItem(key, String(getOfflineUsage(tool) + 1));
+  } catch(e) { /* localStorage unavailable — usage just won't persist */ }
+}
+
 async function getUsageFS(tool) {
+  if (window._offlineMode) return getOfflineUsage(tool);
   if (!window._user) return 0;
   try {
     const token = await window._user.getIdToken();
@@ -1853,6 +1885,7 @@ async function getUsageFS(tool) {
 }
 
 async function incUsageFS(tool) {
+  if (window._offlineMode) { incOfflineUsage(tool); return; }
   if (!window._user) return;
   try {
     const token = await window._user.getIdToken();
@@ -1876,6 +1909,12 @@ async function incUsageFS(tool) {
 }
 
 async function checkGate(tool, limit = FREE_LIMIT) {
+  if (window._offlineMode) {
+    const used = getOfflineUsage(tool);
+    if (used < limit) return true;
+    showPaywall(tool);
+    return false;
+  }
   if (!window._user) { showPaywall(tool); return false; }
   if (isPro()) return true;
   const used = await getUsageFS(tool);
@@ -1895,7 +1934,7 @@ async function updateBadge(btnId, tool) {
   const btn = document.getElementById(btnId);
   if(!btn) return;
   if(isPro()) { btn.querySelector(".use-badge")?.remove(); return; }
-  if(!window._user) {
+  if(!window._offlineMode && !window._user) {
     let badge = btn.querySelector(".use-badge");
     if(!badge){ badge=document.createElement("span"); badge.className="use-badge"; btn.appendChild(badge); }
     badge.className="use-badge"; badge.textContent="Sign in to use";
@@ -2121,25 +2160,10 @@ function initNairobot() {
 function escapeHtml(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
-function exportCVPdf() {
-  const name = document.getElementById("cvName").value.trim() || "Your Name";
-  const role = document.getElementById("cvRole").value.trim() || "Professional";
-  const email = document.getElementById("cvEmail").value.trim();
-  const phone = document.getElementById("cvPhone").value.trim();
-  const loc = document.getElementById("cvLocation").value.trim();
-  const aiText = document.getElementById("cvAiContent").textContent.trim();
-
-  if(!aiText || aiText.length < 50) {
-    alert("Please generate your CV with AI first before exporting.");
-    return;
-  }
-
-  
-  document.getElementById("cvp-name").textContent = name;
-  document.getElementById("cvp-role").textContent = role;
-  document.getElementById("cvp-contact").textContent = [email,phone,loc].filter(Boolean).join(" · ");
-
-  
+// Shared: turns the AI-generated CV text into formatted CV markup.
+// Used by both the live on-screen preview and the print/PDF export area,
+// so they can never drift out of sync with each other.
+function buildCVBodyHtml(aiText) {
   const lines = aiText.split("\n").filter(l=>l.trim());
   let html = "";
   let inList = false;
@@ -2159,10 +2183,80 @@ function exportCVPdf() {
     }
   });
   if(inList) html += `</ul>`;
-  document.getElementById("cvp-body").innerHTML = html;
+  return html;
+}
 
-  
-  setTimeout(()=>{ window.print(); }, 100);
+// Reads current form + AI content, and returns null if there's nothing to render yet.
+function getCVFields() {
+  const name = document.getElementById("cvName").value.trim() || "Your Name";
+  const role = document.getElementById("cvRole").value.trim() || "Professional";
+  const email = document.getElementById("cvEmail").value.trim();
+  const phone = document.getElementById("cvPhone").value.trim();
+  const loc = document.getElementById("cvLocation").value.trim();
+  const aiText = document.getElementById("cvAiContent").textContent.trim();
+  if(!aiText || aiText.length < 50) return null;
+  return { name, role, contact: [email,phone,loc].filter(Boolean).join(" · "), aiText };
+}
+
+// Renders the live, on-screen CV preview panel (#cvPreview) right after generation.
+function renderCVPreview() {
+  const f = getCVFields();
+  if(!f) return;
+  const bodyHtml = buildCVBodyHtml(f.aiText);
+  document.getElementById("cvPreview").className = "panel filled";
+  document.getElementById("cvPreview").innerHTML = `
+    <h1>${escapeHtml(f.name)}</h1>
+    <div class="cv-role">${escapeHtml(f.role)}</div>
+    <div class="cv-contact">${escapeHtml(f.contact)}</div>
+    <div>${bodyHtml}</div>`;
+}
+
+async function exportCVPdf() {
+  const f = getCVFields();
+  if(!f) {
+    alert("Please generate your CV with AI first before exporting.");
+    return;
+  }
+
+  document.getElementById("cvp-name").textContent = f.name;
+  document.getElementById("cvp-role").textContent = f.role;
+  document.getElementById("cvp-contact").textContent = f.contact;
+  document.getElementById("cvp-body").innerHTML = buildCVBodyHtml(f.aiText);
+
+  const printArea = document.getElementById("cv-print-area");
+  const btn = document.getElementById("cv-pdf");
+  const originalLabel = btn.textContent;
+
+  // html2pdf.js is loaded lazily (only when the user actually exports) to keep
+  // initial page load light — consistent with the zero-budget, CDN-only approach.
+  try {
+    if (typeof html2pdf === "undefined") {
+      btn.textContent = "⏳ Loading…";
+      await new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+    btn.textContent = "⏳ Generating…";
+    printArea.classList.add("capturing");
+    await html2pdf().set({
+      margin: 10,
+      filename: `${f.name.replace(/\s+/g,"_")}_CV.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    }).from(printArea).save();
+  } catch(e) {
+    console.log("PDF export failed, falling back to print dialog:", e.message);
+    printArea.classList.add("capturing");
+    window.print();
+  } finally {
+    printArea.classList.remove("capturing");
+    btn.textContent = originalLabel;
+  }
 }
 
 // ============ UTILITY FUNCTIONS ============
@@ -2275,7 +2369,7 @@ Be specific, practical, Kenya-market focused. Under 380 words.`, el, "salary");
     const edu=document.getElementById("cvEdu").value.trim();
     const el=openAiBox("cvAiBox","cvAiContent");
     document.getElementById("cv-pdf").style.display="inline-flex";
-    await streamAI(`You are 3MAI CV writer for 3M. Write a complete, ATS-optimised CV for a Kenyan professional:
+    const ok = await streamAI(`You are 3MAI CV writer for 3M. Write a complete, ATS-optimised CV for a Kenyan professional:
 Name: ${name||"[Name]"} | Target Role: ${role}
 Skills: ${skills||"Not specified"} | Experience: ${exp||"Not specified"} | Education: ${edu||"Not specified"}
 
@@ -2288,6 +2382,7 @@ CERTIFICATIONS & TRAINING (relevant to Kenyan job market)
 REFEREES (standard Kenya format: "Available upon request")
 
 Make it compelling for Kenyan employers. Use power verbs. Quantify achievements. Under 500 words.`, el, "cv");
+    if(ok) renderCVPreview();
   });
 
   document.getElementById("coverBtn").addEventListener("click", async ()=>{
