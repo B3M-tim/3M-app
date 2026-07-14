@@ -896,8 +896,9 @@ select.inp{
 <!-- ===== GOVT JOBS ===== -->
 <div id="pg-govt" class="pg"><div class="inner">
   <div class="ph-tag tag-gold">🏛️ GOVERNMENT JOBS</div>
-  <div class="pg-title">Live Government Job Listings</div>
-  <div class="pg-sub">Latest openings from PSC, counties, parastatals and government agencies. AI application tips for any role.</div>
+  <div class="pg-title">Government Job Listings</div>
+  <div class="pg-sub">Curated openings from PSC, counties, parastatals and government agencies, refreshed regularly. AI application tips for any role.</div>
+  <div id="govtStaleWarning" style="display:none;background:rgba(232,72,85,.08);border:1px solid rgba(232,72,85,.25);color:var(--rr);border-radius:10px;padding:10px 14px;font-size:.78rem;font-weight:600;margin-bottom:14px;"></div>
   <div id="govtList" style="margin-bottom:14px;"></div>
   <div class="panel">
     <label class="lbl">🤖 AI Application Strategy — which job?</label>
@@ -1151,30 +1152,23 @@ select.inp{
     <button class="pw-close" id="pw-close">✕</button>
     <span class="pw-icon">🔒</span>
     <div class="pw-title">You've used your <em>3 free</em> queries</div>
-    <p class="pw-sub">Upgrade to Pro for unlimited AI queries across all 9 tools — salary insights, career roadmaps, scam detection, legal guidance, tax tips, CV builder &amp; more.</p>
-    <div class="pw-plans">
-      <div class="pw-plan" data-plan="basic" onclick="selectPlan('basic')">
-        <div class="pw-plan-name">Basic</div>
-        <div class="pw-plan-price">KES 49<span>/mo</span></div>
-        <div class="pw-plan-note">50 AI queries/mo</div>
-      </div>
-      <div class="pw-plan pop" data-plan="pro" onclick="selectPlan('pro')">
-        <div class="pw-plan-name">⚡ Pro</div>
-        <div class="pw-plan-price">KES 99<span>/mo</span></div>
-        <div class="pw-plan-note">Unlimited · All tools</div>
-      </div>
-    </div>
+    <p class="pw-sub">Upgrade to Pro for unlimited AI queries across all tools — salary insights, career roadmaps, scam detection, legal guidance, tax tips, CV builder &amp; more.</p>
     <div class="pw-mpesa">
-      <div class="pw-mpesa-title">💳 Pay via M-Pesa (Lipa Na M-Pesa)</div>
+      <div class="pw-mpesa-title">💳 Pay via M-Pesa</div>
       <div class="pw-mpesa-steps">
-        1. Go to M-Pesa → Lipa Na M-Pesa → Pay Bill<br>
-        2. Business No: <span class="pw-mpesa-code">400200</span><br>
-        3. Account No: <span class="pw-mpesa-code">3M</span><br>
-        4. Amount: KES 49 (Basic) or KES 99 (Pro)<br>
-        5. WhatsApp screenshot to: <strong style="color:var(--g);">+254 700 000 000</strong>
+        1. Go to M-Pesa → Send Money<br>
+        2. Send to: <span class="pw-mpesa-code" id="pw-mpesa-number">0119512387</span><br>
+        3. Amount: <strong style="color:var(--gold-tx);">KES <span id="pw-price">TBD</span></strong><br>
+        4. Copy the M-Pesa confirmation code from the SMS you receive (e.g. <em>QGH7X9K2L1</em>)<br>
+        5. Paste it below — we'll verify and activate Pro manually, usually within a day.
       </div>
     </div>
-    <button class="pw-cta" id="pw-wa-btn">📱 Send Payment via WhatsApp</button>
+    <div class="field" style="margin-top:14px;">
+      <label class="lbl">M-Pesa Confirmation Code</label>
+      <input type="text" id="pw-txn-code" class="inp" placeholder="e.g., QGH7X9K2L1" style="text-transform:uppercase;">
+    </div>
+    <button class="pw-cta" id="pw-submit-btn">✅ Submit for Pro Activation</button>
+    <p style="font-size:.7rem;color:var(--dim);text-align:center;margin-top:8px;">You must be signed in for us to activate your account. Activation is manual and may take up to 24 hours.</p>
     <br><button class="pw-dismiss" id="pw-dismiss">Maybe later — go back</button>
   </div>
 </div>
@@ -1384,13 +1378,24 @@ const SCAM_FLAGS = [
   {name:"Overpayment/refund scheme",w:50},{name:"Asked for ID/bank details",w:40},
   {name:"Pressure to decide fast",w:20},{name:"Poor grammar/communication",w:15}
 ];
+// ============ GOVT JOBS — MANUAL WEEKLY UPDATE REQUIRED ============
+// There is no public API for Kenyan government job listings (PSC's
+// psckjobs.go.ke is a login-gated application portal, not a data feed).
+// This list must be updated by hand, roughly weekly, from:
+//   - https://www.publicservice.go.ke/jobs/
+//   - https://www.psckjobs.go.ke/ActiveJobsAdverts.aspx
+//   - individual county public service board sites
+// GOVT_JOBS_UPDATED must be bumped every time the list is edited — the
+// freshness check below uses it to warn in the UI if the data goes stale,
+// instead of silently showing expired listings as if they were current.
+const GOVT_JOBS_UPDATED = "2026-07-10"; // <-- update this date every time you edit GOVT_JOBS below
+const GOVT_JOBS_STALE_AFTER_DAYS = 10;  // warn if not updated within this many days
+
 const GOVT_JOBS = [
-  {org:"Ministry of ICT",title:"Digital Services Officer",deadline:"2026-05-30",salary:"KES 68k–92k"},
-  {org:"Kenya Police Service",title:"Police Constable (Recruit)",deadline:"2026-06-15",salary:"KES 45k + allowances"},
-  {org:"KRA",title:"Tax Assistant (Revenue)",deadline:"2026-06-30",salary:"KES 70k–98k"},
-  {org:"County Gov – Nairobi",title:"Public Health Officer",deadline:"2026-06-05",salary:"KES 55k–75k"},
-  {org:"KEMSA",title:"Procurement Officer",deadline:"2026-06-20",salary:"KES 62k–85k"},
-  {org:"CBK",title:"Graduate Trainee (Finance)",deadline:"2026-06-30",salary:"KES 55k + benefits"},
+  // Add real, current listings here. Remove this block and replace with
+  // actual postings from the sources above — do not leave example/fake
+  // data in production, since expired examples render as misleading
+  // "CLOSED" listings under a "Live Government Job Listings" heading.
 ];
 const RIGHTS = [
   {title:"Unfair / wrongful dismissal",law:"Employment Act 2007 §45",action:"Report to Labour Officer within 3 months. Up to 12 months' salary compensation."},
@@ -1796,8 +1801,37 @@ function buildScamChips() {
 
 // ============ GOVT JOBS ============
 function buildGovtJobs() {
+  const listEl = document.getElementById("govtList");
   const today = new Date(); today.setHours(0,0,0,0);
-  document.getElementById("govtList").innerHTML = GOVT_JOBS.map(j=>{
+
+  // Staleness check: warn visibly if GOVT_JOBS_UPDATED is older than
+  // GOVT_JOBS_STALE_AFTER_DAYS, so a missed weekly update is obvious
+  // instead of quietly showing old listings as if they were current.
+  const updated = new Date(GOVT_JOBS_UPDATED);
+  const daysSinceUpdate = Math.floor((today - updated) / 86400000);
+  const staleWarning = document.getElementById("govtStaleWarning");
+  if (staleWarning) {
+    if (daysSinceUpdate > GOVT_JOBS_STALE_AFTER_DAYS) {
+      staleWarning.style.display = "block";
+      staleWarning.textContent = `⚠️ This list was last updated ${daysSinceUpdate} days ago and may be out of date. Check publicservice.go.ke for the latest postings.`;
+    } else {
+      staleWarning.style.display = "none";
+    }
+  }
+
+  if (!GOVT_JOBS.length) {
+    listEl.innerHTML = `
+      <div style="text-align:center;padding:30px 20px;color:var(--dim);font-size:.83rem;">
+        No listings loaded yet. Check
+        <a href="https://www.publicservice.go.ke/jobs/" target="_blank" rel="noopener" style="color:var(--blue);">publicservice.go.ke</a>
+        or
+        <a href="https://www.psckjobs.go.ke/ActiveJobsAdverts.aspx" target="_blank" rel="noopener" style="color:var(--blue);">psckjobs.go.ke</a>
+        directly for current government vacancies.
+      </div>`;
+    return;
+  }
+
+  listEl.innerHTML = GOVT_JOBS.map(j=>{
     const deadline = new Date(j.deadline);
     const expired = deadline < today;
     const dLabel = expired
@@ -1842,7 +1876,7 @@ function calcTax() {
 // ============ FREEMIUM PAYWALL ============
 const FREE_LIMIT = 5;
 const TOOL_KEYS = ["salary","career","scam","govt","rights","tax","cv","cover","hustle","marketing"];
-let selectedPlan = "pro";
+// (selectedPlan removed — Pro is now a single manual-verification flow, no plan tiers)
 
 // ============ FIRESTORE USAGE TRACKING ============
 // Usage stored as: usage/{uid} -> { salary_2026-06-23: 2, career_2026-06-23: 1, ... }
@@ -1931,9 +1965,6 @@ async function checkGate(tool, limit = FREE_LIMIT) {
 // Keep these for compatibility but they now use Firestore values
 function getUsage(tool) { return 0; } // legacy fallback
 function incUsage(tool) {} // replaced by incUsageFS
-function unlockPro() {
-  if (window._userDoc) window._userDoc.premium = true;
-}
 
 async function updateBadge(btnId, tool) {
   const btn = document.getElementById(btnId);
@@ -1960,38 +1991,85 @@ async function refreshAllBadges() {
   for (const btnId of ["brandBtn","stratBtn","adBtn"]) await updateBadge(btnId,"marketing");
 }
 
+// ============ PRO ACTIVATION (manual M-Pesa verification) ============
+// No Paybill/Till is available yet — payment goes to a personal M-Pesa
+// number via Send Money, which has no automated confirmation API. Instead,
+// the user submits their M-Pesa transaction code, which gets written to a
+// "pending_claims" Firestore collection for manual review. The app owner
+// checks their M-Pesa statement and flips premium:true by hand (see the
+// admin panel wired up separately) — this can't be auto-approved safely
+// since anyone could type in a fake or reused code.
+const PRO_PRICE_KES = "TBD"; // <-- set your real price here once decided
+
 function showPaywall(tool) {
   document.getElementById("pw-overlay").classList.add("open");
 }
 function hidePaywall() {
   document.getElementById("pw-overlay").classList.remove("open");
 }
-function selectPlan(plan) {
-  selectedPlan = plan;
-  document.querySelectorAll(".pw-plan").forEach(p => p.style.outline = "none");
-  const target = document.querySelector(`.pw-plan[data-plan="${plan}"]`);
-  if(target) target.style.outline = "2px solid var(--g)";
-  const amount = plan==="pro"?"99":"49";
-  document.getElementById("pw-wa-btn").textContent = `📱 Pay KES ${amount} via WhatsApp`;
+
+async function submitProClaim() {
+  const btn = document.getElementById("pw-submit-btn");
+  const codeInput = document.getElementById("pw-txn-code");
+  const code = codeInput.value.trim().toUpperCase();
+
+  if (!window._user) {
+    alert("Please sign in first so we know which account to activate.");
+    return;
+  }
+  if (window._offlineMode) {
+    alert("You're currently offline — Pro activation requires a connection. Please try again once you're back online.");
+    return;
+  }
+  if (!code || code.length < 6) {
+    alert("Please enter the M-Pesa confirmation code from your SMS receipt.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Submitting…";
+
+  try {
+    const token = await window._user.getIdToken();
+    // Doc ID = the transaction code itself — this makes accidental duplicate
+    // submissions land on the same doc instead of creating unlimited claims,
+    // though it doesn't prevent someone submitting another person's code.
+    const result = await window.fsSet("pending_claims", code, {
+      uid: window._user.uid,
+      email: window._user.email || "",
+      txnCode: code,
+      submittedAt: new Date().toISOString(),
+      status: "pending"
+    }, token);
+
+    if (result?.error) {
+      alert("⚠️ Something went wrong submitting your code. Please try again, or contact support directly.");
+      btn.disabled = false;
+      btn.textContent = "✅ Submit for Pro Activation";
+      return;
+    }
+
+    codeInput.value = "";
+    btn.textContent = "✅ Submitted!";
+    alert("Thanks! We've received your code and will activate Pro within 24 hours once verified. You'll see it unlock automatically next time you open the app.");
+    setTimeout(() => { hidePaywall(); btn.disabled = false; btn.textContent = "✅ Submit for Pro Activation"; }, 800);
+  } catch(e) {
+    alert("⚠️ Connection error submitting your code. Please try again.");
+    btn.disabled = false;
+    btn.textContent = "✅ Submit for Pro Activation";
+  }
 }
 
 function initPaywall() {
+  document.getElementById("pw-price").textContent = PRO_PRICE_KES;
   document.getElementById("pw-close").addEventListener("click", hidePaywall);
   document.getElementById("pw-dismiss").addEventListener("click", hidePaywall);
-  document.getElementById("pw-wa-btn").addEventListener("click", ()=>{
-    const amount = selectedPlan==="pro"?"99":"49";
-    const msg = `Hi 3M! I've paid KES ${amount} for the ${selectedPlan.toUpperCase()} plan via M-Pesa. Please activate my account. 🙏`;
-    window.open("https://wa.me/254700000000?text="+encodeURIComponent(msg),"_blank");
-  });
-  
+  document.getElementById("pw-submit-btn").addEventListener("click", submitProClaim);
+
   document.getElementById("pw-overlay").addEventListener("click", e=>{
     if(e.target===document.getElementById("pw-overlay")) hidePaywall();
   });
-  selectPlan("pro");
   refreshAllBadges();
-
-  
-  window.unlock3M = ()=>{ unlockPro(); refreshAllBadges(); alert("✅ Pro unlocked! Refresh to see changes."); };
 }
 
 // ============ AI STREAM ============
@@ -2146,7 +2224,7 @@ function initNairobot() {
       tDiv.remove();
       const bDiv = document.createElement("div");
       bDiv.className = "nb-msg bot";
-      bDiv.textContent = reply;
+      bDiv.textContent = reply.replace(/\*\*(.+?)\*\*/g, "$1");
       msgs.appendChild(bDiv);
 
       incUsageFS("nairobot"); // NEW: count this exchange toward the daily limit
@@ -2570,7 +2648,6 @@ Reference Kenyan context naturally (M-Pesa, Nairobi, local pain points). Focus o
 // Expose functions for HTML onclick handlers
 window.showHero = showHero;
 window.showPage = showPage;
-window.selectPlan = selectPlan;
 window.switchMkt = switchMkt;
 
 // Register Service Worker for PWA
