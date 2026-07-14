@@ -794,6 +794,7 @@ select.inp{
 <nav>
   <div class="logo" onclick="showHero()"><img src="/logo-header.png" alt="3M" class="logo-img"></div>
   <div class="nav-tools" id="navTools"></div>
+  <button class="nav-cta" id="nav-saved-btn" style="background:transparent;border:1px solid var(--bdr);color:var(--tx2);margin-right:6px;">💾 Saved</button>
   <button class="nav-cta" id="nav-login-btn">Sign In</button>
 </nav>
 <div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
@@ -1146,6 +1147,14 @@ select.inp{
 
 </div></div>
 
+<!-- ===== SAVED ITEMS ===== -->
+<div id="pg-saved" class="pg"><div class="inner">
+  <div class="ph-tag tag-gold">💾 SAVED ITEMS</div>
+  <div class="pg-title">Your Saved Results</div>
+  <div class="pg-sub">AI outputs you've saved from any tool, synced to your account. Tap 💾 Save on a result to keep it here.</div>
+  <div id="savedItemsList"></div>
+</div></div>
+
 <!-- ===== PAYWALL MODAL ===== -->
 <div id="pw-overlay">
   <div id="pw-modal">
@@ -1468,6 +1477,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.fsGet = fsGet;
   window.fsSet = fsSet;
 
+  // Lists documents in a subcollection, e.g. saved_items/{uid}/items.
+  // Using a per-user subcollection means this is always scoped to one
+  // user's data by path alone — no composite index or query needed.
+  async function fsListSubcollection(parentCollection, parentId, subcollection, token) {
+    const url = `${FS_BASE}/${parentCollection}/${parentId}/${subcollection}?pageSize=100&key=${firebaseConfig.apiKey}`;
+    const res = await fetch(url, { headers: { "Authorization": `Bearer ${token}` } });
+    if (!res.ok) return { documents: [], error: true };
+    return await res.json();
+  }
+
+  async function fsSetSub(parentCollection, parentId, subcollection, docId, data, token) {
+    const fields = {};
+    for (const [k, v] of Object.entries(data)) {
+      if (typeof v === "boolean") fields[k] = { booleanValue: v };
+      else if (typeof v === "number") fields[k] = { integerValue: v };
+      else if (v === null) fields[k] = { nullValue: null };
+      else fields[k] = { stringValue: String(v) };
+    }
+    const res = await fetch(`${FS_BASE}/${parentCollection}/${parentId}/${subcollection}/${docId}?key=${firebaseConfig.apiKey}`, {
+      method: "PATCH",
+      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ fields })
+    });
+    return await res.json();
+  }
+
+  async function fsDeleteSub(parentCollection, parentId, subcollection, docId, token) {
+    const res = await fetch(`${FS_BASE}/${parentCollection}/${parentId}/${subcollection}/${docId}?key=${firebaseConfig.apiKey}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    return res.ok;
+  }
+
+  window.fsListSubcollection = fsListSubcollection;
+  window.fsSetSub = fsSetSub;
+  window.fsDeleteSub = fsDeleteSub;
+
   if (!firebaseReady) {
     // Firebase never loaded after retries. Sign-in and cross-device usage sync
     // are unavailable, but AI tools still work — usage limits fall back to
@@ -1590,6 +1637,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ============ APP INIT ============
   buildNav(); buildToolGrid(); buildSalaryFilters(); bindEvents(); initPaywall();
+  document.getElementById("nav-saved-btn").addEventListener("click", () => showPage("saved"));
   // Lazy init NairoBot on first open
   let nbInit = false;
   document.getElementById("nb-bubble").addEventListener("click", ()=>{
@@ -1644,6 +1692,7 @@ function showPage(id) {
   document.getElementById("pg-"+id).classList.add("on");
   const t = TOOLS.find(x=>x.id===id);
   if(t) { document.getElementById("nav-"+id).className = "nt "+t.nav; document.getElementById("tg-"+id).classList.add("on"); }
+  if(id === "saved") loadSavedItems();
   window.scrollTo({top:0, behavior: /Mobi|Android/i.test(navigator.userAgent) ? "instant" : "smooth"});
   window.logEventSafe('page_view', { page_title: id });
 }
@@ -2131,10 +2180,139 @@ function getToolBtnId(tool){
 function openAiBox(boxId, contentId) {
   const box=document.getElementById(boxId), content=document.getElementById(contentId);
   box.style.display="block";
+  ensureSaveButton(box, contentId);
   return content;
 }
 
-// ============ NAIROBOT ============
+// Injects a "Save" button into an ai-box once, reusing whatever content div
+// it's attached to at click-time (so it always saves the latest output, not
+// whatever was there when the button was created).
+function ensureSaveButton(box, contentId) {
+  if (box.querySelector(".save-item-btn")) return; // already added
+  const header = box.querySelector(".ai-box-header");
+  if (!header) return;
+  const btn = document.createElement("button");
+  btn.className = "save-item-btn";
+  btn.textContent = "💾 Save";
+  btn.style.cssText = "margin-left:auto;background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.3);color:var(--gold-tx);border-radius:8px;padding:4px 10px;font-size:.68rem;font-weight:700;cursor:pointer;";
+  btn.addEventListener("click", () => saveCurrentItem(contentId, header.textContent.trim(), btn));
+  header.style.display = "flex";
+  header.style.alignItems = "center";
+  header.appendChild(btn);
+}
+
+// ============ SAVED ITEMS ============
+async function saveCurrentItem(contentId, toolLabel, btn) {
+  if (!window._user) {
+    alert("Please sign in to save items — saved items sync to your account.");
+    return;
+  }
+  if (window._offlineMode) {
+    alert("You're offline — saving requires a connection. Try again once you're back online.");
+    return;
+  }
+  const content = document.getElementById(contentId);
+  const text = content?.textContent?.trim();
+  if (!text || text.length < 10) {
+    alert("Nothing to save yet — generate a result first.");
+    return;
+  }
+
+  const originalLabel = btn.textContent;
+  btn.textContent = "⏳ Saving…";
+  btn.disabled = true;
+
+  try {
+    const token = await window._user.getIdToken();
+    const itemId = `item_${Date.now()}`;
+    const result = await window.fsSetSub("saved_items", window._user.uid, "items", itemId, {
+      tool: toolLabel,
+      content: text,
+      savedAt: new Date().toISOString()
+    }, token);
+
+    if (result?.error) {
+      btn.textContent = originalLabel;
+      btn.disabled = false;
+      alert("⚠️ Couldn't save — please try again.");
+      return;
+    }
+    btn.textContent = "✅ Saved";
+    setTimeout(() => { btn.textContent = originalLabel; btn.disabled = false; }, 1500);
+  } catch(e) {
+    btn.textContent = originalLabel;
+    btn.disabled = false;
+    alert("⚠️ Connection error while saving.");
+  }
+}
+
+async function loadSavedItems() {
+  const listEl = document.getElementById("savedItemsList");
+  if (!listEl) return;
+
+  if (!window._user) {
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:.83rem;">Sign in to see your saved items.</div>`;
+    return;
+  }
+  if (window._offlineMode) {
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:.83rem;">You're offline — saved items need a connection to load.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:.83rem;">Loading…</div>`;
+  try {
+    const token = await window._user.getIdToken();
+    const data = await window.fsListSubcollection("saved_items", window._user.uid, "items", token);
+    const docs = data.documents || [];
+    if (!docs.length) {
+      listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:.83rem;">Nothing saved yet. Tap 💾 Save on any AI result to keep it here.</div>`;
+      return;
+    }
+    docs.sort((a,b) => (b.fields?.savedAt?.stringValue||"").localeCompare(a.fields?.savedAt?.stringValue||""));
+    listEl.innerHTML = docs.map(d => {
+      const f = d.fields || {};
+      const itemId = d.name.split("/").pop();
+      const savedDate = f.savedAt?.stringValue ? new Date(f.savedAt.stringValue).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}) : "";
+      const preview = (f.content?.stringValue || "").slice(0, 140);
+      return `
+      <div class="panel" style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;">
+          <div style="font-weight:700;font-size:.85rem;color:var(--tx);">${escapeHtml(f.tool?.stringValue || "Saved item")}</div>
+          <div style="font-size:.68rem;color:var(--dim);white-space:nowrap;">${savedDate}</div>
+        </div>
+        <div style="font-size:.78rem;color:var(--tx2);line-height:1.6;margin-bottom:10px;">${escapeHtml(preview)}${(f.content?.stringValue||"").length>140?"…":""}</div>
+        <div style="display:flex;gap:8px;">
+          <button class="copy-btn saved-copy-btn" data-content="${encodeURIComponent(f.content?.stringValue||"")}">📋 Copy full text</button>
+          <button class="copy-btn saved-delete-btn" style="color:var(--rr);border-color:rgba(232,72,85,.3);" data-item-id="${itemId}">🗑️ Delete</button>
+        </div>
+      </div>`;
+    }).join("");
+
+    // Event delegation instead of inline onclick — keeps these handlers in
+    // module scope like the rest of the app, no need to leak more functions
+    // onto window just to satisfy inline HTML attributes.
+    listEl.querySelectorAll(".saved-copy-btn").forEach(b => {
+      b.addEventListener("click", () => copyIt(decodeURIComponent(b.dataset.content), b));
+    });
+    listEl.querySelectorAll(".saved-delete-btn").forEach(b => {
+      b.addEventListener("click", () => deleteSavedItem(b.dataset.itemId));
+    });
+  } catch(e) {
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--rr);font-size:.83rem;">Couldn't load saved items. Please try again.</div>`;
+  }
+}
+
+async function deleteSavedItem(itemId) {
+  if (!window._user) return;
+  if (!confirm("Delete this saved item? This can't be undone.")) return;
+  try {
+    const token = await window._user.getIdToken();
+    await window.fsDeleteSub("saved_items", window._user.uid, "items", itemId, token);
+    await loadSavedItems();
+  } catch(e) {
+    alert("⚠️ Couldn't delete — please try again.");
+  }
+}
 function initNairobot() {
   const bubble = document.getElementById("nb-bubble");
   const panel  = document.getElementById("nb-panel");
