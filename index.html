@@ -792,6 +792,7 @@ select.inp{
 
 <!-- NAV -->
 <nav>
+  <button id="nav-back-btn" style="display:none;background:transparent;border:none;color:var(--tx);font-size:1.2rem;padding:4px 10px 4px 0;cursor:pointer;line-height:1;">←</button>
   <div class="logo" onclick="showHero()"><img src="/logo-header.png" alt="3M" class="logo-img"></div>
   <div class="nav-tools" id="navTools"></div>
   <button class="nav-cta" id="nav-saved-btn" style="background:transparent;border:1px solid var(--bdr);color:var(--tx2);margin-right:6px;">💾 Saved</button>
@@ -1155,6 +1156,49 @@ select.inp{
   <div id="savedItemsList"></div>
 </div></div>
 
+<!-- ===== ACCOUNT CENTER ===== -->
+<div id="pg-account" class="pg"><div class="inner">
+  <div class="ph-tag tag-gold">👤 ACCOUNT</div>
+  <div class="pg-title">Your Account</div>
+  <div class="pg-sub">Manage your profile and see your Pro status.</div>
+  <div id="acctSignedOut" style="text-align:center;padding:40px 20px;">
+    <p style="color:var(--dim);font-size:.85rem;margin-bottom:16px;">Sign in to view and manage your account.</p>
+  </div>
+  <div id="acctSignedIn" style="display:none;">
+    <div class="panel" style="text-align:center;padding:24px 20px;">
+      <img id="acctPhoto" src="" alt="Profile photo" style="width:72px;height:72px;border-radius:50%;border:2px solid var(--bdr);margin-bottom:12px;">
+      <div id="acctEmail" style="font-size:.78rem;color:var(--dim);margin-bottom:14px;"></div>
+      <span id="acctProBadge" style="display:none;background:rgba(245,197,24,.12);color:var(--gold-tx);border:1px solid rgba(245,197,24,.3);border-radius:100px;padding:4px 12px;font-size:.68rem;font-weight:700;">⚡ PRO</span>
+      <span id="acctFreeBadge" style="background:rgba(255,255,255,.06);color:var(--dim2);border:1px solid var(--bdr);border-radius:100px;padding:4px 12px;font-size:.68rem;font-weight:700;">FREE PLAN</span>
+    </div>
+    <div class="panel" style="margin-top:14px;">
+      <label class="lbl">Display Name</label>
+      <input type="text" id="acctNameInput" class="inp" placeholder="Your name" style="margin-bottom:10px;">
+      <button id="acctSaveNameBtn" class="run-btn rb-b">Save Name</button>
+    </div>
+    <div class="panel" style="margin-top:14px;">
+      <button id="acctSignOutBtn" class="copy-btn" style="width:100%;color:var(--rr);border-color:rgba(232,72,85,.3);">Sign Out</button>
+    </div>
+    <div style="text-align:center;margin-top:14px;">
+      <button id="acctGetHelpBtn" style="background:none;border:none;color:var(--blue);font-size:.8rem;cursor:pointer;text-decoration:underline;">💬 Need help? Chat with Support</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- ===== CUSTOMER SUPPORT ===== -->
+<div id="pg-support" class="pg"><div class="inner">
+  <div class="ph-tag tag-b">💬 SUPPORT</div>
+  <div class="pg-title">Get Help</div>
+  <div class="pg-sub">Ask 3MAI Support about how 3M works, your account, or Pro. For anything it can't resolve, it'll point you to a real contact.</div>
+  <div class="panel" style="padding:0;overflow:hidden;">
+    <div id="supMsgs" style="height:min(50vh,420px);overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;"></div>
+    <div class="nb-row">
+      <input type="text" id="supInput" class="nb-inp" placeholder="Ask about the app, your account, Pro...">
+      <button id="supSend" class="nb-send">➤</button>
+    </div>
+  </div>
+</div></div>
+
 <!-- ===== PAYWALL MODAL ===== -->
 <div id="pw-overlay">
   <div id="pw-modal">
@@ -1179,6 +1223,9 @@ select.inp{
     <button class="pw-cta" id="pw-submit-btn">✅ Submit for Pro Activation</button>
     <p style="font-size:.7rem;color:var(--dim);text-align:center;margin-top:8px;">You must be signed in for us to activate your account. Activation is manual and may take up to 24 hours.</p>
     <br><button class="pw-dismiss" id="pw-dismiss">Maybe later — go back</button>
+    <div style="text-align:center;margin-top:10px;">
+      <button id="pw-help-btn" style="background:none;border:none;color:var(--blue);font-size:.75rem;cursor:pointer;text-decoration:underline;">Already paid but still blocked? Get help</button>
+    </div>
   </div>
 </div>
 
@@ -1535,12 +1582,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const analytics = getAnalytics(fbApp);
     window.analytics = analytics;
     const provider = new GoogleAuthProvider();
+    window._authSignOut = () => auth.signOut();
     dbg("🔥 Firebase Auth + Analytics initialized");
 
-    // Wire login button
+    // Wire login button — opens Account Center if already signed in,
+    // otherwise starts the Google sign-in flow. Sign-out now lives inside
+    // Account Center itself rather than being a surprise single tap here.
     document.getElementById("nav-login-btn").addEventListener("click", () => {
       if (auth.currentUser) {
-        auth.signOut();
+        showPage("account");
       } else {
         signInWithPopup(auth, provider).catch(e => dbg("❌ Login error: " + e.message));
       }
@@ -1574,9 +1624,12 @@ document.addEventListener("DOMContentLoaded", async () => {
               createdAt: new Date().toISOString()
             }, token);
             dbg(result.error ? "❌ Create error: " + result.error.message : "✅ User doc created");
-            window._userDoc = { premium: false }; // brand-new user — correctly false
+            window._userDoc = { premium: false, displayName: user.displayName }; // brand-new user — correctly false
           } else {
-            window._userDoc = { premium: userDoc.fields?.premium?.booleanValue === true }; // FIX: read real status
+            window._userDoc = {
+              premium: userDoc.fields?.premium?.booleanValue === true, // FIX: read real status
+              displayName: userDoc.fields?.displayName?.stringValue || user.displayName
+            };
             dbg("💳 Premium status: " + window._userDoc.premium);
           }
 
@@ -1638,6 +1691,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ============ APP INIT ============
   buildNav(); buildToolGrid(); buildSalaryFilters(); bindEvents(); initPaywall();
   document.getElementById("nav-saved-btn").addEventListener("click", () => showPage("saved"));
+  document.getElementById("nav-back-btn").addEventListener("click", () => history.back());
+  document.getElementById("acctSaveNameBtn").addEventListener("click", saveAccountName);
+  document.getElementById("acctSignOutBtn").addEventListener("click", accountSignOut);
+  document.getElementById("acctGetHelpBtn").addEventListener("click", () => showPage("support"));
   // Lazy init NairoBot on first open
   let nbInit = false;
   document.getElementById("nb-bubble").addEventListener("click", ()=>{
@@ -1683,7 +1740,8 @@ function buildToolGrid() {
   });
 }
 let currentPage = null;
-function showPage(id) {
+
+function showPage(id, opts = {}) {
   currentPage = id;
   document.getElementById("heroSection").style.display = "none";
   document.querySelectorAll(".pg").forEach(p => p.classList.remove("on"));
@@ -1693,17 +1751,50 @@ function showPage(id) {
   const t = TOOLS.find(x=>x.id===id);
   if(t) { document.getElementById("nav-"+id).className = "nt "+t.nav; document.getElementById("tg-"+id).classList.add("on"); }
   if(id === "saved") loadSavedItems();
+  if(id === "account") loadAccountPage();
+  if(id === "support") initSupport();
+  updateBackButton();
+  // Push a real history entry (unless we're here because of a popstate event,
+  // e.g. the user pressed the phone's back/gesture button) so that hardware
+  // back navigation moves through in-app pages instead of exiting the PWA.
+  if (!opts.fromPopState) {
+    history.pushState({ page: id }, "", "#" + id);
+  }
   window.scrollTo({top:0, behavior: /Mobi|Android/i.test(navigator.userAgent) ? "instant" : "smooth"});
   window.logEventSafe('page_view', { page_title: id });
 }
-function showHero() {
+
+function showHero(opts = {}) {
   currentPage = null;
   document.getElementById("heroSection").style.display = "";
   document.querySelectorAll(".pg").forEach(p=>p.classList.remove("on"));
   document.querySelectorAll(".nt").forEach(b=>b.className="nt");
   document.querySelectorAll(".tg-btn").forEach(b=>b.classList.remove("on"));
+  updateBackButton();
+  if (!opts.fromPopState) {
+    history.pushState({ page: null }, "", "#");
+  }
   window.scrollTo({top:0, behavior: /Mobi|Android/i.test(navigator.userAgent) ? "instant" : "smooth"});
 }
+
+// Shows/hides the visible in-app back arrow based on whether we're on a
+// sub-page (hero has nothing to go back to, so no arrow there).
+function updateBackButton() {
+  const backBtn = document.getElementById("nav-back-btn");
+  if (backBtn) backBtn.style.display = currentPage ? "flex" : "none";
+}
+
+// Handles both the hardware/gesture back button (via popstate) and the
+// visible in-app arrow — both funnel through browser history so behavior
+// stays consistent between the two.
+window.addEventListener("popstate", (e) => {
+  const targetPage = e.state?.page;
+  if (targetPage) {
+    showPage(targetPage, { fromPopState: true });
+  } else {
+    showHero({ fromPopState: true });
+  }
+});
 
 function calcPAYE(gross, relief) {
   
@@ -2114,6 +2205,7 @@ function initPaywall() {
   document.getElementById("pw-close").addEventListener("click", hidePaywall);
   document.getElementById("pw-dismiss").addEventListener("click", hidePaywall);
   document.getElementById("pw-submit-btn").addEventListener("click", submitProClaim);
+  document.getElementById("pw-help-btn").addEventListener("click", () => { hidePaywall(); showPage("support"); });
 
   document.getElementById("pw-overlay").addEventListener("click", e=>{
     if(e.target===document.getElementById("pw-overlay")) hidePaywall();
@@ -2313,6 +2405,174 @@ async function deleteSavedItem(itemId) {
     alert("⚠️ Couldn't delete — please try again.");
   }
 }
+
+// ============ ACCOUNT CENTER ============
+function loadAccountPage() {
+  const signedOutEl = document.getElementById("acctSignedOut");
+  const signedInEl = document.getElementById("acctSignedIn");
+
+  if (!window._user) {
+    signedOutEl.style.display = "block";
+    signedInEl.style.display = "none";
+    return;
+  }
+  signedOutEl.style.display = "none";
+  signedInEl.style.display = "block";
+
+  document.getElementById("acctPhoto").src = window._user.photoURL || "/icon-192.png";
+  document.getElementById("acctEmail").textContent = window._user.email || "";
+  document.getElementById("acctNameInput").value = window._userDoc?.displayName || window._user.displayName || "";
+
+  const isProUser = window._userDoc?.premium === true;
+  document.getElementById("acctProBadge").style.display = isProUser ? "inline-block" : "none";
+  document.getElementById("acctFreeBadge").style.display = isProUser ? "none" : "inline-block";
+}
+
+async function saveAccountName() {
+  const btn = document.getElementById("acctSaveNameBtn");
+  const input = document.getElementById("acctNameInput");
+  const newName = input.value.trim();
+
+  if (!window._user) return;
+  if (window._offlineMode) {
+    alert("You're offline — saving your name requires a connection.");
+    return;
+  }
+  if (!newName) {
+    alert("Please enter a name.");
+    return;
+  }
+
+  const originalLabel = btn.textContent;
+  btn.textContent = "⏳ Saving…";
+  btn.disabled = true;
+
+  try {
+    const token = await window._user.getIdToken();
+    const result = await window.fsSet("users", window._user.uid, { displayName: newName }, token);
+    if (result?.error) {
+      alert("⚠️ Couldn't save your name. Please try again.");
+    } else {
+      if (window._userDoc) window._userDoc.displayName = newName;
+      const navBtn = document.getElementById("nav-login-btn");
+      if (navBtn) navBtn.textContent = newName.split(" ")[0];
+      btn.textContent = "✅ Saved";
+      setTimeout(() => { btn.textContent = originalLabel; }, 1500);
+    }
+  } catch(e) {
+    alert("⚠️ Connection error while saving your name.");
+  } finally {
+    btn.disabled = false;
+    if (btn.textContent === "⏳ Saving…") btn.textContent = originalLabel;
+  }
+}
+
+async function accountSignOut() {
+  if (!window._authSignOut) {
+    alert("Sign out isn't available right now — you're likely offline.");
+    return;
+  }
+  if (!confirm("Sign out of your account?")) return;
+  try {
+    await window._authSignOut();
+    showHero();
+  } catch(e) {
+    alert("⚠️ Sign out failed. Please try again.");
+  }
+}
+
+// ============ CUSTOMER SUPPORT ============
+// Separate from NairoBot: NairoBot answers career/market questions, this
+// answers questions about the app itself. Its system prompt is deliberately
+// scoped to known, real app behavior so it doesn't invent capabilities
+// (refunds, account deletion, etc.) it can't actually perform, and is told
+// to hand off clearly rather than keep guessing when it doesn't know.
+let supportInitialized = false;
+function initSupport() {
+  if (supportInitialized) return;
+  supportInitialized = true;
+
+  const msgs = document.getElementById("supMsgs");
+  const input = document.getElementById("supInput");
+  const sendBtn = document.getElementById("supSend");
+  const supHistory = [];
+
+  const welcomeDiv = document.createElement("div");
+  welcomeDiv.className = "nb-msg bot";
+  welcomeDiv.textContent = "👋 Hi, I'm 3MAI Support. Ask me how any tool works, about your account, or about Pro. If I can't sort it out, I'll tell you exactly how to reach a real person.";
+  msgs.appendChild(welcomeDiv);
+
+  sendBtn.addEventListener("click", sendSupportMsg);
+  input.addEventListener("keydown", e => { if(e.key==="Enter" && !e.shiftKey) sendSupportMsg(); }, {passive:true});
+
+  async function sendSupportMsg() {
+    const q = input.value.trim();
+    if (!q) return;
+
+    input.value = "";
+    sendBtn.disabled = true;
+
+    const uDiv = document.createElement("div");
+    uDiv.className = "nb-msg user";
+    uDiv.textContent = q;
+    msgs.appendChild(uDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    const tDiv = document.createElement("div");
+    tDiv.className = "nb-msg typing";
+    tDiv.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+    msgs.appendChild(tDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    supHistory.push({role:"user", content:q});
+    if (supHistory.length > 40) supHistory.splice(0, supHistory.length - 40);
+
+    try {
+      const res = await fetch("/claude", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          model:"claude-haiku-4-5-20251001",
+          max_tokens:500,
+          system:`You are 3MAI Support, the customer support assistant for 3M — a Kenyan career and income platform with these real, current tools: Salary Intelligence, AI Career Coach, Scam Risk Analyzer, Government Job Listings (currently a manually-curated list, not a live feed), Workers' Rights guide, PAYE Tax Calculator, CV Builder (with PDF export), Cover Letter Generator, Side Hustle Generator, and a Marketing Hub (social posts, brand, strategy, ad copy). There's also a floating NairoBot chat for career questions, a Saved Items page for keeping past AI results, and an Account page for managing display name and Pro status.
+
+Free accounts get a limited number of AI queries per tool per day; Pro removes that limit. There is no payment gateway (Paybill) yet — Pro is activated by sending payment via M-Pesa Send Money to a personal number shown in the app, then submitting the M-Pesa confirmation code in-app for manual verification, which can take up to 24 hours.
+
+Your job: answer questions about how the app works, account/Pro status, and general troubleshooting, using only the real information above — never invent a feature, refund policy, or process that isn't described here. If someone reports a bug, thank them and let them know it's been noted — you cannot fix bugs, change their account data, issue refunds, or take any action yourself. If a question is outside what you can resolve (billing disputes, account deletion requests, anything requiring a human), say so plainly and tell them to describe the issue in detail so the app owner can review it directly — do not claim to escalate, forward, or ticket it anywhere, since no such system exists yet. Keep answers concise and warm.`,
+          messages: supHistory.slice(-20)
+        })
+      });
+      const raw = await res.text();
+      let data;
+      try { data = JSON.parse(raw); } catch(pe) {
+        throw new Error("Bad response: " + raw.substring(0,100));
+      }
+      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+      const reply = data.content?.map(b=>b.text||"").join("") || "Sorry, something went wrong. Please try again.";
+
+      supHistory.push({role:"assistant", content:reply});
+
+      tDiv.remove();
+      const bDiv = document.createElement("div");
+      bDiv.className = "nb-msg bot";
+      bDiv.textContent = reply.replace(/\*\*(.+?)\*\*/g, "$1");
+      msgs.appendChild(bDiv);
+    } catch(e) {
+      tDiv.remove();
+      const eDiv = document.createElement("div");
+      eDiv.className = "nb-msg bot";
+      eDiv.textContent = "⚠️ Error: " + e.message;
+      msgs.appendChild(eDiv);
+      supHistory.pop();
+    }
+
+    msgs.scrollTop = msgs.scrollHeight;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+}
+
+// ============ NAIROBOT ============
 function initNairobot() {
   const bubble = document.getElementById("nb-bubble");
   const panel  = document.getElementById("nb-panel");
