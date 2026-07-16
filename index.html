@@ -55,12 +55,6 @@
   "inLanguage": "en-KE"
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Non-blocking font load: media trick loads async, onload swaps to all -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap&font-display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap&font-display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap&font-display=swap"></noscript>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 
@@ -87,7 +81,7 @@
 
 html{scroll-behavior:smooth;text-rendering:optimizeSpeed;-webkit-text-size-adjust:100%;}
 body{
-  font-family:'DM Sans',sans-serif;background:var(--blk);color:var(--tx);
+  font-family:'Times New Roman',Times,serif;background:var(--blk);color:var(--tx);
   overflow-x:hidden;-webkit-font-smoothing:antialiased;
 }
 
@@ -163,7 +157,7 @@ nav{
 .nav-cta{
   background:linear-gradient(135deg,var(--g),var(--gd));
   color:#000;border:none;padding:7px 18px;border-radius:100px;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:.68rem;
+  font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.68rem;
   cursor:pointer;transition:var(--trans);white-space:nowrap;flex-shrink:0;
   letter-spacing:.05em;position:relative;overflow:hidden;
   box-shadow:0 2px 12px rgba(245,197,24,.3);
@@ -215,7 +209,7 @@ nav{
 }
 @keyframes blink{0%,100%{opacity:1;box-shadow:0 0 8px var(--g);}50%{opacity:.3;box-shadow:none;}}
 .hero h1{
-  font-family:'Syne',sans-serif;font-weight:800;
+  font-family:'Times New Roman',Times,serif;font-weight:800;
   font-size:clamp(2rem,5vw,3.4rem);
   letter-spacing:-.055em;line-height:1.02;margin-bottom:16px;
   color:var(--tx);
@@ -271,7 +265,7 @@ nav{
 .tg-btn.on::after{transform:scaleX(1);}
 .tg-icon{font-size:1.65rem;display:block;margin-bottom:10px;transition:transform .2s;}
 .tg-btn:hover .tg-icon{transform:scale(1.12);}
-.tg-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.67rem;margin-bottom:2px;line-height:1.3;color:var(--tx);}
+.tg-name{font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.67rem;margin-bottom:2px;line-height:1.3;color:var(--tx);}
 .tg-tag{font-size:.58rem;color:var(--dim);}
 .tg-dot{
   position:absolute;top:9px;right:9px;
@@ -289,7 +283,7 @@ nav{
 .hstat{flex:1;min-width:110px;padding:16px 18px;text-align:center;border-right:1px solid var(--wire);}
 .hstat:last-child{border-right:none;}
 .hstat-val{
-  font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;
+  font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1.35rem;
   color:var(--g);letter-spacing:-.04em;display:block;
   text-shadow:0 0 20px rgba(245,197,24,.25);
 }
@@ -319,7 +313,7 @@ nav{
 .tag-rr{background:rgba(232,72,85,.1);color:var(--rr);border:1px solid rgba(232,72,85,.2);}
 .tag-gold{background:rgba(245,197,24,.12);color:var(--gold-tx);border:1px solid rgba(245,197,24,.3);}
 .pg-title{
-  font-family:'Syne',sans-serif;font-weight:800;
+  font-family:'Times New Roman',Times,serif;font-weight:800;
   font-size:clamp(1.3rem,2.5vw,1.85rem);
   letter-spacing:-.04em;margin-bottom:6px;line-height:1.08;
   color:var(--tx);
@@ -342,7 +336,7 @@ nav{
 }
 .panel:focus-within{border-color:rgba(245,197,24,.14);box-shadow:0 0 0 3px rgba(245,197,24,.04);}
 .card-label{
-  font-family:'Syne',sans-serif;font-weight:700;font-size:.7rem;
+  font-family:'Times New Roman',Times,serif;font-weight:700;font-size:.7rem;
   color:var(--tx2);text-transform:uppercase;letter-spacing:.1em;
   margin-bottom:14px;display:flex;align-items:center;gap:8px;
 }
@@ -359,7 +353,7 @@ nav{
   width:100%;background:rgba(5,8,16,.9);
   border:1px solid rgba(255,255,255,.09);border-radius:var(--radius-sm);
   padding:11px 14px;color:#fff;font-size:.85rem;outline:none;
-  font-family:'DM Sans',sans-serif;transition:border-color .15s,box-shadow .15s,background .15s;
+  font-family:'Times New Roman',Times,serif;transition:border-color .15s,box-shadow .15s,background .15s;
   appearance:none;-webkit-appearance:none;
 }
 .inp::placeholder{color:rgba(255,255,255,.38);}
@@ -378,7 +372,7 @@ select.inp{
 
 .run-btn{
   width:100%;padding:14px 16px;border-radius:var(--radius-sm);border:none;cursor:pointer;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;
+  font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.88rem;
   display:flex;align-items:center;justify-content:center;gap:8px;
   transition:var(--trans);letter-spacing:.02em;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent;
@@ -428,7 +422,7 @@ select.inp{
 .s-min,.s-max{font-size:1rem;color:var(--dim2);}
 .s-mid{
   font-size:2.1rem;color:var(--g);font-weight:800;
-  font-family:'Syne',sans-serif;
+  font-family:'Times New Roman',Times,serif;
   text-shadow:0 0 24px rgba(245,197,24,.3);
   filter:drop-shadow(0 0 12px rgba(245,197,24,.2));
 }
@@ -513,7 +507,7 @@ select.inp{
 }
 .ai-box-header{
   display:flex;align-items:center;gap:9px;margin-bottom:14px;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:.74rem;
+  font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.74rem;
   color:var(--g);letter-spacing:.06em;text-transform:uppercase;
 }
 .bot-dot{
@@ -576,7 +570,7 @@ select.inp{
   font-size:1.1rem;flex-shrink:0;
   box-shadow:0 2px 12px rgba(245,197,24,.3);
 }
-.nb-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;color:var(--tx);}
+.nb-name{font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.88rem;color:var(--tx);}
 .nb-sub{font-size:.59rem;color:var(--dim2);margin-top:1px;}
 .nb-x{
   margin-left:auto;background:rgba(255,255,255,.06);
@@ -628,7 +622,7 @@ select.inp{
   flex:1;background:rgba(6,9,15,.8);
   border:1px solid var(--wire);border-radius:10px;
   padding:8px 12px;color:#fff;font-size:.78rem;outline:none;
-  font-family:'DM Sans',sans-serif;transition:border-color .15s;
+  font-family:'Times New Roman',Times,serif;transition:border-color .15s;
 }
 .nb-inp::placeholder{color:rgba(255,255,255,.4);}
 .nb-inp:focus{border-color:rgba(245,197,24,.25);}
@@ -675,7 +669,7 @@ select.inp{
 .pw-close:hover{background:rgba(255,255,255,.12);color:var(--tx);}
 .pw-icon{font-size:2.6rem;margin-bottom:10px;display:block;}
 .pw-title{
-  font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;
+  font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1.25rem;
   letter-spacing:-.035em;margin-bottom:8px;color:var(--tx);
 }
 .pw-title em{font-style:normal;color:var(--g);}
@@ -692,8 +686,8 @@ select.inp{
   background:linear-gradient(135deg,rgba(245,197,24,.08),var(--navy));
   box-shadow:0 0 0 1px rgba(245,197,24,.1);
 }
-.pw-plan-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.65rem;color:var(--dim2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
-.pw-plan-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-.04em;color:var(--tx);}
+.pw-plan-name{font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.65rem;color:var(--dim2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
+.pw-plan-price{font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1.5rem;letter-spacing:-.04em;color:var(--tx);}
 .pw-plan-price span{font-size:.7rem;font-weight:400;color:var(--dim);}
 .pw-plan-note{font-size:.62rem;color:var(--dim2);margin-top:4px;}
 .pw-plan.pop .pw-plan-price{color:var(--g);}
@@ -701,17 +695,17 @@ select.inp{
   background:rgba(245,197,24,.05);border:1px solid rgba(245,197,24,.15);
   border-radius:var(--radius);padding:14px;margin-bottom:16px;
 }
-.pw-mpesa-title{font-family:'Syne',sans-serif;font-weight:800;font-size:.75rem;color:var(--g);margin-bottom:9px;}
+.pw-mpesa-title{font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.75rem;color:var(--g);margin-bottom:9px;}
 .pw-mpesa-steps{font-size:.73rem;color:var(--tx2);line-height:1.95;text-align:left;}
 .pw-mpesa-code{
-  font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--g);
+  font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;color:var(--g);
   letter-spacing:.06em;background:rgba(245,197,24,.1);
   padding:4px 12px;border-radius:6px;display:inline-block;margin:4px 0;
 }
 .pw-cta{
   width:100%;padding:14px;background:linear-gradient(135deg,var(--g),var(--gd));
   color:#000;border:none;border-radius:100px;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;
+  font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.88rem;
   cursor:pointer;transition:var(--trans);margin-bottom:10px;
   box-shadow:0 4px 20px rgba(245,197,24,.35);
   letter-spacing:.03em;
@@ -737,8 +731,8 @@ select.inp{
 
 #cv-print-area{display:none;position:fixed;left:-9999px;top:0;width:750px;}
 #cv-print-area.capturing{display:block !important;}
-#cvPreview.filled{text-align:left;font-family:Georgia,serif;color:#111;padding:20px;}
-#cvPreview.filled h1{font-size:20px;margin-bottom:2px;color:#0A1628;font-family:'Syne',sans-serif;}
+#cvPreview.filled{text-align:left;font-family:'Times New Roman',Times,serif;color:#111;padding:20px;}
+#cvPreview.filled h1{font-size:20px;margin-bottom:2px;color:#0A1628;font-family:'Times New Roman',Times,serif;}
 #cvPreview.filled .cv-role{font-size:12px;color:#2D7DD2;margin-bottom:4px;}
 #cvPreview.filled .cv-contact{font-size:10px;color:#555;margin-bottom:14px;border-bottom:2px solid #F5C518;padding-bottom:8px;}
 #cvPreview.filled h2{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#2D7DD2;margin:16px 0 5px;border-bottom:1px solid #ddd;padding-bottom:3px;}
@@ -746,7 +740,7 @@ select.inp{
 #cvPreview.filled ul{padding-left:16px;}
 @media print{
   body > *{display:none !important;}
-  #cv-print-area{display:block !important;font-family:Georgia,serif;color:#111;background:#fff;padding:40px;max-width:750px;margin:0 auto;}
+  #cv-print-area{display:block !important;font-family:'Times New Roman',Times,serif;color:#111;background:#fff;padding:40px;max-width:750px;margin:0 auto;}
   #cv-print-area h1{font-size:22px;margin-bottom:2px;color:#0A1628;}
   #cv-print-area .cv-role{font-size:13px;color:#2D7DD2;margin-bottom:4px;}
   #cv-print-area .cv-contact{font-size:11px;color:#555;margin-bottom:16px;border-bottom:2px solid #F5C518;padding-bottom:10px;}
@@ -758,7 +752,7 @@ select.inp{
 .mkt-tab{
   background:var(--card2);border:1px solid var(--wire);color:var(--dim2);
   font-size:.71rem;font-weight:600;padding:8px 16px;border-radius:8px;
-  cursor:pointer;transition:var(--trans);font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:var(--trans);font-family:'Times New Roman',Times,serif;
 }
 .mkt-tab:hover{color:var(--tx2);border-color:rgba(255,255,255,.1);}
 .mkt-tab.on{
@@ -854,7 +848,7 @@ select.inp{
         <div id="salaryDetails"></div>
       </div>
       <div class="panel" style="padding:16px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.7rem;color:var(--tx2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">📍 County Comparison (median)</div>
+        <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.7rem;color:var(--tx2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">📍 County Comparison (median)</div>
         <div id="countyComparison"></div>
       </div>
     </div>
@@ -1024,7 +1018,7 @@ select.inp{
   <!-- SOCIAL MEDIA POST GENERATOR -->
   <div id="mkt-social" class="mkt-panel">
     <div class="panel">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px;">📱 Social Media Post Generator</div>
+      <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">📱 Social Media Post Generator</div>
       <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Generate ready-to-post content for Instagram, X, TikTok, and WhatsApp in seconds.</div>
       <div class="g2">
         <div class="field"><label class="lbl">Your Product / Service / Topic</label><input type="text" id="socialProduct" class="inp" placeholder="e.g., My chapati business in Westlands, New clothing line..."></div>
@@ -1056,7 +1050,7 @@ select.inp{
   <!-- BRAND GENERATOR -->
   <div id="mkt-brand" class="mkt-panel" style="display:none;">
     <div class="panel">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px;">🎨 Business Name & Brand Generator</div>
+      <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">🎨 Business Name & Brand Generator</div>
       <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Generate business names, taglines, brand personality, logo concepts, and colour palette ideas.</div>
       <div class="g2">
         <div class="field"><label class="lbl">What Does Your Business Do?</label><textarea id="brandDesc" class="inp" rows="3" placeholder="e.g., I sell handmade jewellery targeting young professional women in Nairobi..."></textarea></div>
@@ -1091,7 +1085,7 @@ select.inp{
   <!-- STRATEGY BUILDER -->
   <div id="mkt-strategy" class="mkt-panel" style="display:none;">
     <div class="panel">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px;">📈 Marketing Strategy Builder</div>
+      <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">📈 Marketing Strategy Builder</div>
       <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Get a full 90-day marketing plan tailored to your business, budget, and Kenyan market.</div>
       <div class="g2">
         <div class="field"><label class="lbl">Business Description</label><textarea id="stratBusiness" class="inp" rows="3" placeholder="e.g., Online shop selling African print clothing. Based in Nairobi, targeting diaspora and local market..."></textarea></div>
@@ -1123,7 +1117,7 @@ select.inp{
   <!-- AD COPY WRITER -->
   <div id="mkt-adcopy" class="mkt-panel" style="display:none;">
     <div class="panel">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px;">✍️ AI Ad Copy Writer</div>
+      <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">✍️ AI Ad Copy Writer</div>
       <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Write high-converting headlines, ad copy, and CTAs for any product or service.</div>
       <div class="g2">
         <div class="field"><label class="lbl">Product / Service</label><input type="text" id="adProduct" class="inp" placeholder="e.g., Online Python programming course for beginners in Kenya"></div>
@@ -1664,7 +1658,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   installBtn.textContent = '📲 Install App';
   installBtn.style.cssText = `
     display:none;background:var(--blue);color:#fff;border:none;
-    padding:7px 14px;border-radius:100px;font-family:'Syne',sans-serif;
+    padding:7px 14px;border-radius:100px;font-family:'Times New Roman',Times,serif;
     font-weight:800;font-size:.65rem;cursor:pointer;flex-shrink:0;
     margin-left:6px;letter-spacing:.03em;
   `;
