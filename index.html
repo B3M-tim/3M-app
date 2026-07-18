@@ -69,8 +69,8 @@
   --wire:rgba(17,24,39,.08);--wire2:rgba(17,24,39,.05);--wire3:rgba(17,24,39,.03);
   --tx:#111827;--tx2:#5B6B85;--dim:#6B7C94;--dim2:#94A3B8;--wh:#fff;
   --red:#D6304A;--purple:#7A68BC;
-  --rr:#D6304A;--rf:rgba(214,48,74,.08);--rbdr:rgba(214,48,74,.22);
-  --bb:#2D7DD2;--bf:rgba(45,125,210,.08);--bbdr:rgba(45,125,210,.2);
+  --rr:#D6304A;--rf:rgba(214,48,74,.08);--rbdr:rgba(214,48,74,.22);--rr-tx:#A3192D;
+  --bb:#2D7DD2;--bf:rgba(45,125,210,.08);--bbdr:rgba(45,125,210,.2);--bb-tx:#175499;
   --gold:#F5C518;--gold-f:rgba(245,197,24,.08);--gold-bdr:rgba(245,197,24,.25);
   --gold-tx:#8A6D00;
   --radius:16px;--radius-sm:10px;--radius-lg:22px;--radius-xs:6px;
@@ -129,6 +129,7 @@ nav{
 .logo{
   white-space:nowrap;cursor:pointer;
   transition:opacity .2s;display:flex;align-items:center;
+  background:none;border:none;padding:0;font:inherit;
 }
 .logo:hover{opacity:.8;}
 .logo-img{height:34px;width:auto;display:block;}
@@ -148,11 +149,11 @@ nav{
 .nt:hover{color:var(--tx2);}
 .nt.active{color:var(--g);font-weight:700;}
 .nt.active::after,.nt.active-b::after,.nt.active-r::after,.nt.active-gold::after{width:60%;}
-.nt.active-r{color:var(--rr);font-weight:700;}
+.nt.active-r{color:#E8586E;font-weight:700;}
 .nt.active-r::after{background:var(--rr);}
-.nt.active-b{color:var(--bb);font-weight:700;}
+.nt.active-b{color:var(--blue3);font-weight:700;}
 .nt.active-b::after{background:var(--bb);}
-.nt.active-gold{color:var(--gold-tx);font-weight:700;}
+.nt.active-gold{color:var(--g);font-weight:700;}
 .nt.active-gold::after{background:var(--gold);}
 .nav-cta{
   background:linear-gradient(135deg,var(--g),var(--gd));
@@ -184,10 +185,10 @@ nav{
 .ticker-track:hover{animation-play-state:paused;}
 .ti{
   display:inline-flex;align-items:center;gap:6px;padding:0 24px;
-  font-size:.68rem;color:var(--dim2);
+  font-size:.68rem;color:var(--tx2);
 }
 .ti::before{content:'·';color:var(--bdr);font-size:.9rem;}
-.ti strong{color:var(--g);font-weight:700;}
+.ti strong{color:var(--gold-tx);font-weight:700;}
 @keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
 .hero{
@@ -198,7 +199,7 @@ nav{
   display:inline-flex;align-items:center;gap:8px;
   background:rgba(245,197,24,.07);
   border:1px solid rgba(245,197,24,.2);border-radius:100px;
-  padding:6px 18px;font-size:.63rem;color:var(--g);font-weight:700;
+  padding:6px 18px;font-size:.63rem;color:var(--gold-tx);font-weight:700;
   text-transform:uppercase;letter-spacing:.13em;margin-bottom:28px;
   box-shadow:0 0 24px rgba(245,197,24,.1),inset 0 1px 0 rgba(245,197,24,.1);
 }
@@ -221,7 +222,7 @@ nav{
   filter:drop-shadow(0 0 20px rgba(245,197,24,.3));
 }
 .hero p{
-  color:var(--dim2);font-size:.88rem;
+  color:var(--tx2);font-size:.88rem;
   max-width:480px;margin:0 auto 40px;line-height:1.75;
 }
 
@@ -253,6 +254,10 @@ nav{
   box-shadow:0 8px 36px rgba(0,0,0,.5),0 0 0 1px rgba(245,197,24,.08);
   transform:translateY(-2px);
 }
+.tg-btn:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 3px rgba(245,197,24,.5),0 8px 36px rgba(0,0,0,.5);
+}
 .tg-btn:hover::before{opacity:1;}
 .tg-btn:hover::after{transform:scaleX(1);}
 .tg-btn.on{
@@ -266,7 +271,7 @@ nav{
 .tg-icon{font-size:1.65rem;display:block;margin-bottom:10px;transition:transform .2s;}
 .tg-btn:hover .tg-icon{transform:scale(1.12);}
 .tg-name{font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.67rem;margin-bottom:2px;line-height:1.3;color:var(--tx);}
-.tg-tag{font-size:.58rem;color:var(--dim);}
+.tg-tag{font-size:.58rem;color:var(--tx2);}
 .tg-dot{
   position:absolute;top:9px;right:9px;
   width:5px;height:5px;background:var(--g);border-radius:50%;
@@ -308,9 +313,9 @@ nav{
   text-transform:uppercase;letter-spacing:.14em;
   padding:3px 10px;border-radius:5px;margin-bottom:9px;
 }
-.tag-g{background:rgba(245,197,24,.1);color:var(--g);border:1px solid rgba(245,197,24,.2);}
-.tag-b{background:rgba(45,125,210,.1);color:var(--bb);border:1px solid rgba(45,125,210,.2);}
-.tag-rr{background:rgba(232,72,85,.1);color:var(--rr);border:1px solid rgba(232,72,85,.2);}
+.tag-g{background:rgba(245,197,24,.1);color:var(--gold-tx);border:1px solid rgba(245,197,24,.2);}
+.tag-b{background:rgba(45,125,210,.1);color:var(--bb-tx);border:1px solid rgba(45,125,210,.2);}
+.tag-rr{background:rgba(232,72,85,.1);color:var(--rr-tx);border:1px solid rgba(232,72,85,.2);}
 .tag-gold{background:rgba(245,197,24,.12);color:var(--gold-tx);border:1px solid rgba(245,197,24,.3);}
 .pg-title{
   font-family:'Times New Roman',Times,serif;font-weight:800;
@@ -318,7 +323,7 @@ nav{
   letter-spacing:-.04em;margin-bottom:6px;line-height:1.08;
   color:var(--tx);
 }
-.pg-sub{color:var(--dim2);font-size:.83rem;line-height:1.7;max-width:540px;}
+.pg-sub{color:var(--tx2);font-size:.83rem;line-height:1.7;max-width:540px;}
 
 .panel{
   background:linear-gradient(160deg,var(--raise),var(--card));
@@ -358,8 +363,8 @@ nav{
 }
 .inp::placeholder{color:rgba(255,255,255,.38);}
 .inp:focus{
-  border-color:rgba(245,197,24,.35);
-  box-shadow:0 0 0 3px rgba(245,197,24,.08);
+  border-color:var(--g);
+  box-shadow:0 0 0 3px rgba(245,197,24,.35);
   background:rgba(5,8,16,1);
 }
 select.inp{color:#fff;}
@@ -409,7 +414,7 @@ select.inp{
 }
 .wa-btn{background:#25D366;color:#000;}
 .wa-btn:hover{background:#20BD5A;box-shadow:0 4px 16px rgba(37,211,102,.3);transform:translateY(-1px);}
-.copy-btn{background:var(--gf);border:1px solid var(--bdr);color:var(--g);}
+.copy-btn{background:var(--gf);border:1px solid var(--bdr);color:var(--gold-tx);}
 .copy-btn:hover{background:var(--gf2);transform:translateY(-1px);}
 
 .ins-item{
@@ -435,13 +440,14 @@ select.inp{
 
 .issue-chip{
   padding:6px 12px;border-radius:7px;border:1px solid var(--wire);
-  background:var(--card2);color:var(--dim2);font-size:.71rem;font-weight:600;
+  background:var(--card2);color:var(--tx2);font-size:.71rem;font-weight:600;
   cursor:pointer;transition:var(--trans);
 }
 .issue-chip:hover{border-color:rgba(232,72,85,.2);color:var(--tx2);transform:translateY(-1px);}
+.issue-chip:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(232,72,85,.4);}
 .issue-chip.sel{
   background:rgba(232,72,85,.1);border-color:rgba(232,72,85,.3);
-  color:var(--red);box-shadow:0 0 0 2px rgba(232,72,85,.08);
+  color:var(--rr-tx);box-shadow:0 0 0 2px rgba(232,72,85,.08);
 }
 
 .gjob{
@@ -625,7 +631,7 @@ select.inp{
   font-family:'Times New Roman',Times,serif;transition:border-color .15s;
 }
 .nb-inp::placeholder{color:rgba(255,255,255,.4);}
-.nb-inp:focus{border-color:rgba(245,197,24,.25);}
+.nb-inp:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(245,197,24,.35);}
 .nb-send{
   background:var(--g);color:#000;
   border:none;border-radius:10px;width:34px;height:34px;cursor:pointer;
@@ -688,7 +694,7 @@ select.inp{
 }
 .pw-plan-name{font-family:'Times New Roman',Times,serif;font-weight:800;font-size:.65rem;color:var(--dim2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
 .pw-plan-price{font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1.5rem;letter-spacing:-.04em;color:var(--tx);}
-.pw-plan-price span{font-size:.7rem;font-weight:400;color:var(--dim);}
+.pw-plan-price span{font-size:.7rem;font-weight:400;color:var(--tx2);}
 .pw-plan-note{font-size:.62rem;color:var(--dim2);margin-top:4px;}
 .pw-plan.pop .pw-plan-price{color:var(--g);}
 .pw-mpesa{
@@ -750,14 +756,14 @@ select.inp{
 }
 
 .mkt-tab{
-  background:var(--card2);border:1px solid var(--wire);color:var(--dim2);
+  background:var(--card2);border:1px solid var(--wire);color:var(--tx2);
   font-size:.71rem;font-weight:600;padding:8px 16px;border-radius:8px;
   cursor:pointer;transition:var(--trans);font-family:'Times New Roman',Times,serif;
 }
 .mkt-tab:hover{color:var(--tx2);border-color:rgba(255,255,255,.1);}
 .mkt-tab.on{
   background:rgba(245,197,24,.1);border-color:rgba(245,197,24,.25);
-  color:var(--g);font-weight:700;
+  color:var(--gold-tx);font-weight:700;
   box-shadow:0 0 0 2px rgba(245,197,24,.06);
 }
 
@@ -786,10 +792,10 @@ select.inp{
 
 <!-- NAV -->
 <nav>
-  <button id="nav-back-btn" style="display:none;background:transparent;border:none;color:var(--tx);font-size:1.2rem;padding:4px 10px 4px 0;cursor:pointer;line-height:1;">←</button>
-  <div class="logo" onclick="showHero()"><img src="/logo-header.png" alt="3M" class="logo-img"></div>
+  <button id="nav-back-btn" style="display:none;background:transparent;border:none;color:#fff;font-size:1.2rem;padding:4px 10px 4px 0;cursor:pointer;line-height:1;">←</button>
+  <button class="logo" onclick="showHero()" aria-label="Go to home"><img src="/logo-header.png" alt="3M" class="logo-img"></button>
   <div class="nav-tools" id="navTools"></div>
-  <button class="nav-cta" id="nav-saved-btn" style="background:transparent;border:1px solid var(--bdr);color:var(--tx2);margin-right:6px;">💾 Saved</button>
+  <button class="nav-cta" id="nav-saved-btn" style="background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);margin-right:6px;">💾 Saved</button>
   <button class="nav-cta" id="nav-login-btn">Sign In</button>
 </nav>
 <div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
@@ -815,7 +821,7 @@ select.inp{
   <div class="pg-header">
     <div class="pg-header-left">
       <div class="ph-tag tag-g">💰 SALARY INSIGHT</div>
-      <div class="pg-title">Kenya Salary Intelligence</div>
+      <h2 class="pg-title">Kenya Salary Intelligence</h2>
       <div class="pg-sub">Real salary ranges for 50+ roles across 11 counties and 11 industries. Based on Kenya market data 2024–2025.</div>
     </div>
   </div>
@@ -823,19 +829,19 @@ select.inp{
     <div>
       <div class="panel">
         <div class="field">
-          <label class="lbl">🏭 Industry</label>
+          <label class="lbl" for="salIndustry">🏭 Industry</label>
           <select id="salIndustry" class="inp"></select>
         </div>
         <div class="field">
-          <label class="lbl">👔 Role</label>
+          <label class="lbl" for="salRole">👔 Role</label>
           <select id="salRole" class="inp"></select>
         </div>
         <div class="field">
-          <label class="lbl">📍 County / Location</label>
+          <label class="lbl" for="salCounty">📍 County / Location</label>
           <select id="salCounty" class="inp"></select>
         </div>
         <div class="field">
-          <label class="lbl">⏱️ Experience — <span id="expYears">3 yrs</span></label>
+          <label class="lbl" for="expSlider">⏱️ Experience — <span id="expYears">3 yrs</span></label>
           <input type="range" id="expSlider" min="0" max="20" value="3" style="width:100%;accent-color:var(--g);">
         </div>
         <button id="salaryAiBtn" class="run-btn rb-g" style="margin-top:8px;">✨ AI Market Analysis</button>
@@ -860,10 +866,10 @@ select.inp{
 <!-- ===== CAREER ===== -->
 <div id="pg-career" class="pg"><div class="inner">
   <div class="ph-tag tag-b">🎯 AI CAREER COACH</div>
-  <div class="pg-title">Your Personalised Career Roadmap</div>
+  <h2 class="pg-title">Your Personalised Career Roadmap</h2>
   <div class="pg-sub">Describe your background and goals. 3MAI builds a step-by-step Kenya-specific plan with salary targets, skill gaps, and local platforms.</div>
   <div class="panel">
-    <label class="lbl">Your background, skills & goals</label>
+    <label class="lbl" for="careerQuery">Your background, skills & goals</label>
     <textarea id="careerQuery" class="inp" rows="4" placeholder="e.g., I'm a 24-year-old IT graduate from Meru, doing odd tech jobs. I want to break into cybersecurity or cloud computing in Nairobi within 6 months..."></textarea>
     <button id="careerRun" class="run-btn rb-b" style="margin-top:12px;">✨ Generate My Roadmap</button>
   </div>
@@ -874,12 +880,12 @@ select.inp{
 <!-- ===== SCAM ===== -->
 <div id="pg-scam" class="pg"><div class="inner">
   <div class="ph-tag tag-rr">⚠️ SCAM DETECTOR</div>
-  <div class="pg-title">AI Job Scam Risk Analyzer</div>
+  <h2 class="pg-title">AI Job Scam Risk Analyzer</h2>
   <div class="pg-sub">Select red flags, describe the offer, and 3MAI will tell you if it's a scam — and exactly what to do next.</div>
   <div class="panel">
-    <label class="lbl">Red flags spotted (select all that apply)</label>
-    <div id="scamChips" style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px;"></div>
-    <label class="lbl">Describe the offer (optional)</label>
+    <label class="lbl" id="scamChipsLabel">Red flags spotted (select all that apply)</label>
+    <div id="scamChips" role="group" aria-labelledby="scamChipsLabel" style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px;"></div>
+    <label class="lbl" for="scamDesc">Describe the offer (optional)</label>
     <textarea id="scamDesc" class="inp" rows="3" placeholder="e.g., WhatsApp message from 'Equity Recruitment' offering KES 180k/month remote data entry, asking KES 2,500 training fee first..."></textarea>
     <button id="scamBtn" class="run-btn rb-rr" style="margin-top:12px;">🔍 Analyse Scam Risk</button>
     <div id="riskMeter" class="ptrack" style="margin:18px 0 6px;"><div id="riskFill" class="pfill" style="width:0%;background:var(--rr);"></div></div>
@@ -892,12 +898,12 @@ select.inp{
 <!-- ===== GOVT JOBS ===== -->
 <div id="pg-govt" class="pg"><div class="inner">
   <div class="ph-tag tag-gold">🏛️ GOVERNMENT JOBS</div>
-  <div class="pg-title">Government Job Listings</div>
+  <h2 class="pg-title">Government Job Listings</h2>
   <div class="pg-sub">Curated openings from PSC, counties, parastatals and government agencies, refreshed regularly. AI application tips for any role.</div>
   <div id="govtStaleWarning" style="display:none;background:rgba(232,72,85,.08);border:1px solid rgba(232,72,85,.25);color:var(--rr);border-radius:10px;padding:10px 14px;font-size:.78rem;font-weight:600;margin-bottom:14px;"></div>
   <div id="govtList" style="margin-bottom:14px;"></div>
   <div class="panel">
-    <label class="lbl">🤖 AI Application Strategy — which job?</label>
+    <label class="lbl" for="govtInput">🤖 AI Application Strategy — which job?</label>
     <input type="text" id="govtInput" class="inp" placeholder="e.g., KRA Tax Assistant, Police Constable, Public Health Officer...">
     <button id="govtBtn" class="run-btn rb-gold" style="margin-top:10px;">✨ Get Application Strategy</button>
   </div>
@@ -908,11 +914,11 @@ select.inp{
 <!-- ===== RIGHTS ===== -->
 <div id="pg-rights" class="pg"><div class="inner">
   <div class="ph-tag tag-gold">⚖️ WORKERS' RIGHTS</div>
-  <div class="pg-title">Know Your Rights Under Kenyan Law</div>
+  <h2 class="pg-title">Know Your Rights Under Kenyan Law</h2>
   <div class="pg-sub">Employment Act 2007 made simple. Tap any issue, then get personalised AI legal guidance for your situation.</div>
   <div id="rightsCards" style="margin-bottom:14px;"></div>
   <div class="panel">
-    <label class="lbl">⚖️ Describe your workplace situation</label>
+    <label class="lbl" for="rightsQuery">⚖️ Describe your workplace situation</label>
     <textarea id="rightsQuery" class="inp" rows="3" placeholder="e.g., My employer hasn't paid salary for 2 months, threatening to fire me if I complain..."></textarea>
     <button id="rightsBtn" class="run-btn rb-gold" style="margin-top:10px;">⚖️ Get AI Legal Advice</button>
   </div>
@@ -923,12 +929,12 @@ select.inp{
 <!-- ===== TAX ===== -->
 <div id="pg-tax" class="pg"><div class="inner">
   <div class="ph-tag tag-b">📊 KRA TAX CALCULATOR</div>
-  <div class="pg-title">PAYE & Deductions Calculator</div>
+  <h2 class="pg-title">PAYE & Deductions Calculator</h2>
   <div class="pg-sub">Calculate your exact take-home pay. Then get AI tips to legally reduce your tax burden.</div>
   <div class="g2" style="margin-bottom:14px;">
     <div class="panel">
-      <div class="field"><label class="lbl">💰 Monthly Gross (KES)</label><input type="number" id="grossIncome" class="inp" value="65000" step="1000"></div>
-      <div class="field"><label class="lbl">🧾 Personal Relief (KES/mo)</label><input type="number" id="taxRelief" class="inp" value="2400" step="100"></div>
+      <div class="field"><label class="lbl" for="grossIncome">💰 Monthly Gross (KES)</label><input type="number" id="grossIncome" class="inp" value="65000" step="1000"></div>
+      <div class="field"><label class="lbl" for="taxRelief">🧾 Personal Relief (KES/mo)</label><input type="number" id="taxRelief" class="inp" value="2400" step="100"></div>
       <button id="calcTaxBtn" class="run-btn rb-b">Calculate PAYE</button>
     </div>
     <div class="panel">
@@ -944,24 +950,24 @@ select.inp{
 <!-- ===== CV BUILDER ===== -->
 <div id="pg-cv" class="pg"><div class="inner">
   <div class="ph-tag tag-b">📄 CV BUILDER</div>
-  <div class="pg-title">AI-Powered CV Builder</div>
+  <h2 class="pg-title">AI-Powered CV Builder</h2>
   <div class="pg-sub">Fill in your details and get AI-enhanced CV content tailored for Kenyan employers. ATS-optimised.</div>
   <div class="g2">
     <div class="panel">
-      <div class="field"><label class="lbl">Full Name</label><input type="text" id="cvName" class="inp" placeholder="e.g., James Mwangi Kamau"></div>
-      <div class="field"><label class="lbl">Target Role</label><input type="text" id="cvRole" class="inp" placeholder="e.g., Software Engineer"></div>
-      <div class="field"><label class="lbl">Years of Experience</label><input type="text" id="cvYears" class="inp" placeholder="e.g., 2"></div>
-      <div class="field"><label class="lbl">Email</label><input type="email" id="cvEmail" class="inp" placeholder="james@email.com"></div>
-      <div class="field"><label class="lbl">Phone</label><input type="tel" id="cvPhone" class="inp" placeholder="+254 7XX XXX XXX"></div>
-      <div class="field"><label class="lbl">Location</label><input type="text" id="cvLocation" class="inp" placeholder="Nairobi, Kenya"></div>
-      <div class="field"><label class="lbl">Key Skills</label><input type="text" id="cvSkills" class="inp" placeholder="Python, Data Analysis, SQL..."></div>
-      <div class="field"><label class="lbl">Work Experience</label><textarea id="cvExp" class="inp" rows="3" placeholder="2 yrs at Safaricom as data analyst. Built dashboards, automated reporting..."></textarea></div>
-      <div class="field"><label class="lbl">Education</label><input type="text" id="cvEdu" class="inp" placeholder="BSc Computer Science — UoN, 2022"></div>
-      <div class="field"><label class="lbl">Target Job Description (optional, boosts ATS match)</label><textarea id="cvJobDesc" class="inp" rows="3" placeholder="Paste the job posting here so 3MAI can mirror its exact keywords..."></textarea></div>
+      <div class="field"><label class="lbl" for="cvName">Full Name</label><input type="text" id="cvName" class="inp" placeholder="e.g., James Mwangi Kamau"></div>
+      <div class="field"><label class="lbl" for="cvRole">Target Role</label><input type="text" id="cvRole" class="inp" placeholder="e.g., Software Engineer"></div>
+      <div class="field"><label class="lbl" for="cvYears">Years of Experience</label><input type="text" id="cvYears" class="inp" placeholder="e.g., 2"></div>
+      <div class="field"><label class="lbl" for="cvEmail">Email</label><input type="email" id="cvEmail" class="inp" placeholder="james@email.com"></div>
+      <div class="field"><label class="lbl" for="cvPhone">Phone</label><input type="tel" id="cvPhone" class="inp" placeholder="+254 7XX XXX XXX"></div>
+      <div class="field"><label class="lbl" for="cvLocation">Location</label><input type="text" id="cvLocation" class="inp" placeholder="Nairobi, Kenya"></div>
+      <div class="field"><label class="lbl" for="cvSkills">Key Skills</label><input type="text" id="cvSkills" class="inp" placeholder="Python, Data Analysis, SQL..."></div>
+      <div class="field"><label class="lbl" for="cvExp">Work Experience</label><textarea id="cvExp" class="inp" rows="3" placeholder="2 yrs at Safaricom as data analyst. Built dashboards, automated reporting..."></textarea></div>
+      <div class="field"><label class="lbl" for="cvEdu">Education</label><input type="text" id="cvEdu" class="inp" placeholder="BSc Computer Science — UoN, 2022"></div>
+      <div class="field"><label class="lbl" for="cvJobDesc">Target Job Description (optional, boosts ATS match)</label><textarea id="cvJobDesc" class="inp" rows="3" placeholder="Paste the job posting here so 3MAI can mirror its exact keywords..."></textarea></div>
       <button id="cvBtn" class="run-btn rb-b" style="margin-top:4px;">✨ Generate AI CV</button>
     </div>
     <div class="panel" id="cvPreview" style="min-height:280px;">
-      <div style="text-align:center;color:var(--dim);padding:40px 0;font-size:.83rem;">Your CV preview will appear here →</div>
+      <div style="text-align:center;color:var(--tx2);padding:40px 0;font-size:.83rem;">Your CV preview will appear here →</div>
     </div>
   </div>
   <div id="cvAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI CV Writer</div><div id="cvAiContent" class="ai-content"></div></div>
@@ -971,12 +977,12 @@ select.inp{
 <!-- ===== COVER LETTER ===== -->
 <div id="pg-cover" class="pg"><div class="inner">
   <div class="ph-tag tag-b">✉️ COVER LETTER AI</div>
-  <div class="pg-title">AI Cover Letter Generator</div>
+  <h2 class="pg-title">AI Cover Letter Generator</h2>
   <div class="pg-sub">Paste a job description and your background. 3MAI writes a compelling cover letter for Kenyan employers in seconds.</div>
   <div class="panel">
-    <div class="field"><label class="lbl">Your Name & Role</label><input type="text" id="clName" class="inp" placeholder="e.g., Grace Njeri — Marketing Manager"></div>
-    <div class="field"><label class="lbl">Job Description</label><textarea id="clJob" class="inp" rows="4" placeholder="e.g., Digital Marketing Officer at KCB. Requirements: 3+ yrs digital marketing, SEO/SEM, Google Analytics..."></textarea></div>
-    <div class="field"><label class="lbl">Your Key Strengths & Experience</label><textarea id="clExp" class="inp" rows="3" placeholder="e.g., 4 years managing social media for Nairobi FMCG brand. Grew Instagram 2k→40k followers. Strong paid ads and content strategy..."></textarea></div>
+    <div class="field"><label class="lbl" for="clName">Your Name & Role</label><input type="text" id="clName" class="inp" placeholder="e.g., Grace Njeri — Marketing Manager"></div>
+    <div class="field"><label class="lbl" for="clJob">Job Description</label><textarea id="clJob" class="inp" rows="4" placeholder="e.g., Digital Marketing Officer at KCB. Requirements: 3+ yrs digital marketing, SEO/SEM, Google Analytics..."></textarea></div>
+    <div class="field"><label class="lbl" for="clExp">Your Key Strengths & Experience</label><textarea id="clExp" class="inp" rows="3" placeholder="e.g., 4 years managing social media for Nairobi FMCG brand. Grew Instagram 2k→40k followers. Strong paid ads and content strategy..."></textarea></div>
     <button id="coverBtn" class="run-btn rb-b" style="margin-top:4px;">✉️ Generate Cover Letter</button>
   </div>
   <div id="coverAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Cover Letter</div><div id="coverAiContent" class="ai-content"></div></div>
@@ -986,14 +992,14 @@ select.inp{
 <!-- ===== SIDE HUSTLE ===== -->
 <div id="pg-hustle" class="pg"><div class="inner">
   <div class="ph-tag tag-g">🚀 SIDE HUSTLE GENERATOR</div>
-  <div class="pg-title">AI Side Hustle Ideas for Kenya</div>
+  <h2 class="pg-title">AI Side Hustle Ideas for Kenya</h2>
   <div class="pg-sub">Tell 3MAI your skills, time, and capital. Get personalised side hustle ideas with income projections and exact how-to-start steps.</div>
   <div class="panel">
     <div class="g2">
-      <div class="field"><label class="lbl">Your Main Skills</label><input type="text" id="hustleSkills" class="inp" placeholder="e.g., Excel, driving, cooking, coding..."></div>
-      <div class="field"><label class="lbl">Available Time / Week</label><select id="hustleTime" class="inp"><option value="2-5">2–5 hours</option><option value="5-10">5–10 hours</option><option value="10-20" selected>10–20 hours</option><option value="20+">20+ hours</option></select></div>
-      <div class="field"><label class="lbl">Starting Capital</label><select id="hustleCapital" class="inp"><option value="0">KES 0 — Bootstrap</option><option value="5000" selected>Up to KES 5,000</option><option value="20000">Up to KES 20,000</option><option value="50000">Up to KES 50,000</option></select></div>
-      <div class="field"><label class="lbl">Category</label><select id="hustleCat" class="inp"><option value="any">Any — surprise me</option><option value="online">Online / Digital</option><option value="offline">Offline / Physical</option><option value="services">Services</option><option value="products">Products / Reselling</option></select></div>
+      <div class="field"><label class="lbl" for="hustleSkills">Your Main Skills</label><input type="text" id="hustleSkills" class="inp" placeholder="e.g., Excel, driving, cooking, coding..."></div>
+      <div class="field"><label class="lbl" for="hustleTime">Available Time / Week</label><select id="hustleTime" class="inp"><option value="2-5">2–5 hours</option><option value="5-10">5–10 hours</option><option value="10-20" selected>10–20 hours</option><option value="20+">20+ hours</option></select></div>
+      <div class="field"><label class="lbl" for="hustleCapital">Starting Capital</label><select id="hustleCapital" class="inp"><option value="0">KES 0 — Bootstrap</option><option value="5000" selected>Up to KES 5,000</option><option value="20000">Up to KES 20,000</option><option value="50000">Up to KES 50,000</option></select></div>
+      <div class="field"><label class="lbl" for="hustleCat">Category</label><select id="hustleCat" class="inp"><option value="any">Any — surprise me</option><option value="online">Online / Digital</option><option value="offline">Offline / Physical</option><option value="services">Services</option><option value="products">Products / Reselling</option></select></div>
     </div>
     <button id="hustleBtn" class="run-btn rb-g" style="margin-top:4px;">🚀 Generate Side Hustle Ideas</button>
   </div>
@@ -1004,7 +1010,7 @@ select.inp{
 <!-- ===== MARKETING HUB ===== -->
 <div id="pg-marketing" class="pg"><div class="inner">
   <div class="ph-tag tag-rr">📣 MARKETING HUB</div>
-  <div class="pg-title">AI Marketing Suite</div>
+  <h2 class="pg-title">AI Marketing Suite</h2>
   <div class="pg-sub">Four powerful AI marketing tools in one place — social posts, brand identity, full strategy, and ad copy. Built for Kenyan entrepreneurs and hustlers.</div>
 
   <!-- SUB-TAB NAV -->
@@ -1019,11 +1025,11 @@ select.inp{
   <div id="mkt-social" class="mkt-panel">
     <div class="panel">
       <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">📱 Social Media Post Generator</div>
-      <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Generate ready-to-post content for Instagram, X, TikTok, and WhatsApp in seconds.</div>
+      <div style="font-size:.8rem;color:var(--tx2);margin-bottom:14px;">Generate ready-to-post content for Instagram, X, TikTok, and WhatsApp in seconds.</div>
       <div class="g2">
-        <div class="field"><label class="lbl">Your Product / Service / Topic</label><input type="text" id="socialProduct" class="inp" placeholder="e.g., My chapati business in Westlands, New clothing line..."></div>
-        <div class="field"><label class="lbl">Target Audience</label><input type="text" id="socialAudience" class="inp" placeholder="e.g., Nairobi youth 18-30, working mums..."></div>
-        <div class="field"><label class="lbl">Platform</label>
+        <div class="field"><label class="lbl" for="socialProduct">Your Product / Service / Topic</label><input type="text" id="socialProduct" class="inp" placeholder="e.g., My chapati business in Westlands, New clothing line..."></div>
+        <div class="field"><label class="lbl" for="socialAudience">Target Audience</label><input type="text" id="socialAudience" class="inp" placeholder="e.g., Nairobi youth 18-30, working mums..."></div>
+        <div class="field"><label class="lbl" for="socialPlatform">Platform</label>
           <select id="socialPlatform" class="inp">
             <option value="all">All platforms (Instagram, X, TikTok, WhatsApp)</option>
             <option value="instagram">Instagram</option>
@@ -1032,7 +1038,7 @@ select.inp{
             <option value="whatsapp">WhatsApp status / broadcast</option>
           </select>
         </div>
-        <div class="field"><label class="lbl">Tone</label>
+        <div class="field"><label class="lbl" for="socialTone">Tone</label>
           <select id="socialTone" class="inp">
             <option value="energetic">Energetic & hype</option>
             <option value="professional">Professional & trustworthy</option>
@@ -1051,11 +1057,11 @@ select.inp{
   <div id="mkt-brand" class="mkt-panel" style="display:none;">
     <div class="panel">
       <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">🎨 Business Name & Brand Generator</div>
-      <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Generate business names, taglines, brand personality, logo concepts, and colour palette ideas.</div>
+      <div style="font-size:.8rem;color:var(--tx2);margin-bottom:14px;">Generate business names, taglines, brand personality, logo concepts, and colour palette ideas.</div>
       <div class="g2">
-        <div class="field"><label class="lbl">What Does Your Business Do?</label><textarea id="brandDesc" class="inp" rows="3" placeholder="e.g., I sell handmade jewellery targeting young professional women in Nairobi..."></textarea></div>
+        <div class="field"><label class="lbl" for="brandDesc">What Does Your Business Do?</label><textarea id="brandDesc" class="inp" rows="3" placeholder="e.g., I sell handmade jewellery targeting young professional women in Nairobi..."></textarea></div>
         <div class="field">
-          <label class="lbl">Industry / Niche</label>
+          <label class="lbl" for="brandIndustry">Industry / Niche</label>
           <select id="brandIndustry" class="inp">
             <option value="food">Food & Beverage</option>
             <option value="fashion">Fashion & Clothing</option>
@@ -1066,7 +1072,7 @@ select.inp{
             <option value="education">Education & Training</option>
             <option value="other">Other</option>
           </select>
-          <label class="lbl" style="margin-top:10px;">Brand Personality</label>
+          <label class="lbl" for="brandVibe" style="margin-top:10px;">Brand Personality</label>
           <select id="brandVibe" class="inp">
             <option value="bold">Bold & Fearless</option>
             <option value="premium">Premium & Luxurious</option>
@@ -1086,11 +1092,11 @@ select.inp{
   <div id="mkt-strategy" class="mkt-panel" style="display:none;">
     <div class="panel">
       <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">📈 Marketing Strategy Builder</div>
-      <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Get a full 90-day marketing plan tailored to your business, budget, and Kenyan market.</div>
+      <div style="font-size:.8rem;color:var(--tx2);margin-bottom:14px;">Get a full 90-day marketing plan tailored to your business, budget, and Kenyan market.</div>
       <div class="g2">
-        <div class="field"><label class="lbl">Business Description</label><textarea id="stratBusiness" class="inp" rows="3" placeholder="e.g., Online shop selling African print clothing. Based in Nairobi, targeting diaspora and local market..."></textarea></div>
+        <div class="field"><label class="lbl" for="stratBusiness">Business Description</label><textarea id="stratBusiness" class="inp" rows="3" placeholder="e.g., Online shop selling African print clothing. Based in Nairobi, targeting diaspora and local market..."></textarea></div>
         <div class="field">
-          <label class="lbl">Monthly Marketing Budget</label>
+          <label class="lbl" for="stratBudget">Monthly Marketing Budget</label>
           <select id="stratBudget" class="inp">
             <option value="0">KES 0 — Free / organic only</option>
             <option value="5000">Up to KES 5,000</option>
@@ -1098,7 +1104,7 @@ select.inp{
             <option value="50000">Up to KES 50,000</option>
             <option value="100000">KES 100,000+</option>
           </select>
-          <label class="lbl" style="margin-top:10px;">Primary Goal</label>
+          <label class="lbl" for="stratGoal" style="margin-top:10px;">Primary Goal</label>
           <select id="stratGoal" class="inp">
             <option value="awareness">Brand awareness — more people know me</option>
             <option value="sales">Drive sales — more orders / revenue</option>
@@ -1118,12 +1124,12 @@ select.inp{
   <div id="mkt-adcopy" class="mkt-panel" style="display:none;">
     <div class="panel">
       <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">✍️ AI Ad Copy Writer</div>
-      <div style="font-size:.8rem;color:var(--dim);margin-bottom:14px;">Write high-converting headlines, ad copy, and CTAs for any product or service.</div>
+      <div style="font-size:.8rem;color:var(--tx2);margin-bottom:14px;">Write high-converting headlines, ad copy, and CTAs for any product or service.</div>
       <div class="g2">
-        <div class="field"><label class="lbl">Product / Service</label><input type="text" id="adProduct" class="inp" placeholder="e.g., Online Python programming course for beginners in Kenya"></div>
-        <div class="field"><label class="lbl">Target Customer</label><input type="text" id="adTarget" class="inp" placeholder="e.g., Unemployed graduates aged 22-28 in Nairobi"></div>
-        <div class="field"><label class="lbl">Key Benefit / Unique Selling Point</label><input type="text" id="adUSP" class="inp" placeholder="e.g., Learn in 30 days, get a job or full refund"></div>
-        <div class="field"><label class="lbl">Ad Format</label>
+        <div class="field"><label class="lbl" for="adProduct">Product / Service</label><input type="text" id="adProduct" class="inp" placeholder="e.g., Online Python programming course for beginners in Kenya"></div>
+        <div class="field"><label class="lbl" for="adTarget">Target Customer</label><input type="text" id="adTarget" class="inp" placeholder="e.g., Unemployed graduates aged 22-28 in Nairobi"></div>
+        <div class="field"><label class="lbl" for="adUSP">Key Benefit / Unique Selling Point</label><input type="text" id="adUSP" class="inp" placeholder="e.g., Learn in 30 days, get a job or full refund"></div>
+        <div class="field"><label class="lbl" for="adFormat">Ad Format</label>
           <select id="adFormat" class="inp">
             <option value="all">All formats</option>
             <option value="facebook">Facebook / Instagram Ad</option>
@@ -1145,7 +1151,7 @@ select.inp{
 <!-- ===== SAVED ITEMS ===== -->
 <div id="pg-saved" class="pg"><div class="inner">
   <div class="ph-tag tag-gold">💾 SAVED ITEMS</div>
-  <div class="pg-title">Your Saved Results</div>
+  <h2 class="pg-title">Your Saved Results</h2>
   <div class="pg-sub">AI outputs you've saved from any tool, synced to your account. Tap 💾 Save on a result to keep it here.</div>
   <div id="savedItemsList"></div>
 </div></div>
@@ -1153,20 +1159,20 @@ select.inp{
 <!-- ===== ACCOUNT CENTER ===== -->
 <div id="pg-account" class="pg"><div class="inner">
   <div class="ph-tag tag-gold">👤 ACCOUNT</div>
-  <div class="pg-title">Your Account</div>
+  <h2 class="pg-title">Your Account</h2>
   <div class="pg-sub">Manage your profile and see your Pro status.</div>
   <div id="acctSignedOut" style="text-align:center;padding:40px 20px;">
-    <p style="color:var(--dim);font-size:.85rem;margin-bottom:16px;">Sign in to view and manage your account.</p>
+    <p style="color:var(--tx2);font-size:.85rem;margin-bottom:16px;">Sign in to view and manage your account.</p>
   </div>
   <div id="acctSignedIn" style="display:none;">
     <div class="panel" style="text-align:center;padding:24px 20px;">
       <img id="acctPhoto" src="" alt="Profile photo" style="width:72px;height:72px;border-radius:50%;border:2px solid var(--bdr);margin-bottom:12px;">
-      <div id="acctEmail" style="font-size:.78rem;color:var(--dim);margin-bottom:14px;"></div>
+      <div id="acctEmail" style="font-size:.78rem;color:var(--tx2);margin-bottom:14px;"></div>
       <span id="acctProBadge" style="display:none;background:rgba(245,197,24,.12);color:var(--gold-tx);border:1px solid rgba(245,197,24,.3);border-radius:100px;padding:4px 12px;font-size:.68rem;font-weight:700;">⚡ PRO</span>
       <span id="acctFreeBadge" style="background:rgba(255,255,255,.06);color:var(--dim2);border:1px solid var(--bdr);border-radius:100px;padding:4px 12px;font-size:.68rem;font-weight:700;">FREE PLAN</span>
     </div>
     <div class="panel" style="margin-top:14px;">
-      <label class="lbl">Display Name</label>
+      <label class="lbl" for="acctNameInput">Display Name</label>
       <input type="text" id="acctNameInput" class="inp" placeholder="Your name" style="margin-bottom:10px;">
       <button id="acctSaveNameBtn" class="run-btn rb-b">Save Name</button>
     </div>
@@ -1182,12 +1188,12 @@ select.inp{
 <!-- ===== CUSTOMER SUPPORT ===== -->
 <div id="pg-support" class="pg"><div class="inner">
   <div class="ph-tag tag-b">💬 SUPPORT</div>
-  <div class="pg-title">Get Help</div>
+  <h2 class="pg-title">Get Help</h2>
   <div class="pg-sub">Ask 3MAI Support about how 3M works, your account, or Pro. For anything it can't resolve, it'll point you to a real contact.</div>
   <div class="panel" style="padding:0;overflow:hidden;">
     <div id="supMsgs" style="height:min(50vh,420px);overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;"></div>
     <div class="nb-row">
-      <input type="text" id="supInput" class="nb-inp" placeholder="Ask about the app, your account, Pro...">
+      <input type="text" id="supInput" class="nb-inp" placeholder="Ask about the app, your account, Pro..." aria-label="Message 3MAI Support">
       <button id="supSend" class="nb-send">➤</button>
     </div>
   </div>
@@ -1211,11 +1217,11 @@ select.inp{
       </div>
     </div>
     <div class="field" style="margin-top:14px;">
-      <label class="lbl">M-Pesa Confirmation Code</label>
+      <label class="lbl" for="pw-txn-code">M-Pesa Confirmation Code</label>
       <input type="text" id="pw-txn-code" class="inp" placeholder="e.g., QGH7X9K2L1" style="text-transform:uppercase;">
     </div>
     <button class="pw-cta" id="pw-submit-btn">✅ Submit for Pro Activation</button>
-    <p style="font-size:.7rem;color:var(--dim);text-align:center;margin-top:8px;">You must be signed in for us to activate your account. Activation is manual and may take up to 24 hours.</p>
+    <p style="font-size:.7rem;color:var(--tx2);text-align:center;margin-top:8px;">You must be signed in for us to activate your account. Activation is manual and may take up to 24 hours.</p>
     <br><button class="pw-dismiss" id="pw-dismiss">Maybe later — go back</button>
     <div style="text-align:center;margin-top:10px;">
       <button id="pw-help-btn" style="background:none;border:none;color:var(--blue);font-size:.75rem;cursor:pointer;text-decoration:underline;">Already paid but still blocked? Get help</button>
@@ -1248,7 +1254,7 @@ select.inp{
     <button class="nb-sug" data-q="How do I file iTax returns in Kenya?">📊 iTax</button>
   </div>
   <div class="nb-row">
-    <input type="text" id="nbInput" class="nb-inp" placeholder="Ask 3MAI anything...">
+    <input type="text" id="nbInput" class="nb-inp" placeholder="Ask 3MAI anything..." aria-label="Message NairoBot">
     <button id="nbSend" class="nb-send">➤</button>
   </div>
 </div>
@@ -1568,7 +1574,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     banner.textContent = '⚠️ Running offline — sign-in unavailable, AI tools work with device-only limits.';
     document.body.prepend(banner);
     const loginBtn = document.getElementById("nav-login-btn");
-    if (loginBtn) { loginBtn.textContent = "Offline"; loginBtn.disabled = true; loginBtn.style.opacity = ".5"; }
+    if (loginBtn) {
+      loginBtn.textContent = "Offline";
+      loginBtn.disabled = true;
+      // Explicit disabled styling instead of opacity — fading a black-on-gold
+      // button with opacity washes the text out against the dark nav bar
+      // behind it (verified contrast failure), so this uses a fixed,
+      // contrast-checked color pair instead of a percentage fade.
+      loginBtn.style.background = "rgba(255,255,255,.08)";
+      loginBtn.style.color = "rgba(255,255,255,.65)";
+      loginBtn.style.boxShadow = "none";
+      loginBtn.style.cursor = "not-allowed";
+    }
   } else {
     // ============ FIREBASE INIT ============
     const fbApp = initializeApp(firebaseConfig);
@@ -1692,7 +1709,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Lazy init NairoBot on first open
   let nbInit = false;
   document.getElementById("nb-bubble").addEventListener("click", ()=>{
-    if(!nbInit){ initNairobot(); nbInit=true; }
+    if(!nbInit){
+      initNairobot();
+      nbInit=true;
+      // initNairobot() attaches its own click listener to this same bubble
+      // for future taps, but that listener can't retroactively fire for
+      // the click that's already in progress right now — so the very first
+      // tap must open the panel explicitly here, or it takes a second tap
+      // to do anything visible.
+      document.getElementById("nb-panel").classList.add("open");
+      document.getElementById("nbInput").focus();
+    }
   }, {once:false});
   
   requestAnimationFrame(() => {
@@ -1704,7 +1731,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     refreshAllBadges();
     
     document.getElementById("taxResult").innerHTML =
-      `<div style="color:var(--dim);font-size:.82rem;text-align:center;padding:12px 0;">Enter your gross salary above and tap <strong style="color:var(--tx)">Calculate</strong> to see your breakdown.</div>`;
+      `<div style="color:var(--tx2);font-size:.82rem;text-align:center;padding:12px 0;">Enter your gross salary above and tap <strong style="color:var(--tx)">Calculate</strong> to see your breakdown.</div>`;
   });
   // NairoBot welcome message shown on first open (lazy)
 });
@@ -1728,8 +1755,19 @@ function buildToolGrid() {
   TOOLS.forEach(t => {
     const d = document.createElement("div");
     d.className = "tg-btn"; d.id = "tg-"+t.id;
+    d.setAttribute("role", "button");
+    d.setAttribute("tabindex", "0");
+    d.setAttribute("aria-label", `${t.name} — ${t.tag}`);
     d.innerHTML = `<span class="tg-dot"></span><span class="tg-icon">${t.icon}</span><div class="tg-name">${t.name}</div><div class="tg-tag">${t.tag}</div>`;
     d.addEventListener("click", () => showPage(t.id));
+    // role="button" alone doesn't give Enter/Space activation for free the
+    // way a real <button> does — that has to be wired up explicitly.
+    d.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        showPage(t.id);
+      }
+    });
     g.appendChild(d);
   });
 }
@@ -1928,7 +1966,20 @@ function buildScamChips() {
   SCAM_FLAGS.forEach((f,i)=>{
     const ch=document.createElement("span");
     ch.className="issue-chip"; ch.textContent=f.name; ch.dataset.i=i;
-    ch.addEventListener("click",()=>ch.classList.toggle("sel"));
+    // These act as toggleable checkboxes (select all that apply), so the
+    // correct ARIA role is checkbox, not button — aria-checked must be
+    // kept in sync with the .sel class on every toggle.
+    ch.setAttribute("role", "checkbox");
+    ch.setAttribute("tabindex", "0");
+    ch.setAttribute("aria-checked", "false");
+    const toggle = () => {
+      ch.classList.toggle("sel");
+      ch.setAttribute("aria-checked", ch.classList.contains("sel") ? "true" : "false");
+    };
+    ch.addEventListener("click", toggle);
+    ch.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
     c.appendChild(ch);
   });
 }
@@ -1955,11 +2006,11 @@ function buildGovtJobs() {
 
   if (!GOVT_JOBS.length) {
     listEl.innerHTML = `
-      <div style="text-align:center;padding:30px 20px;color:var(--dim);font-size:.83rem;">
+      <div style="text-align:center;padding:30px 20px;color:var(--tx2);font-size:.83rem;">
         No listings loaded yet. Check
-        <a href="https://www.publicservice.go.ke/jobs/" target="_blank" rel="noopener" style="color:var(--blue);">publicservice.go.ke</a>
+        <a href="https://www.publicservice.go.ke/jobs/" target="_blank" rel="noopener" style="color:var(--bb-tx);">publicservice.go.ke</a>
         or
-        <a href="https://www.psckjobs.go.ke/ActiveJobsAdverts.aspx" target="_blank" rel="noopener" style="color:var(--blue);">psckjobs.go.ke</a>
+        <a href="https://www.psckjobs.go.ke/ActiveJobsAdverts.aspx" target="_blank" rel="noopener" style="color:var(--bb-tx);">psckjobs.go.ke</a>
         directly for current government vacancies.
       </div>`;
     return;
@@ -2337,21 +2388,21 @@ async function loadSavedItems() {
   if (!listEl) return;
 
   if (!window._user) {
-    listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:.83rem;">Sign in to see your saved items.</div>`;
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--tx2);font-size:.83rem;">Sign in to see your saved items.</div>`;
     return;
   }
   if (window._offlineMode) {
-    listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:.83rem;">You're offline — saved items need a connection to load.</div>`;
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--tx2);font-size:.83rem;">You're offline — saved items need a connection to load.</div>`;
     return;
   }
 
-  listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:.83rem;">Loading…</div>`;
+  listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--tx2);font-size:.83rem;">Loading…</div>`;
   try {
     const token = await window._user.getIdToken();
     const data = await window.fsListSubcollection("saved_items", window._user.uid, "items", token);
     const docs = data.documents || [];
     if (!docs.length) {
-      listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:.83rem;">Nothing saved yet. Tap 💾 Save on any AI result to keep it here.</div>`;
+      listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--tx2);font-size:.83rem;">Nothing saved yet. Tap 💾 Save on any AI result to keep it here.</div>`;
       return;
     }
     docs.sort((a,b) => (b.fields?.savedAt?.stringValue||"").localeCompare(a.fields?.savedAt?.stringValue||""));
@@ -2364,7 +2415,7 @@ async function loadSavedItems() {
       <div class="panel" style="margin-bottom:12px;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;">
           <div style="font-weight:700;font-size:.85rem;color:var(--tx);">${escapeHtml(f.tool?.stringValue || "Saved item")}</div>
-          <div style="font-size:.68rem;color:var(--dim);white-space:nowrap;">${savedDate}</div>
+          <div style="font-size:.68rem;color:var(--tx2);white-space:nowrap;">${savedDate}</div>
         </div>
         <div style="font-size:.78rem;color:var(--tx2);line-height:1.6;margin-bottom:10px;">${escapeHtml(preview)}${(f.content?.stringValue||"").length>140?"…":""}</div>
         <div style="display:flex;gap:8px;">
