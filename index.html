@@ -788,6 +788,11 @@ select.inp{
 </style>
 </head>
 <body>
+<!-- Visually-hidden live region for status announcements (e.g. "Saved") that
+     don't have a natural live-region home of their own, like a button whose
+     text briefly changes. Screen readers announce whatever text is placed
+     here; sighted users never see it. -->
+<div id="a11y-announcer" aria-live="polite" role="status" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
 <div class="top-bar"></div>
 
 <!-- NAV -->
@@ -900,7 +905,7 @@ select.inp{
   <div class="ph-tag tag-gold">🏛️ GOVERNMENT JOBS</div>
   <h2 class="pg-title">Government Job Listings</h2>
   <div class="pg-sub">Curated openings from PSC, counties, parastatals and government agencies, refreshed regularly. AI application tips for any role.</div>
-  <div id="govtStaleWarning" style="display:none;background:rgba(232,72,85,.08);border:1px solid rgba(232,72,85,.25);color:var(--rr);border-radius:10px;padding:10px 14px;font-size:.78rem;font-weight:600;margin-bottom:14px;"></div>
+  <div id="govtStaleWarning" style="display:none;background:rgba(232,72,85,.08);border:1px solid rgba(232,72,85,.25);color:var(--rr-tx);border-radius:10px;padding:10px 14px;font-size:.78rem;font-weight:600;margin-bottom:14px;"></div>
   <div id="govtList" style="margin-bottom:14px;"></div>
   <div class="panel">
     <label class="lbl" for="govtInput">🤖 AI Application Strategy — which job?</label>
@@ -1191,7 +1196,7 @@ select.inp{
   <h2 class="pg-title">Get Help</h2>
   <div class="pg-sub">Ask 3MAI Support about how 3M works, your account, or Pro. For anything it can't resolve, it'll point you to a real contact.</div>
   <div class="panel" style="padding:0;overflow:hidden;">
-    <div id="supMsgs" style="height:min(50vh,420px);overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;"></div>
+    <div id="supMsgs" aria-live="polite" aria-atomic="false" style="height:min(50vh,420px);overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;"></div>
     <div class="nb-row">
       <input type="text" id="supInput" class="nb-inp" placeholder="Ask about the app, your account, Pro..." aria-label="Message 3MAI Support">
       <button id="supSend" class="nb-send">➤</button>
@@ -1245,7 +1250,7 @@ select.inp{
     <div><div class="nb-name">3MAI</div><div class="nb-sub">3M · Kenya Career AI</div></div>
     <button class="nb-x" id="nb-close">✕</button>
   </div>
-  <div class="nb-msgs" id="nbMsgs"></div>
+  <div class="nb-msgs" id="nbMsgs" aria-live="polite" aria-atomic="false"></div>
   <div class="nb-sugs" id="nbSugs">
     <button class="nb-sug" data-q="What's a fair salary for a software engineer in Nairobi?">💰 SW salary</button>
     <button class="nb-sug" data-q="How do I spot a job scam in Kenya?">⚠️ Scam tips</button>
@@ -1952,10 +1957,10 @@ function buildCountyComparison(role, yrs) {
     return `
       <div style="margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:3px;">
-          <span style="color:${isSelected?'var(--g)':'var(--tx2)'};font-weight:${isSelected?'700':'400'}">${c.label}</span>
-          <strong style="color:${isSelected?'var(--g)':'var(--tx2)'}">KES ${val.toLocaleString()}</strong>
+          <span style="color:${isSelected?'var(--gold-tx)':'var(--tx2)'};font-weight:${isSelected?'700':'400'}">${isSelected?'📍 ':''}${c.label}${isSelected?' (selected)':''}</span>
+          <strong style="color:${isSelected?'var(--gold-tx)':'var(--tx2)'}">KES ${val.toLocaleString()}</strong>
         </div>
-        <div class="ptrack"><div class="pfill" style="width:${pct}%;background:${isSelected?'var(--g)':'var(--blue)'};"></div></div>
+        <div class="ptrack"><div class="pfill" style="width:${pct}%;background:${isSelected?'var(--g)':'var(--blue)'};${isSelected?'box-shadow:0 0 0 1px var(--gd) inset;':''}"></div></div>
       </div>`;
   }).join("");
 }
@@ -2318,7 +2323,19 @@ function openAiBox(boxId, contentId) {
   const box=document.getElementById(boxId), content=document.getElementById(contentId);
   box.style.display="block";
   ensureSaveButton(box, contentId);
+  ensureLiveRegion(content);
   return content;
+}
+
+// Marks an AI output container as a live region so screen readers announce
+// the result once it's ready. Safe here specifically because streamAI()
+// sets the final text in one shot (typing indicator -> complete answer,
+// nothing in between) rather than streaming token-by-token — a live region
+// on genuinely incremental content would instead spam partial announcements.
+function ensureLiveRegion(el) {
+  if (el.getAttribute("aria-live")) return; // already set
+  el.setAttribute("aria-live", "polite");
+  el.setAttribute("role", "status");
 }
 
 // Injects a "Save" button into an ai-box once, reusing whatever content div
@@ -2339,6 +2356,16 @@ function ensureSaveButton(box, contentId) {
 }
 
 // ============ SAVED ITEMS ============
+// Announces a status message to screen reader users via the shared hidden
+// live region — for UI feedback (like a button's text briefly changing)
+// that has no natural live-region container of its own.
+function announce(message) {
+  const el = document.getElementById("a11y-announcer");
+  if (!el) return;
+  el.textContent = ""; // clear first so repeated identical messages still re-announce
+  requestAnimationFrame(() => { el.textContent = message; });
+}
+
 async function saveCurrentItem(contentId, toolLabel, btn) {
   if (!window._user) {
     alert("Please sign in to save items — saved items sync to your account.");
@@ -2375,6 +2402,7 @@ async function saveCurrentItem(contentId, toolLabel, btn) {
       return;
     }
     btn.textContent = "✅ Saved";
+    announce("Saved successfully.");
     setTimeout(() => { btn.textContent = originalLabel; btn.disabled = false; }, 1500);
   } catch(e) {
     btn.textContent = originalLabel;
