@@ -1024,6 +1024,7 @@ select.inp{
     <button class="mkt-tab" onclick="switchMkt('brand')">🎨 Brand Generator</button>
     <button class="mkt-tab" onclick="switchMkt('strategy')">📈 Strategy Builder</button>
     <button class="mkt-tab" onclick="switchMkt('adcopy')">✍️ Ad Copy Writer</button>
+    <button class="mkt-tab" onclick="switchMkt('image')">🖼️ Image Generator</button>
   </div>
 
   <!-- SOCIAL MEDIA POST GENERATOR -->
@@ -1149,6 +1150,25 @@ select.inp{
     </div>
     <div id="adAiBox" class="ai-box" style="display:none;"><div class="ai-box-header"><span class="bot-dot"></span> 3MAI Ad Copywriter</div><div id="adAiContent" class="ai-content"></div></div>
     <div class="share-bar"><p style="font-size:.8rem;"><strong>Ready to run your ads ✍️</strong></p><div style="display:flex;gap:8px;"><button class="wa-btn" id="adc-wa">📱 Share</button><button class="copy-btn" id="adc-cp">📋 Copy ad copy</button></div></div>
+  </div>
+
+  <div id="mkt-image" class="mkt-panel" style="display:none;">
+    <div class="panel">
+      <div style="font-family:'Times New Roman',Times,serif;font-weight:800;font-size:1rem;margin-bottom:6px;">🖼️ AI Image Generator</div>
+      <div style="font-size:.8rem;color:var(--tx2);margin-bottom:6px;">Describe a product photo, poster, or social graphic and 3MAI will generate it.</div>
+      <div style="font-size:.72rem;color:var(--tx2);background:rgba(45,125,210,.06);border:1px solid rgba(45,125,210,.15);border-radius:8px;padding:8px 10px;margin-bottom:14px;">
+        ℹ️ This feature is powered by a free daily image quota. If it's temporarily unavailable, it means today's free limit has been reached — try again tomorrow.
+      </div>
+      <div class="field"><label class="lbl" for="imgPrompt">Describe the image you want</label><textarea id="imgPrompt" class="inp" rows="3" placeholder="e.g., A clean product photo of handmade beaded jewellery on a white background, natural light, Instagram-ready"></textarea></div>
+      <button id="imgBtn" class="run-btn rb-b" style="margin-top:4px;">🖼️ Generate Image</button>
+    </div>
+    <div id="imgResultBox" style="display:none;margin-top:14px;text-align:center;">
+      <img id="imgResult" alt="" style="max-width:100%;border-radius:12px;border:1px solid var(--wire);">
+      <div style="margin-top:10px;">
+        <button id="img-dl" class="copy-btn">⬇️ Download Image</button>
+      </div>
+    </div>
+    <div id="imgStatus" role="status" aria-live="polite" style="text-align:center;font-size:.8rem;color:var(--tx2);margin-top:10px;"></div>
   </div>
 
 </div></div>
@@ -2121,12 +2141,19 @@ async function incUsageFS(tool) {
     const doc = await window.fsGet("usage", window._user.uid, token);
     const key = getTodayKey(tool);
     const current = parseInt(doc?.fields?.[key]?.integerValue || 0);
+    // Running all-time total, separate from the daily-reset keys above.
+    // Written alongside the daily key from the start, rather than computed
+    // later by summing every historical daily field — cheap now, avoids an
+    // expensive retroactive scan once there's real usage history to sum.
+    const totalKey = `${tool}_total`;
+    const currentTotal = parseInt(doc?.fields?.[totalKey]?.integerValue || 0);
     const fields = {};
     // Preserve existing fields
     if (doc?.fields) {
       Object.entries(doc.fields).forEach(([k, v]) => { fields[k] = v; });
     }
     fields[key] = { integerValue: current + 1 };
+    fields[totalKey] = { integerValue: currentTotal + 1 };
     const FS_PROJECT = "biz-3mt";
     const FS_BASE = `https://firestore.googleapis.com/v1/projects/${FS_PROJECT}/databases/default/documents`;
     await fetch(`${FS_BASE}/usage/${window._user.uid}?key=AIzaSyAB6xsmjLxkZpFcxJPJPMwJeVkBz0Wd01s`, {
@@ -2213,6 +2240,14 @@ async function submitProClaim() {
   }
   if (!code || code.length < 6) {
     alert("Please enter the M-Pesa confirmation code from your SMS receipt.");
+    return;
+  }
+  // M-Pesa confirmation codes are alphanumeric only. Enforcing that here
+  // matters beyond input validation — this code becomes both the Firestore
+  // document ID and gets rendered in the admin approval page later, so
+  // rejecting anything else closes off a stored-injection path at the source.
+  if (!/^[A-Z0-9]+$/.test(code)) {
+    alert("That doesn't look like a valid M-Pesa code — it should only contain letters and numbers.");
     return;
   }
 
@@ -3125,6 +3160,66 @@ For each format requested, provide:
 💡 Pro tip for that specific platform
 
 Reference Kenyan context naturally (M-Pesa, Nairobi, local pain points). Focus on benefits over features. Use social proof language. Under 500 words total.`, el, "marketing");
+  });
+
+  // ============ IMAGE GENERATOR ============
+  document.getElementById("imgBtn").addEventListener("click", async ()=>{
+    const prompt = document.getElementById("imgPrompt").value.trim();
+    if(!prompt){alert("Please describe the image you want.");return;}
+    if (_inFlightTools.has("marketing-image")) return;
+    if (!(await checkGate("marketing-image"))) return;
+    _inFlightTools.add("marketing-image");
+
+    const btn = document.getElementById("imgBtn");
+    const status = document.getElementById("imgStatus");
+    const resultBox = document.getElementById("imgResultBox");
+    const resultImg = document.getElementById("imgResult");
+    const originalLabel = btn.textContent;
+
+    btn.disabled = true;
+    btn.textContent = "⏳ Generating…";
+    status.textContent = "";
+    resultBox.style.display = "none";
+
+    try {
+      const res = await fetch("/gemini-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: `Professional marketing image for a Kenyan small business: ${prompt}` })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.error === "quota_exceeded") {
+          status.textContent = "⚠️ Today's free image limit has been reached. Please try again tomorrow.";
+        } else {
+          status.textContent = "⚠️ " + (data.message || data.error || "Image generation failed. Please try again.");
+        }
+        return;
+      }
+
+      resultImg.src = `data:${data.mimeType};base64,${data.image}`;
+      resultImg.alt = prompt;
+      resultBox.style.display = "block";
+      incUsageFS("marketing-image");
+    } catch(e) {
+      status.textContent = "⚠️ Connection error. Please check your network and try again.";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      _inFlightTools.delete("marketing-image");
+    }
+  });
+
+  document.getElementById("img-dl").addEventListener("click", () => {
+    const img = document.getElementById("imgResult");
+    if (!img.src) return;
+    const a = document.createElement("a");
+    a.href = img.src;
+    a.download = "3m-marketing-image.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   });
 
   // ============ SHARE BUTTONS — ALL TOOLS ============

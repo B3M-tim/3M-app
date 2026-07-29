@@ -7,12 +7,17 @@
 <meta name="robots" content="noindex, nofollow">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0A0E1A;color:#e8ecf5;padding:20px;max-width:720px;margin:0 auto;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0A0E1A;color:#e8ecf5;padding:20px;max-width:960px;margin:0 auto;}
   h1{font-size:1.3rem;margin-bottom:4px;}
   .sub{color:#8892a8;font-size:.85rem;margin-bottom:24px;}
   #signin-gate{text-align:center;padding:80px 20px;}
   #signin-btn{background:#F5C518;color:#000;border:none;padding:12px 24px;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;}
   #app{display:none;}
+  .tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid #232a42;}
+  .tab-btn{background:none;border:none;color:#8892a8;padding:10px 4px;font-size:.85rem;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;margin-right:16px;}
+  .tab-btn.active{color:#F5C518;border-bottom-color:#F5C518;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
   .claim{background:#141a2e;border:1px solid #232a42;border-radius:12px;padding:16px;margin-bottom:12px;}
   .claim-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
   .claim-code{font-family:monospace;font-size:1.1rem;font-weight:700;color:#F5C518;}
@@ -28,7 +33,20 @@
   .status-approved{background:rgba(46,204,113,.15);color:#2ECC71;}
   .status-rejected{background:rgba(232,72,85,.15);color:#E84855;}
   #error-banner{background:#E84855;color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:16px;font-size:.82rem;display:none;}
-</style>
+  .users-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+  .users-table th{text-align:left;padding:10px 12px;color:#8892a8;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #232a42;cursor:pointer;user-select:none;white-space:nowrap;}
+  .users-table th:hover{color:#F5C518;}
+  .users-table th.sorted::after{content:' ▾';color:#F5C518;}
+  .users-table th.sorted.asc::after{content:' ▴';}
+  .users-table td{padding:10px 12px;border-bottom:1px solid #1a2138;vertical-align:top;}
+  .users-table tr:hover td{background:#141a2e;}
+  .pro-pill{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(245,197,24,.15);color:#F5C518;}
+  .free-pill{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,.06);color:#8892a8;}
+  .users-summary{display:flex;gap:24px;margin-bottom:20px;flex-wrap:wrap;}
+  .summary-stat{background:#141a2e;border:1px solid #232a42;border-radius:10px;padding:12px 18px;}
+  .summary-stat .num{font-size:1.4rem;font-weight:800;color:#F5C518;}
+  .summary-stat .label{font-size:.72rem;color:#8892a8;text-transform:uppercase;letter-spacing:.04em;}
+  .table-wrap{overflow-x:auto;}</style>
 </head>
 <body>
 
@@ -39,10 +57,28 @@
 </div>
 
 <div id="app">
-  <h1>Pro Claims</h1>
-  <p class="sub">Verify each M-Pesa code against your statement before approving. Approving sets <code>premium: true</code> on the user's account.</p>
+  <h1>3M Admin</h1>
   <div id="error-banner"></div>
-  <div id="claims-list"></div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="claims">Pro Claims</button>
+    <button class="tab-btn" data-tab="users">Users</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-claims">
+    <p class="sub">Verify each M-Pesa code against your statement before approving. Approving sets <code>premium: true</code> on the user's account.</p>
+    <div id="claims-list"></div>
+  </div>
+
+  <div class="tab-panel" id="tab-users">
+    <p class="sub">Every signed-up user, their Pro status, and today's tool usage. Click a column header to sort.</p>
+    <div class="users-summary" id="usersSummary"></div>
+    <div class="table-wrap">
+      <table class="users-table" id="usersTable">
+        <thead><tr id="usersTableHead"></tr></thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script type="module">
@@ -70,9 +106,44 @@ function showError(msg) {
   banner.textContent = msg;
   banner.style.display = "block";
 }
+function hideError() {
+  document.getElementById("error-banner").style.display = "none";
+}
+
+// Escapes a string for safe interpolation into an HTML attribute value.
+// The claims list interpolates claimId/uid (both ultimately user-submitted
+// data via the M-Pesa code field) into onclick="..." attributes — without
+// this, a maliciously-crafted code could break out of the attribute and
+// run arbitrary JS in this admin session.
+function escAttr(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
 document.getElementById("signin-btn").addEventListener("click", () => {
   signInWithPopup(auth, provider).catch(e => showError("Sign-in failed: " + e.message));
+});
+
+let usersLoadedOnce = false;
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+    hideError();
+    // Lazy-load: fetching every user + their usage doc is a real cost as
+    // the userbase grows, so this only happens once, on first visit to the
+    // tab, not on every page load regardless of whether the admin looks at it.
+    if (btn.dataset.tab === "users" && !usersLoadedOnce) {
+      usersLoadedOnce = true;
+      loadUsers(auth.currentUser);
+    }
+  });
 });
 
 onAuthStateChanged(auth, async (user) => {
@@ -87,6 +158,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 async function loadClaims(user) {
+  hideError();
   const listEl = document.getElementById("claims-list");
   listEl.innerHTML = `<div class="empty">Loading…</div>`;
   try {
@@ -101,6 +173,11 @@ async function loadClaims(user) {
       showError("Access denied — this Google account isn't set as the admin email in your Firestore rules.");
       return;
     }
+    if (!res.ok) {
+      listEl.innerHTML = "";
+      showError(`Couldn't load claims (HTTP ${res.status}). Please try refreshing.`);
+      return;
+    }
     const data = await res.json();
     const docs = data.documents || [];
     if (!docs.length) {
@@ -113,27 +190,44 @@ async function loadClaims(user) {
     listEl.innerHTML = docs.map(d => {
       const f = d.fields || {};
       const claimId = d.name.split("/").pop();
+      const uid = f.uid?.stringValue || "";
       const status = f.status?.stringValue || "pending";
       return `
-      <div class="claim" data-id="${claimId}" data-uid="${f.uid?.stringValue||''}">
+      <div class="claim" data-id="${escAttr(claimId)}" data-uid="${escAttr(uid)}">
         <div class="claim-row">
           <div>
-            <div class="claim-code">${f.txnCode?.stringValue || claimId}</div>
+            <div class="claim-code">${escAttr(f.txnCode?.stringValue || claimId)}</div>
             <div class="claim-meta">
-              ${f.email?.stringValue || "(no email)"}<br>
-              UID: ${f.uid?.stringValue || "?"}<br>
+              ${escAttr(f.email?.stringValue || "(no email)")}<br>
+              UID: ${escAttr(uid || "?")}<br>
               Submitted: ${f.submittedAt?.stringValue ? new Date(f.submittedAt.stringValue).toLocaleString() : "?"}
             </div>
           </div>
-          <span class="status-pill status-${status}">${status}</span>
+          <span class="status-pill status-${escAttr(status)}">${escAttr(status)}</span>
         </div>
         ${status === "pending" ? `
         <div class="claim-actions">
-          <button class="btn btn-approve" onclick="window.approveClaim('${claimId}','${f.uid?.stringValue||''}')">✅ Verified — Approve</button>
-          <button class="btn btn-reject" onclick="window.rejectClaim('${claimId}')">✕ Reject</button>
+          <button class="btn btn-approve" data-action="approve">✅ Verified — Approve</button>
+          <button class="btn btn-reject" data-action="reject">✕ Reject</button>
         </div>` : ''}
       </div>`;
     }).join("");
+
+    // Event delegation instead of inline onclick="..." strings — building
+    // onclick attributes by concatenating user-controlled data is unsafe
+    // even with HTML-entity escaping, since that escaping protects the HTML
+    // attribute boundary but not the JavaScript string literal boundary
+    // once the browser decodes and parses the attribute's content as code.
+    // Reading claimId/uid back from .dataset avoids ever needing to embed
+    // them in a string of executable code at all.
+    listEl.querySelectorAll(".claim").forEach(claimEl => {
+      const claimId = claimEl.dataset.id;
+      const uid = claimEl.dataset.uid;
+      const approveBtn = claimEl.querySelector('[data-action="approve"]');
+      const rejectBtn = claimEl.querySelector('[data-action="reject"]');
+      if (approveBtn) approveBtn.addEventListener("click", () => approveClaim(claimId, uid));
+      if (rejectBtn) rejectBtn.addEventListener("click", () => rejectClaim(claimId));
+    });
   } catch(e) {
     listEl.innerHTML = "";
     showError("Failed to load claims: " + e.message);
@@ -152,10 +246,23 @@ async function patchDoc(collection, docId, fields, token) {
     headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({ fields: fsFields })
   });
-  return res.json();
+  // Firestore returns HTTP 200 with the document on success, and a 4xx/5xx
+  // status with an error body on failure — check the status explicitly
+  // rather than assuming every failure mode conveniently parses as JSON
+  // with an .error field.
+  let data;
+  try {
+    data = await res.json();
+  } catch(e) {
+    return { error: { message: `Unreadable response (HTTP ${res.status})` } };
+  }
+  if (!res.ok && !data.error) {
+    return { error: { message: `Request failed (HTTP ${res.status})` } };
+  }
+  return data;
 }
 
-window.approveClaim = async (claimId, uid) => {
+async function approveClaim(claimId, uid) {
   if (!uid) { showError("This claim has no linked user UID — can't approve."); return; }
   if (!confirm(`Confirm you've checked your M-Pesa statement for this transaction, and grant Pro to UID ${uid}?`)) return;
   try {
@@ -168,23 +275,185 @@ window.approveClaim = async (claimId, uid) => {
       showError("Failed to grant Pro: " + userResult.error.message + " — check your Firestore rules allow your admin email to update users/premium.");
       return;
     }
-    await patchDoc("pending_claims", claimId, { status: "approved" }, token);
+    const claimResult = await patchDoc("pending_claims", claimId, { status: "approved" }, token);
+    if (claimResult.error) {
+      // Premium was already granted successfully above — that's the part that
+      // actually matters for the user. This only failed to update the claim's
+      // status, so it may still show as "pending" next reload; safe to
+      // approve again since granting premium:true twice is harmless.
+      showError("Pro was granted, but the claim couldn't be marked approved: " + claimResult.error.message + ". It may still show as pending — that's OK, the user already has Pro.");
+      await loadClaims(auth.currentUser);
+      return;
+    }
     await loadClaims(auth.currentUser);
   } catch(e) {
     showError("Approve failed: " + e.message);
   }
-};
+}
 
-window.rejectClaim = async (claimId) => {
+async function rejectClaim(claimId) {
   if (!confirm("Reject this claim? The user will not be granted Pro.")) return;
   try {
     const token = await auth.currentUser.getIdToken();
-    await patchDoc("pending_claims", claimId, { status: "rejected" }, token);
+    const result = await patchDoc("pending_claims", claimId, { status: "rejected" }, token);
+    if (result.error) {
+      showError("Reject failed: " + result.error.message);
+      return;
+    }
     await loadClaims(auth.currentUser);
   } catch(e) {
     showError("Reject failed: " + e.message);
   }
-};
+}
+
+// Matches index.html's getTodayKey() exactly — Nairobi local date, not UTC,
+// so "today" means the same day in both places rather than drifting by a
+// few hours near midnight for East Africa Time users.
+function todayDateStr() {
+  return new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Nairobi" });
+}
+
+let usersData = []; // cached rows so re-sorting doesn't require re-fetching
+let currentSort = { key: "todayTotal", dir: "desc" };
+
+async function loadUsers(user) {
+  hideError();
+  const summaryEl = document.getElementById("usersSummary");
+  const bodyEl = document.getElementById("usersTableBody");
+  bodyEl.innerHTML = `<tr><td colspan="6" class="empty">Loading users…</td></tr>`;
+
+  try {
+    const token = await user.getIdToken();
+
+    const usersRes = await fetch(`${FS_BASE}/users?pageSize=300`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    if (usersRes.status === 403) {
+      bodyEl.innerHTML = "";
+      showError("Access denied listing users — check the Firestore rule grants your admin email `allow list` on /users.");
+      return;
+    }
+    if (!usersRes.ok) {
+      bodyEl.innerHTML = "";
+      showError(`Couldn't load users (HTTP ${usersRes.status}).`);
+      return;
+    }
+    const usersJson = await usersRes.json();
+    const userDocs = usersJson.documents || [];
+
+    // Fetch each user's usage doc. Done in parallel rather than one-by-one —
+    // still one request per user, so this is the part that gets slower as
+    // the userbase grows, per the tradeoff discussed before building this.
+    const today = todayDateStr();
+    const rows = await Promise.all(userDocs.map(async (d) => {
+      const f = d.fields || {};
+      const uid = d.name.split("/").pop();
+      let todayTotal = 0, allTimeTotal = 0;
+      try {
+        const usageRes = await fetch(`${FS_BASE}/usage/${uid}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (usageRes.ok) {
+          const usageJson = await usageRes.json();
+          const usageFields = usageJson.fields || {};
+          Object.entries(usageFields).forEach(([key, val]) => {
+            const n = parseInt(val.integerValue || 0);
+            if (key.endsWith("_total")) {
+              allTimeTotal += n;
+            } else if (key.includes(`_${today}`)) {
+              todayTotal += n;
+            }
+          });
+        }
+      } catch(e) { /* a single user's usage fetch failing shouldn't break the whole table */ }
+
+      return {
+        uid,
+        email: f.email?.stringValue || "(no email)",
+        displayName: f.displayName?.stringValue || "",
+        premium: f.premium?.booleanValue === true,
+        createdAt: f.createdAt?.stringValue || "",
+        todayTotal,
+        allTimeTotal
+      };
+    }));
+
+    usersData = rows;
+
+    // Summary stats
+    const totalUsers = rows.length;
+    const proUsers = rows.filter(r => r.premium).length;
+    const activeToday = rows.filter(r => r.todayTotal > 0).length;
+    summaryEl.innerHTML = `
+      <div class="summary-stat"><div class="num">${totalUsers}</div><div class="label">Total Users</div></div>
+      <div class="summary-stat"><div class="num">${proUsers}</div><div class="label">Pro Users</div></div>
+      <div class="summary-stat"><div class="num">${activeToday}</div><div class="label">Active Today</div></div>
+    `;
+
+    renderUsersTable();
+  } catch(e) {
+    bodyEl.innerHTML = "";
+    showError("Failed to load users: " + e.message);
+  }
+}
+
+const USER_COLUMNS = [
+  { key: "displayName", label: "Name" },
+  { key: "email", label: "Email" },
+  { key: "premium", label: "Plan" },
+  { key: "todayTotal", label: "Today" },
+  { key: "allTimeTotal", label: "All-time" },
+  { key: "createdAt", label: "Joined" }
+];
+
+function renderUsersTable() {
+  const headEl = document.getElementById("usersTableHead");
+  const bodyEl = document.getElementById("usersTableBody");
+
+  headEl.innerHTML = USER_COLUMNS.map(col => {
+    const isSorted = currentSort.key === col.key;
+    const cls = isSorted ? `sorted ${currentSort.dir === "asc" ? "asc" : ""}` : "";
+    return `<th data-key="${col.key}" class="${cls}">${col.label}</th>`;
+  }).join("");
+
+  headEl.querySelectorAll("th").forEach(th => {
+    th.addEventListener("click", () => {
+      const key = th.dataset.key;
+      if (currentSort.key === key) {
+        currentSort.dir = currentSort.dir === "desc" ? "asc" : "desc";
+      } else {
+        currentSort = { key, dir: "desc" };
+      }
+      renderUsersTable();
+    });
+  });
+
+  const sorted = [...usersData].sort((a, b) => {
+    const { key, dir } = currentSort;
+    let av = a[key], bv = b[key];
+    if (typeof av === "string") { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    if (typeof av === "boolean") { av = av ? 1 : 0; bv = bv ? 1 : 0; }
+    if (av < bv) return dir === "asc" ? -1 : 1;
+    if (av > bv) return dir === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  if (!sorted.length) {
+    bodyEl.innerHTML = `<tr><td colspan="6" class="empty">No users yet.</td></tr>`;
+    return;
+  }
+
+  bodyEl.innerHTML = sorted.map(r => `
+    <tr>
+      <td>${escAttr(r.displayName || "—")}</td>
+      <td>${escAttr(r.email)}</td>
+      <td>${r.premium ? '<span class="pro-pill">PRO</span>' : '<span class="free-pill">FREE</span>'}</td>
+      <td>${r.todayTotal}</td>
+      <td>${r.allTimeTotal}</td>
+      <td>${r.createdAt ? new Date(r.createdAt).toLocaleDateString() : "—"}</td>
+    </tr>
+  `).join("");
+}
 </script>
 </body>
 </html>
