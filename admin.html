@@ -57,7 +57,13 @@
 </div>
 
 <div id="app">
-  <h1>3M Admin</h1>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+    <h1>3M Admin</h1>
+    <div style="display:flex;align-items:center;gap:10px;font-size:.78rem;color:#8892a8;">
+      <span id="signed-in-as"></span>
+      <button id="signout-btn" style="background:none;border:1px solid #232a42;color:#e8ecf5;padding:5px 12px;border-radius:8px;font-size:.75rem;cursor:pointer;">Switch account</button>
+    </div>
+  </div>
   <div id="error-banner"></div>
   <div class="tabs">
     <button class="tab-btn active" data-tab="claims">Pro Claims</button>
@@ -72,6 +78,14 @@
   <div class="tab-panel" id="tab-users">
     <p class="sub">Every signed-up user, their Pro status, and today's tool usage. Click a column header to sort.</p>
     <div class="users-summary" id="usersSummary"></div>
+    <div style="background:#141a2e;border:1px solid #232a42;border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:.78rem;font-weight:700;color:#8892a8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px;">Most Popular Tools (all-time)</div>
+      <div id="toolLeaderboard"></div>
+    </div>
+    <div style="background:#141a2e;border:1px solid #232a42;border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:.78rem;font-weight:700;color:#8892a8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px;">Time Spent by Tool (all-time)</div>
+      <div id="timeLeaderboard"></div>
+    </div>
     <div class="table-wrap">
       <table class="users-table" id="usersTable">
         <thead><tr id="usersTableHead"></tr></thead>
@@ -98,6 +112,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+// Without this, Firebase silently reuses whichever Google account is
+// currently active in the browser and skips the account picker entirely —
+// a real problem for an admin device that's also signed into the main app
+// with a different (non-admin) account. This forces the picker to show
+// every time, so the correct admin account is always chosen deliberately.
+provider.setCustomParameters({ prompt: "select_account" });
 
 const FS_BASE = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/default/documents`;
 
@@ -146,6 +166,14 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   });
 });
 
+document.getElementById("signout-btn").addEventListener("click", async () => {
+  await auth.signOut();
+  // Immediately prompt sign-in again with the account picker forced open,
+  // rather than leaving the admin stuck on the signed-out gate needing an
+  // extra click — the whole point of this button is a fast account switch.
+  signInWithPopup(auth, provider).catch(e => showError("Sign-in failed: " + e.message));
+});
+
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     document.getElementById("signin-gate").style.display = "block";
@@ -154,6 +182,7 @@ onAuthStateChanged(auth, async (user) => {
   }
   document.getElementById("signin-gate").style.display = "none";
   document.getElementById("app").style.display = "block";
+  document.getElementById("signed-in-as").textContent = `Signed in as ${user.email}`;
   await loadClaims(user);
 });
 
@@ -192,11 +221,12 @@ async function loadClaims(user) {
       const claimId = d.name.split("/").pop();
       const uid = f.uid?.stringValue || "";
       const status = f.status?.stringValue || "pending";
+      const amount = f.amount?.integerValue;
       return `
       <div class="claim" data-id="${escAttr(claimId)}" data-uid="${escAttr(uid)}">
         <div class="claim-row">
           <div>
-            <div class="claim-code">${escAttr(f.txnCode?.stringValue || claimId)}</div>
+            <div class="claim-code">${escAttr(f.txnCode?.stringValue || claimId)}${amount !== undefined ? ` — <span style="color:#2ECC71;">KES ${escAttr(amount)}</span>` : ''}</div>
             <div class="claim-meta">
               ${escAttr(f.email?.stringValue || "(no email)")}<br>
               UID: ${escAttr(uid || "?")}<br>
@@ -345,10 +375,12 @@ async function loadUsers(user) {
     // still one request per user, so this is the part that gets slower as
     // the userbase grows, per the tradeoff discussed before building this.
     const today = todayDateStr();
+    const toolTotals = {}; // tool name -> all-time count across every user, for the popularity leaderboard
+    const toolTimeTotals = {}; // tool name -> all-time seconds spent across every user
     const rows = await Promise.all(userDocs.map(async (d) => {
       const f = d.fields || {};
       const uid = d.name.split("/").pop();
-      let todayTotal = 0, allTimeTotal = 0;
+      let todayTotal = 0, allTimeTotal = 0, todayTimeSec = 0, allTimeTimeSec = 0;
       try {
         const usageRes = await fetch(`${FS_BASE}/usage/${uid}`, {
           headers: { "Authorization": `Bearer ${token}` }
@@ -358,10 +390,25 @@ async function loadUsers(user) {
           const usageFields = usageJson.fields || {};
           Object.entries(usageFields).forEach(([key, val]) => {
             const n = parseInt(val.integerValue || 0);
+            const isTimeField = key.startsWith("time_");
             if (key.endsWith("_total")) {
-              allTimeTotal += n;
+              if (isTimeField) {
+                // "time_cv_total" -> tool name "cv" — these are seconds
+                // spent, not a count of uses, so they're tracked separately
+                // from allTimeTotal/toolTotals to avoid mixing units.
+                allTimeTimeSec += n;
+                const toolName = key.slice("time_".length, -"_total".length);
+                toolTimeTotals[toolName] = (toolTimeTotals[toolName] || 0) + n;
+              } else {
+                allTimeTotal += n;
+                // Field keys look like "cv_total", "salary_total" — strip the
+                // suffix to get the tool name for the cross-user leaderboard.
+                const toolName = key.slice(0, -"_total".length);
+                toolTotals[toolName] = (toolTotals[toolName] || 0) + n;
+              }
             } else if (key.includes(`_${today}`)) {
-              todayTotal += n;
+              if (isTimeField) todayTimeSec += n;
+              else todayTotal += n;
             }
           });
         }
@@ -374,7 +421,9 @@ async function loadUsers(user) {
         premium: f.premium?.booleanValue === true,
         createdAt: f.createdAt?.stringValue || "",
         todayTotal,
-        allTimeTotal
+        allTimeTotal,
+        todayTimeSec,
+        allTimeTimeSec
       };
     }));
 
@@ -384,11 +433,16 @@ async function loadUsers(user) {
     const totalUsers = rows.length;
     const proUsers = rows.filter(r => r.premium).length;
     const activeToday = rows.filter(r => r.todayTotal > 0).length;
+    const totalTimeAllUsers = rows.reduce((sum, r) => sum + r.allTimeTimeSec, 0);
     summaryEl.innerHTML = `
       <div class="summary-stat"><div class="num">${totalUsers}</div><div class="label">Total Users</div></div>
       <div class="summary-stat"><div class="num">${proUsers}</div><div class="label">Pro Users</div></div>
       <div class="summary-stat"><div class="num">${activeToday}</div><div class="label">Active Today</div></div>
+      <div class="summary-stat"><div class="num">${formatDuration(totalTimeAllUsers)}</div><div class="label">Total Time (all users)</div></div>
     `;
+
+    renderToolLeaderboard(toolTotals);
+    renderTimeLeaderboard(toolTimeTotals);
 
     renderUsersTable();
   } catch(e) {
@@ -401,10 +455,81 @@ const USER_COLUMNS = [
   { key: "displayName", label: "Name" },
   { key: "email", label: "Email" },
   { key: "premium", label: "Plan" },
-  { key: "todayTotal", label: "Today" },
-  { key: "allTimeTotal", label: "All-time" },
+  { key: "todayTotal", label: "Uses Today" },
+  { key: "allTimeTotal", label: "Uses All-time" },
+  { key: "allTimeTimeSec", label: "Time Spent" },
   { key: "createdAt", label: "Joined" }
 ];
+
+const TOOL_NAMES = {
+  salary: "Salary Intelligence", career: "Career Coach", scam: "Scam Shield",
+  govt: "Govt Jobs", rights: "Know Your Rights", tax: "Tax Calculator",
+  cv: "CV Builder", cover: "Cover Letter", hustle: "Side Hustle Ideas",
+  marketing: "Marketing Suite (all 4 sub-tools combined)", nairobot: "NairoBot Chat",
+  "marketing-image": "Image Generator"
+};
+
+// Formats a duration in seconds as a compact human-readable string, e.g.
+// "45s", "12m", "3h 20m" — used throughout the time-tracking display.
+function formatDuration(totalSeconds) {
+  if (!totalSeconds || totalSeconds < 1) return "0s";
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
+}
+
+function renderToolLeaderboard(toolTotals) {
+  const el = document.getElementById("toolLeaderboard");
+  const entries = Object.entries(toolTotals).sort((a, b) => b[1] - a[1]);
+  if (!entries.length) {
+    el.innerHTML = `<div class="empty">No tool usage recorded yet.</div>`;
+    return;
+  }
+  const maxCount = entries[0][1];
+  el.innerHTML = entries.map(([tool, count]) => {
+    const pct = maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
+    return `
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px;">
+          <span>${escAttr(TOOL_NAMES[tool] || tool)}</span>
+          <strong style="color:#F5C518;">${count}</strong>
+        </div>
+        <div style="background:#1a2138;border-radius:4px;height:8px;overflow:hidden;">
+          <div style="width:${pct}%;background:#F5C518;height:100%;"></div>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function renderTimeLeaderboard(toolTimeTotals) {
+  const el = document.getElementById("timeLeaderboard");
+  if (!el) return;
+  const entries = Object.entries(toolTimeTotals).sort((a, b) => b[1] - a[1]);
+  if (!entries.length) {
+    el.innerHTML = `<div class="empty">No time data recorded yet.</div>`;
+    return;
+  }
+  const maxSec = entries[0][1];
+  el.innerHTML = entries.map(([tool, sec]) => {
+    const pct = maxSec > 0 ? Math.round((sec / maxSec) * 100) : 0;
+    // "hero" is the landing page, not a TOOL_NAMES entry — label it explicitly
+    // rather than falling through to showing the raw string "hero".
+    const label = tool === "hero" ? "Home / Landing Page" : (TOOL_NAMES[tool] || tool);
+    return `
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px;">
+          <span>${escAttr(label)}</span>
+          <strong style="color:#2ECC71;">${formatDuration(sec)}</strong>
+        </div>
+        <div style="background:#1a2138;border-radius:4px;height:8px;overflow:hidden;">
+          <div style="width:${pct}%;background:#2ECC71;height:100%;"></div>
+        </div>
+      </div>`;
+  }).join("");
+}
 
 function renderUsersTable() {
   const headEl = document.getElementById("usersTableHead");
@@ -450,6 +575,7 @@ function renderUsersTable() {
       <td>${r.premium ? '<span class="pro-pill">PRO</span>' : '<span class="free-pill">FREE</span>'}</td>
       <td>${r.todayTotal}</td>
       <td>${r.allTimeTotal}</td>
+      <td>${formatDuration(r.allTimeTimeSec)}</td>
       <td>${r.createdAt ? new Date(r.createdAt).toLocaleDateString() : "—"}</td>
     </tr>
   `).join("");
