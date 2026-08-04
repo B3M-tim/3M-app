@@ -1244,6 +1244,8 @@ select.inp{
     <div class="field" style="margin-top:14px;">
       <label class="lbl" for="pw-txn-code">M-Pesa Confirmation Code</label>
       <input type="text" id="pw-txn-code" class="inp" placeholder="e.g., QGH7X9K2L1" style="text-transform:uppercase;">
+      <label class="lbl" for="pw-amount" style="margin-top:10px;">Amount Sent (KES)</label>
+      <input type="number" id="pw-amount" class="inp" placeholder="e.g., 200" min="1" step="1">
     </div>
     <button class="pw-cta" id="pw-submit-btn">✅ Submit for Pro Activation</button>
     <p style="font-size:.7rem;color:var(--tx2);text-align:center;margin-top:8px;">You must be signed in for us to activate your account. Activation is manual and may take up to 24 hours.</p>
@@ -1726,6 +1728,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ============ APP INIT ============
   buildNav(); buildToolGrid(); buildSalaryFilters(); bindEvents(); initPaywall();
+  trackPageEnter("hero"); // hero is shown by default without ever calling showHero()
   document.getElementById("nav-saved-btn").addEventListener("click", () => showPage("saved"));
   document.getElementById("nav-back-btn").addEventListener("click", () => history.back());
   document.getElementById("acctSaveNameBtn").addEventListener("click", saveAccountName);
@@ -1798,7 +1801,109 @@ function buildToolGrid() {
 }
 let currentPage = null;
 
+// ============ TIME TRACKING ============
+// Tracks time spent per tool and total session time. Pauses while the tab
+// is hidden (switched away / backgrounded) so idle background time doesn't
+// count as active usage. Flushes accumulated time to Firestore on page
+// navigation and on unload — unload uses fetch with keepalive:true rather
+// than sendBeacon, since sendBeacon cannot carry the Authorization header
+// Firestore's REST API requires for user-authenticated writes.
+let _timeTrackState = {
+  currentPageId: null,   // "hero" or a tool id
+  accumulatedMs: 0,      // active time banked so far for the current page, across any hide/show cycles
+  activeStart: document.hidden ? null : Date.now() // null while hidden = not currently accumulating
+};
+
+// Banks whatever active time has passed since activeStart into
+// accumulatedMs, then clears activeStart. Safe to call multiple times —
+// a null activeStart (already hidden/banked) is a no-op.
+function _bankActiveTime() {
+  if (_timeTrackState.activeStart === null) return;
+  _timeTrackState.accumulatedMs += Date.now() - _timeTrackState.activeStart;
+  _timeTrackState.activeStart = null;
+}
+
+// Writes accumulated seconds for a given page/tool to Firestore. Small
+// numbers get discarded (under 2s is almost certainly a bounce/misclick,
+// not real engagement, and not worth a write).
+async function _flushPageTime(pageId, ms, opts = {}) {
+  const seconds = Math.round(ms / 1000);
+  if (seconds < 2) return;
+  if (!window._user || window._offlineMode) return;
+
+  try {
+    const token = await window._user.getIdToken();
+    const dateKey = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Nairobi" });
+    const fieldKey = `time_${pageId}_${dateKey}`;
+    const totalFieldKey = `time_${pageId}_total`;
+
+    if (opts.useBeacon) {
+      // Page is unloading — a normal fetch can be cancelled mid-flight when
+      // the page closes, so this uses keepalive to let the browser finish
+      // sending it even after navigation away. This is a fire-and-forget
+      // increment rather than a read-then-write, since there's no time to
+      // safely read the current value first during unload. Firestore's
+      // REST API has no native "increment" verb over a simple PATCH, so
+      // this write can clobber a concurrent one in the rare case both fire
+      // at nearly the same moment — an accepted tradeoff for unload
+      // reliability over perfect accuracy in that edge case.
+      const FS_PROJECT = "biz-3mt";
+      fetch(`https://firestore.googleapis.com/v1/projects/${FS_PROJECT}/databases/default/documents/usage/${window._user.uid}?updateMask.fieldPaths=${fieldKey}&updateMask.fieldPaths=${totalFieldKey}`, {
+        method: "PATCH",
+        headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify({ fields: { [fieldKey]: { integerValue: seconds }, [totalFieldKey]: { integerValue: seconds } } })
+      }).catch(() => {});
+      return;
+    }
+
+    const doc = await window.fsGet("usage", window._user.uid, token);
+    const currentDay = parseInt(doc?.fields?.[fieldKey]?.integerValue || 0);
+    const currentTotal = parseInt(doc?.fields?.[totalFieldKey]?.integerValue || 0);
+    const fields = {};
+    if (doc?.fields) Object.entries(doc.fields).forEach(([k, v]) => { fields[k] = v; });
+    fields[fieldKey] = { integerValue: currentDay + seconds };
+    fields[totalFieldKey] = { integerValue: currentTotal + seconds };
+    const FS_PROJECT = "biz-3mt";
+    await fetch(`https://firestore.googleapis.com/v1/projects/${FS_PROJECT}/databases/default/documents/usage/${window._user.uid}?key=AIzaSyAB6xsmjLxkZpFcxJPJPMwJeVkBz0Wd01s`, {
+      method: "PATCH",
+      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ fields })
+    });
+  } catch(e) { console.log("Time tracking flush error:", e.message); }
+}
+
+// Call when entering a new page — flushes time for whatever page was
+// previously active, then starts the clock for the new one.
+function trackPageEnter(pageId) {
+  if (_timeTrackState.currentPageId) {
+    _bankActiveTime();
+    if (_timeTrackState.accumulatedMs > 0) {
+      _flushPageTime(_timeTrackState.currentPageId, _timeTrackState.accumulatedMs);
+    }
+  }
+  _timeTrackState.currentPageId = pageId;
+  _timeTrackState.accumulatedMs = 0;
+  _timeTrackState.activeStart = document.hidden ? null : Date.now();
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    _bankActiveTime();
+  } else if (_timeTrackState.currentPageId) {
+    _timeTrackState.activeStart = Date.now();
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  _bankActiveTime();
+  if (_timeTrackState.currentPageId && _timeTrackState.accumulatedMs > 0) {
+    _flushPageTime(_timeTrackState.currentPageId, _timeTrackState.accumulatedMs, { useBeacon: true });
+  }
+});
+
 function showPage(id, opts = {}) {
+  trackPageEnter(id);
   currentPage = id;
   document.getElementById("heroSection").style.display = "none";
   document.querySelectorAll(".pg").forEach(p => p.classList.remove("on"));
@@ -1822,6 +1927,7 @@ function showPage(id, opts = {}) {
 }
 
 function showHero(opts = {}) {
+  trackPageEnter("hero");
   currentPage = null;
   document.getElementById("heroSection").style.display = "";
   document.querySelectorAll(".pg").forEach(p=>p.classList.remove("on"));
@@ -2228,7 +2334,9 @@ function hidePaywall() {
 async function submitProClaim() {
   const btn = document.getElementById("pw-submit-btn");
   const codeInput = document.getElementById("pw-txn-code");
+  const amountInput = document.getElementById("pw-amount");
   const code = codeInput.value.trim().toUpperCase();
+  const amount = parseInt(amountInput.value, 10);
 
   if (!window._user) {
     alert("Please sign in first so we know which account to activate.");
@@ -2250,6 +2358,10 @@ async function submitProClaim() {
     alert("That doesn't look like a valid M-Pesa code — it should only contain letters and numbers.");
     return;
   }
+  if (!amount || amount <= 0 || !Number.isFinite(amount)) {
+    alert("Please enter the amount you sent, in KES.");
+    return;
+  }
 
   btn.disabled = true;
   btn.textContent = "⏳ Submitting…";
@@ -2263,6 +2375,7 @@ async function submitProClaim() {
       uid: window._user.uid,
       email: window._user.email || "",
       txnCode: code,
+      amount: amount,
       submittedAt: new Date().toISOString(),
       status: "pending"
     }, token);
@@ -2275,6 +2388,7 @@ async function submitProClaim() {
     }
 
     codeInput.value = "";
+    amountInput.value = "";
     btn.textContent = "✅ Submitted!";
     alert("Thanks! We've received your code and will activate Pro within 24 hours once verified. You'll see it unlock automatically next time you open the app.");
     setTimeout(() => { hidePaywall(); btn.disabled = false; btn.textContent = "✅ Submit for Pro Activation"; }, 800);
