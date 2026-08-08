@@ -67,6 +67,7 @@
   <div id="error-banner"></div>
   <div id="diag-box" style="background:#141a2e;border:1px solid #F5C518;border-radius:10px;padding:14px;margin-bottom:16px;font-size:.78rem;font-family:monospace;white-space:pre-wrap;color:#e8ecf5;"></div>
   <button id="raw-diag-btn" style="background:#F5C518;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;">Show Raw Firestore Response</button>
+  <button id="get-diag-btn" style="background:#2ECC71;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;margin-left:8px;">Test GET Own User Doc</button>
   <div class="tabs">
     <button class="tab-btn active" data-tab="claims">Pro Claims</button>
     <button class="tab-btn" data-tab="users">Users</button>
@@ -234,6 +235,29 @@ onAuthStateChanged(auth, async (user) => {
       document.getElementById("diag-box").textContent = "Raw diagnostic fetch failed: " + e.message;
     }
     btn.textContent = "Show Raw Firestore Response";
+  });
+
+  document.getElementById("get-diag-btn").addEventListener("click", async () => {
+    const btn2 = document.getElementById("get-diag-btn");
+    btn2.textContent = "Loading…";
+    try {
+      const freshToken = await user.getIdToken(true);
+      const url = `${FS_BASE}/users/${user.uid}`;
+      const res = await fetch(url, {
+        headers: { "Authorization": `Bearer ${freshToken}` }
+      });
+      const bodyText = await res.text();
+      let prettyBody = bodyText;
+      try { prettyBody = JSON.stringify(JSON.parse(bodyText), null, 2); } catch(e) { /* leave as raw text if not JSON */ }
+      document.getElementById("diag-box").textContent =
+        "GET (single doc) TEST\n" +
+        "URL: " + url + "\n" +
+        "HTTP status: " + res.status + " " + res.statusText + "\n\n" +
+        "Body:\n" + prettyBody;
+    } catch(e) {
+      document.getElementById("diag-box").textContent = "GET diagnostic fetch failed: " + e.message;
+    }
+    btn2.textContent = "Test GET Own User Doc";
   });
 
   await loadClaims(user);
