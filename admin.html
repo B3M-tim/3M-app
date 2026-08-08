@@ -66,6 +66,7 @@
   </div>
   <div id="error-banner"></div>
   <div id="diag-box" style="background:#141a2e;border:1px solid #F5C518;border-radius:10px;padding:14px;margin-bottom:16px;font-size:.78rem;font-family:monospace;white-space:pre-wrap;color:#e8ecf5;"></div>
+  <button id="raw-diag-btn" style="background:#F5C518;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;">Show Raw Firestore Response</button>
   <div class="tabs">
     <button class="tab-btn active" data-tab="claims">Pro Claims</button>
     <button class="tab-btn" data-tab="users">Users</button>
@@ -212,6 +213,28 @@ onAuthStateChanged(auth, async (user) => {
     "token aud (project): " + JSON.stringify(claims.aud) + "\n" +
     "token iss (issuer): " + JSON.stringify(claims.iss) + "\n" +
     "token uid/sub: " + JSON.stringify(claims.user_id || claims.sub);
+
+  document.getElementById("raw-diag-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("raw-diag-btn");
+    btn.textContent = "Loading…";
+    try {
+      const freshToken = await user.getIdToken(true);
+      const res = await fetch(`${FS_BASE}/pending_claims?pageSize=100`, {
+        headers: { "Authorization": `Bearer ${freshToken}` }
+      });
+      const bodyText = await res.text();
+      let prettyBody = bodyText;
+      try { prettyBody = JSON.stringify(JSON.parse(bodyText), null, 2); } catch(e) { /* leave as raw text if not JSON */ }
+      document.getElementById("diag-box").textContent =
+        "RAW RESPONSE\n" +
+        "URL: " + `${FS_BASE}/pending_claims?pageSize=100` + "\n" +
+        "HTTP status: " + res.status + " " + res.statusText + "\n\n" +
+        "Body:\n" + prettyBody;
+    } catch(e) {
+      document.getElementById("diag-box").textContent = "Raw diagnostic fetch failed: " + e.message;
+    }
+    btn.textContent = "Show Raw Firestore Response";
+  });
 
   await loadClaims(user);
 });
