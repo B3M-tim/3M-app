@@ -65,6 +65,7 @@
     </div>
   </div>
   <div id="error-banner"></div>
+  <div id="diag-box" style="background:#141a2e;border:1px solid #F5C518;border-radius:10px;padding:14px;margin-bottom:16px;font-size:.78rem;font-family:monospace;white-space:pre-wrap;color:#e8ecf5;"></div>
   <div class="tabs">
     <button class="tab-btn active" data-tab="claims">Pro Claims</button>
     <button class="tab-btn" data-tab="users">Users</button>
@@ -174,6 +175,21 @@ document.getElementById("signout-btn").addEventListener("click", async () => {
   signInWithPopup(auth, provider).catch(e => showError("Sign-in failed: " + e.message));
 });
 
+// Decodes a JWT's payload (base64url) without verifying its signature —
+// safe to do purely for display purposes, since this only reads claims
+// already visible to the browser holding the token; it doesn't need to
+// verify authenticity for a diagnostic display.
+function decodeJwtPayload(token) {
+  try {
+    const payload = token.split(".")[1];
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64 + "===".slice((base64.length + 3) % 4);
+    return JSON.parse(atob(padded));
+  } catch(e) {
+    return { error: "Could not decode token: " + e.message };
+  }
+}
+
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     document.getElementById("signin-gate").style.display = "block";
@@ -183,6 +199,20 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("signin-gate").style.display = "none";
   document.getElementById("app").style.display = "block";
   document.getElementById("signed-in-as").textContent = `Signed in as ${user.email}`;
+
+  // Temporary diagnostic: show exactly what claims are in the token
+  // Firestore actually evaluates, to pin down why the rules aren't matching.
+  const token = await user.getIdToken(true); // force refresh, bypass any cached token
+  const claims = decodeJwtPayload(token);
+  document.getElementById("diag-box").textContent =
+    "DIAGNOSTIC (temporary)\n" +
+    "user.email (from Firebase SDK): " + JSON.stringify(user.email) + "\n" +
+    "token email claim: " + JSON.stringify(claims.email) + "\n" +
+    "token email_verified: " + JSON.stringify(claims.email_verified) + "\n" +
+    "token aud (project): " + JSON.stringify(claims.aud) + "\n" +
+    "token iss (issuer): " + JSON.stringify(claims.iss) + "\n" +
+    "token uid/sub: " + JSON.stringify(claims.user_id || claims.sub);
+
   await loadClaims(user);
 });
 
