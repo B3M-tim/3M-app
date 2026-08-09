@@ -309,13 +309,18 @@ onAuthStateChanged(auth, async (user) => {
     btn4.textContent = "Loading…";
     try {
       const freshToken = await user.getIdToken(true);
-      const result = await listCollection("pending_claims", freshToken);
+      const claimsResult = await listCollection("pending_claims", freshToken, "status", ["pending", "approved", "rejected"]);
+      const usersResult = await listCollection("users", freshToken, "premium", [true, false]);
       document.getElementById("diag-box").textContent =
-        "listCollection() FUNCTION TEST\n" +
-        "error: " + JSON.stringify(result.error) + "\n" +
-        (result.status ? "status: " + result.status + "\n" : "") +
-        "documents found: " + (result.documents ? result.documents.length : "n/a") + "\n\n" +
-        "Full result:\n" + JSON.stringify(result, null, 2);
+        "listCollection() FUNCTION TEST\n\n" +
+        "pending_claims — error: " + JSON.stringify(claimsResult.error) +
+        (claimsResult.status ? ", status: " + claimsResult.status : "") +
+        ", found: " + (claimsResult.documents ? claimsResult.documents.length : "n/a") + "\n\n" +
+        "users — error: " + JSON.stringify(usersResult.error) +
+        (usersResult.status ? ", status: " + usersResult.status : "") +
+        ", found: " + (usersResult.documents ? usersResult.documents.length : "n/a") + "\n\n" +
+        "Full claims result:\n" + JSON.stringify(claimsResult, null, 2) + "\n\n" +
+        "Full users result:\n" + JSON.stringify(usersResult, null, 2);
     } catch(e) {
       document.getElementById("diag-box").textContent = "listCollection() test failed: " + e.message;
     }
@@ -412,24 +417,36 @@ async function loadClaims(user) {
 // endpoint doesn't give Firestore's rule compiler enough structure to do
 // that, and returns 403 even with a correct, working rule — confirmed by
 // the identical account succeeding immediately on a runQuery call with an
-// explicit filter. A trivial always-true filter (limit > -1, true for
-// every integer) reproduces "list everything" through the query shape
-// Firestore's rules engine can actually evaluate.
+// explicit filter (status == "pending", 200 OK).
 //
-// Returns results normalized into the same {name, fields} shape the
-// plain GET endpoint used, so calling code doesn't need to change.
-async function listCollection(collectionId, token, pageSize = 300) {
+// A __name__ range-based "match everything" filter was tried first but
+// returned 400 (malformed reference value) rather than a permissions
+// result — abandoned in favor of this lower-risk approach: filter on a
+// field guaranteed present on every document, using the same fieldFilter
+// shape already proven to succeed live, rather than guessing at REST
+// syntax that couldn't be verified without a working terminal.
+//
+// filterField/filterValues: an OR across the given (field, value) pairs.
+// Passing every possible real value for that field is how this catches
+// "all documents" without relying on a true wildcard. Values may be
+// strings or booleans — Firestore's typed value wrapper differs per type.
+async function listCollection(collectionId, token, filterField, filterValues, pageSize = 300) {
   const url = `https://firestore.googleapis.com/v1/projects/biz-3mt/databases/default/documents:runQuery`;
+  const wrapValue = (v) => typeof v === "boolean" ? { booleanValue: v } : { stringValue: v };
+  const orFilters = filterValues.map(v => ({
+    fieldFilter: {
+      field: { fieldPath: filterField },
+      op: "EQUAL",
+      value: wrapValue(v)
+    }
+  }));
+  const where = orFilters.length === 1
+    ? orFilters[0]
+    : { compositeFilter: { op: "OR", filters: orFilters } };
   const body = {
     structuredQuery: {
       from: [{ collectionId }],
-      where: {
-        fieldFilter: {
-          field: { fieldPath: "__name__" },
-          op: "GREATER_THAN",
-          value: { referenceValue: `projects/biz-3mt/databases/default/documents/${collectionId}/` }
-        }
-      },
+      where,
       limit: pageSize
     }
   };
