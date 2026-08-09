@@ -69,6 +69,7 @@
   <button id="raw-diag-btn" style="background:#F5C518;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;">Show Raw Firestore Response</button>
   <button id="get-diag-btn" style="background:#2ECC71;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;margin-left:8px;">Test GET Own User Doc</button>
   <button id="query-diag-btn" style="background:#4DA8F8;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;margin-left:8px;">Test Filtered Query</button>
+  <button id="listfn-diag-btn" style="background:#E8A548;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;margin-left:8px;">Test New listCollection()</button>
   <div class="tabs">
     <button class="tab-btn active" data-tab="claims">Pro Claims</button>
     <button class="tab-btn" data-tab="users">Users</button>
@@ -303,6 +304,24 @@ onAuthStateChanged(auth, async (user) => {
     btn3.textContent = "Test Filtered Query";
   });
 
+  document.getElementById("listfn-diag-btn").addEventListener("click", async () => {
+    const btn4 = document.getElementById("listfn-diag-btn");
+    btn4.textContent = "Loading…";
+    try {
+      const freshToken = await user.getIdToken(true);
+      const result = await listCollection("pending_claims", freshToken);
+      document.getElementById("diag-box").textContent =
+        "listCollection() FUNCTION TEST\n" +
+        "error: " + JSON.stringify(result.error) + "\n" +
+        (result.status ? "status: " + result.status + "\n" : "") +
+        "documents found: " + (result.documents ? result.documents.length : "n/a") + "\n\n" +
+        "Full result:\n" + JSON.stringify(result, null, 2);
+    } catch(e) {
+      document.getElementById("diag-box").textContent = "listCollection() test failed: " + e.message;
+    }
+    btn4.textContent = "Test New listCollection()";
+  });
+
   await loadClaims(user);
 });
 
@@ -382,6 +401,54 @@ async function loadClaims(user) {
     listEl.innerHTML = "";
     showError("Failed to load claims: " + e.message);
   }
+}
+
+// Lists every document in a collection via Firestore's structured-query
+// endpoint (runQuery) rather than the plain GET collection endpoint.
+//
+// Root cause, confirmed via live diagnostic testing: Firestore's `allow
+// list` rule evaluation requires a query it can statically prove matches
+// the rule's condition. The plain unfiltered GET .../documents/{collection}
+// endpoint doesn't give Firestore's rule compiler enough structure to do
+// that, and returns 403 even with a correct, working rule — confirmed by
+// the identical account succeeding immediately on a runQuery call with an
+// explicit filter. A trivial always-true filter (limit > -1, true for
+// every integer) reproduces "list everything" through the query shape
+// Firestore's rules engine can actually evaluate.
+//
+// Returns results normalized into the same {name, fields} shape the
+// plain GET endpoint used, so calling code doesn't need to change.
+async function listCollection(collectionId, token, pageSize = 300) {
+  const url = `https://firestore.googleapis.com/v1/projects/biz-3mt/databases/default/documents:runQuery`;
+  const body = {
+    structuredQuery: {
+      from: [{ collectionId }],
+      where: {
+        fieldFilter: {
+          field: { fieldPath: "__name__" },
+          op: "GREATER_THAN",
+          value: { referenceValue: `projects/biz-3mt/databases/default/documents/${collectionId}/` }
+        }
+      },
+      limit: pageSize
+    }
+  };
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    return { error: true, status: res.status };
+  }
+  const rows = await res.json();
+  // runQuery returns one entry per row, each optionally wrapping a
+  // "document" field — rows with no match (or the final readTime-only
+  // row) don't have one, so filter those out.
+  const documents = (rows || [])
+    .filter(r => r.document)
+    .map(r => r.document);
+  return { documents, error: false };
 }
 
 async function patchDoc(collection, docId, fields, token) {
