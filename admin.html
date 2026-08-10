@@ -65,11 +65,6 @@
     </div>
   </div>
   <div id="error-banner"></div>
-  <div id="diag-box" style="background:#141a2e;border:1px solid #F5C518;border-radius:10px;padding:14px;margin-bottom:16px;font-size:.78rem;font-family:monospace;white-space:pre-wrap;color:#e8ecf5;"></div>
-  <button id="raw-diag-btn" style="background:#F5C518;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;">Show Raw Firestore Response</button>
-  <button id="get-diag-btn" style="background:#2ECC71;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;margin-left:8px;">Test GET Own User Doc</button>
-  <button id="query-diag-btn" style="background:#4DA8F8;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;margin-left:8px;">Test Filtered Query</button>
-  <button id="listfn-diag-btn" style="background:#E8A548;color:#000;border:none;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:16px;margin-left:8px;">Test New listCollection()</button>
   <div class="tabs">
     <button class="tab-btn active" data-tab="claims">Pro Claims</button>
     <button class="tab-btn" data-tab="users">Users</button>
@@ -183,17 +178,6 @@ document.getElementById("signout-btn").addEventListener("click", async () => {
 // safe to do purely for display purposes, since this only reads claims
 // already visible to the browser holding the token; it doesn't need to
 // verify authenticity for a diagnostic display.
-function decodeJwtPayload(token) {
-  try {
-    const payload = token.split(".")[1];
-    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64 + "===".slice((base64.length + 3) % 4);
-    return JSON.parse(atob(padded));
-  } catch(e) {
-    return { error: "Could not decode token: " + e.message };
-  }
-}
-
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     document.getElementById("signin-gate").style.display = "block";
@@ -203,132 +187,9 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("signin-gate").style.display = "none";
   document.getElementById("app").style.display = "block";
   document.getElementById("signed-in-as").textContent = `Signed in as ${user.email}`;
-
-  // Temporary diagnostic: show exactly what claims are in the token
-  // Firestore actually evaluates, to pin down why the rules aren't matching.
-  const token = await user.getIdToken(true); // force refresh, bypass any cached token
-  const claims = decodeJwtPayload(token);
-  document.getElementById("diag-box").textContent =
-    "DIAGNOSTIC (temporary)\n" +
-    "user.email (from Firebase SDK): " + JSON.stringify(user.email) + "\n" +
-    "token email claim: " + JSON.stringify(claims.email) + "\n" +
-    "token email_verified: " + JSON.stringify(claims.email_verified) + "\n" +
-    "token aud (project): " + JSON.stringify(claims.aud) + "\n" +
-    "token iss (issuer): " + JSON.stringify(claims.iss) + "\n" +
-    "token uid/sub: " + JSON.stringify(claims.user_id || claims.sub);
-
-  document.getElementById("raw-diag-btn").addEventListener("click", async () => {
-    const btn = document.getElementById("raw-diag-btn");
-    btn.textContent = "Loading…";
-    try {
-      const freshToken = await user.getIdToken(true);
-      const res = await fetch(`${FS_BASE}/pending_claims?pageSize=100`, {
-        headers: { "Authorization": `Bearer ${freshToken}` }
-      });
-      const bodyText = await res.text();
-      let prettyBody = bodyText;
-      try { prettyBody = JSON.stringify(JSON.parse(bodyText), null, 2); } catch(e) { /* leave as raw text if not JSON */ }
-      document.getElementById("diag-box").textContent =
-        "RAW RESPONSE\n" +
-        "URL: " + `${FS_BASE}/pending_claims?pageSize=100` + "\n" +
-        "HTTP status: " + res.status + " " + res.statusText + "\n\n" +
-        "Body:\n" + prettyBody;
-    } catch(e) {
-      document.getElementById("diag-box").textContent = "Raw diagnostic fetch failed: " + e.message;
-    }
-    btn.textContent = "Show Raw Firestore Response";
-  });
-
-  document.getElementById("get-diag-btn").addEventListener("click", async () => {
-    const btn2 = document.getElementById("get-diag-btn");
-    btn2.textContent = "Loading…";
-    try {
-      const freshToken = await user.getIdToken(true);
-      const url = `${FS_BASE}/users/${user.uid}`;
-      const res = await fetch(url, {
-        headers: { "Authorization": `Bearer ${freshToken}` }
-      });
-      const bodyText = await res.text();
-      let prettyBody = bodyText;
-      try { prettyBody = JSON.stringify(JSON.parse(bodyText), null, 2); } catch(e) { /* leave as raw text if not JSON */ }
-      document.getElementById("diag-box").textContent =
-        "GET (single doc) TEST\n" +
-        "URL: " + url + "\n" +
-        "HTTP status: " + res.status + " " + res.statusText + "\n\n" +
-        "Body:\n" + prettyBody;
-    } catch(e) {
-      document.getElementById("diag-box").textContent = "GET diagnostic fetch failed: " + e.message;
-    }
-    btn2.textContent = "Test GET Own User Doc";
-  });
-
-  document.getElementById("query-diag-btn").addEventListener("click", async () => {
-    const btn3 = document.getElementById("query-diag-btn");
-    btn3.textContent = "Loading…";
-    try {
-      const freshToken = await user.getIdToken(true);
-      // Uses Firestore's structured-query endpoint (runQuery) with an
-      // explicit filter, rather than the plain unfiltered GET-collection
-      // endpoint used elsewhere — testing whether the request SHAPE, not
-      // the rule text, is what's actually being rejected.
-      const url = `https://firestore.googleapis.com/v1/projects/biz-3mt/databases/default/documents:runQuery`;
-      const body = {
-        structuredQuery: {
-          from: [{ collectionId: "pending_claims" }],
-          where: {
-            fieldFilter: {
-              field: { fieldPath: "status" },
-              op: "EQUAL",
-              value: { stringValue: "pending" }
-            }
-          },
-          limit: 10
-        }
-      };
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${freshToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-      const bodyText = await res.text();
-      let prettyBody = bodyText;
-      try { prettyBody = JSON.stringify(JSON.parse(bodyText), null, 2); } catch(e) { /* leave as raw text */ }
-      document.getElementById("diag-box").textContent =
-        "FILTERED QUERY (runQuery) TEST\n" +
-        "URL: " + url + "\n" +
-        "HTTP status: " + res.status + " " + res.statusText + "\n\n" +
-        "Body:\n" + prettyBody;
-    } catch(e) {
-      document.getElementById("diag-box").textContent = "Query diagnostic fetch failed: " + e.message;
-    }
-    btn3.textContent = "Test Filtered Query";
-  });
-
-  document.getElementById("listfn-diag-btn").addEventListener("click", async () => {
-    const btn4 = document.getElementById("listfn-diag-btn");
-    btn4.textContent = "Loading…";
-    try {
-      const freshToken = await user.getIdToken(true);
-      const claimsResult = await listCollection("pending_claims", freshToken, "status", ["pending", "approved", "rejected"]);
-      const usersResult = await listCollection("users", freshToken, "premium", [true, false]);
-      document.getElementById("diag-box").textContent =
-        "listCollection() FUNCTION TEST\n\n" +
-        "pending_claims — error: " + JSON.stringify(claimsResult.error) +
-        (claimsResult.status ? ", status: " + claimsResult.status : "") +
-        ", found: " + (claimsResult.documents ? claimsResult.documents.length : "n/a") + "\n\n" +
-        "users — error: " + JSON.stringify(usersResult.error) +
-        (usersResult.status ? ", status: " + usersResult.status : "") +
-        ", found: " + (usersResult.documents ? usersResult.documents.length : "n/a") + "\n\n" +
-        "Full claims result:\n" + JSON.stringify(claimsResult, null, 2) + "\n\n" +
-        "Full users result:\n" + JSON.stringify(usersResult, null, 2);
-    } catch(e) {
-      document.getElementById("diag-box").textContent = "listCollection() test failed: " + e.message;
-    }
-    btn4.textContent = "Test New listCollection()";
-  });
-
   await loadClaims(user);
 });
+
 
 async function loadClaims(user) {
   hideError();
@@ -336,23 +197,23 @@ async function loadClaims(user) {
   listEl.innerHTML = `<div class="empty">Loading…</div>`;
   try {
     const token = await user.getIdToken();
-    const res = await fetch(`${FS_BASE}/pending_claims?pageSize=100`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    if (res.status === 403) {
-      // Expected if this account isn't the admin email in the Firestore rules —
-      // the read is denied server-side rather than silently returning nothing.
+    // The plain GET .../documents/pending_claims endpoint returned 403 even
+    // with correct rules — Firestore's list-rule evaluation needs a query
+    // it can statically verify, which that endpoint doesn't provide. Fixed
+    // by querying with an explicit OR filter across every real status
+    // value instead (confirmed working via live diagnostic testing).
+    const result = await listCollection("pending_claims", token, "status", ["pending", "approved", "rejected"]);
+    if (result.status === 403) {
       listEl.innerHTML = "";
       showError("Access denied — this Google account isn't set as the admin email in your Firestore rules.");
       return;
     }
-    if (!res.ok) {
+    if (result.error) {
       listEl.innerHTML = "";
-      showError(`Couldn't load claims (HTTP ${res.status}). Please try refreshing.`);
+      showError(`Couldn't load claims (HTTP ${result.status}). Please try refreshing.`);
       return;
     }
-    const data = await res.json();
-    const docs = data.documents || [];
+    const docs = result.documents || [];
     if (!docs.length) {
       listEl.innerHTML = `<div class="empty">No pending claims right now.</div>`;
       return;
@@ -559,21 +420,21 @@ async function loadUsers(user) {
   try {
     const token = await user.getIdToken();
 
-    const usersRes = await fetch(`${FS_BASE}/users?pageSize=300`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    if (usersRes.status === 403) {
+    // Same fix as loadClaims — the plain GET endpoint fails Firestore's
+    // list-rule evaluation even with correct rules; filtering on premium
+    // (true/false covers every user document) via runQuery works.
+    const usersResult = await listCollection("users", token, "premium", [true, false]);
+    if (usersResult.status === 403) {
       bodyEl.innerHTML = "";
       showError("Access denied listing users — check the Firestore rule grants your admin email `allow list` on /users.");
       return;
     }
-    if (!usersRes.ok) {
+    if (usersResult.error) {
       bodyEl.innerHTML = "";
-      showError(`Couldn't load users (HTTP ${usersRes.status}).`);
+      showError(`Couldn't load users (HTTP ${usersResult.status}).`);
       return;
     }
-    const usersJson = await usersRes.json();
-    const userDocs = usersJson.documents || [];
+    const userDocs = usersResult.documents || [];
 
     // Fetch each user's usage doc. Done in parallel rather than one-by-one —
     // still one request per user, so this is the part that gets slower as
