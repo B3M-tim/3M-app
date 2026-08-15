@@ -1634,6 +1634,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
+    // Exposed so showPaywall (now purely a "please sign in" prompt, since
+    // the app has no usage limit or payment gate) can trigger sign-in
+    // without needing access to this block's local auth/provider scope.
+    window._triggerSignIn = () => signInWithPopup(auth, provider).catch(e => dbg("❌ Login error: " + e.message));
+
     // Auth state listener
     onAuthStateChanged(auth, async (user) => {
       const btn = document.getElementById("nav-login-btn");
@@ -2270,43 +2275,34 @@ async function incUsageFS(tool) {
   } catch(e) { console.log("Usage track error:", e.message); }
 }
 
+// The app is currently fully free — no daily limit, no paywall gate.
+// checkGate still requires sign-in (needed for Saved Items, usage
+// analytics, and general account identity), but no longer counts usage
+// against any limit. Usage is still tracked via incUsageFS elsewhere for
+// analytics purposes, independent of this gate.
 async function checkGate(tool, limit = FREE_LIMIT) {
-  if (window._offlineMode) {
-    const used = getOfflineUsage(tool);
-    if (used < limit) return true;
-    showPaywall(tool);
-    return false;
-  }
+  if (window._offlineMode) return true; // offline mode already has no real account to gate on
   if (!window._user) { showPaywall(tool); return false; }
-  if (isPro()) return true;
-  const used = await getUsageFS(tool);
-  if (used < limit) return true;
-  showPaywall(tool);
-  return false;
+  return true;
 }
 
 // Keep these for compatibility but they now use Firestore values
 function getUsage(tool) { return 0; } // legacy fallback
 function incUsage(tool) {} // replaced by incUsageFS
 
+// The app has no usage limit anymore, so there's nothing left to badge for
+// a signed-in user — this now only distinguishes "not signed in yet" from
+// "ready to use", rather than showing a remaining-count that no longer exists.
 async function updateBadge(btnId, tool) {
   const btn = document.getElementById(btnId);
   if(!btn) return;
-  if(isPro()) { btn.querySelector(".use-badge")?.remove(); return; }
   if(!window._offlineMode && !window._user) {
     let badge = btn.querySelector(".use-badge");
     if(!badge){ badge=document.createElement("span"); badge.className="use-badge"; btn.appendChild(badge); }
     badge.className="use-badge"; badge.textContent="Sign in to use";
     return;
   }
-  const used = await getUsageFS(tool);
-  const rem = Math.max(0, FREE_LIMIT - used);
-  let badge = btn.querySelector(".use-badge");
-  if(!badge){ badge=document.createElement("span"); badge.className="use-badge"; btn.appendChild(badge); }
-  if(rem===0){ badge.className="use-badge danger"; badge.textContent="LOCKED 🔒"; }
-  else if(rem===1){ badge.className="use-badge danger"; badge.textContent=rem+" free left"; }
-  else if(rem===2){ badge.className="use-badge warn"; badge.textContent=rem+" free left"; }
-  else{ badge.className="use-badge"; badge.textContent=rem+" free"; }
+  btn.querySelector(".use-badge")?.remove();
 }
 async function refreshAllBadges() {
   const map = {salary:"salaryAiBtn",career:"careerRun",scam:"scamBtn",govt:"govtBtn",rights:"rightsBtn",tax:"taxAiBtn",cv:"cvBtn",cover:"coverBtn",hustle:"hustleBtn",marketing:"socialBtn"};
@@ -2324,8 +2320,12 @@ async function refreshAllBadges() {
 // since anyone could type in a fake or reused code.
 const PRO_PRICE_KES = "TBD"; // <-- set your real price here once decided
 
+// Now purely a "please sign in" prompt — the app has no usage limit or
+// paywall anymore (see checkGate), so this is only ever reached when a
+// signed-out user taps a tool. Triggers sign-in directly rather than
+// opening the old payment modal, which would be confusing messaging here.
 function showPaywall(tool) {
-  document.getElementById("pw-overlay").classList.add("open");
+  if (window._triggerSignIn) window._triggerSignIn();
 }
 function hidePaywall() {
   document.getElementById("pw-overlay").classList.remove("open");
